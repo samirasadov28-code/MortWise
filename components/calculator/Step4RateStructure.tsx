@@ -1,0 +1,155 @@
+'use client';
+
+import type { WizardState, RateStructure } from '@/lib/types';
+import Tooltip from '@/components/shared/Tooltip';
+
+interface Step4Props {
+  state: WizardState;
+  onChange: (updates: Partial<WizardState>) => void;
+}
+
+const RATE_STRUCTURES: Array<{
+  value: RateStructure;
+  label: string;
+  tagline: string;
+  description: string;
+  icon: string;
+}> = [
+  {
+    value: 'fixed',
+    label: 'Fixed rate',
+    tagline: 'Certainty and predictability',
+    description: 'Pay the same rate for a set period, then revert to your lender\'s variable rate. Ideal if you want to know exactly what you\'ll pay each month and want protection against rate rises.',
+    icon: '🔒',
+  },
+  {
+    value: 'variable',
+    label: 'Variable / tracker',
+    tagline: 'Moves with the market',
+    description: 'Your rate tracks the central bank base rate plus a fixed margin. You benefit when rates fall, but payments rise when rates increase. Often starts lower than fixed rates.',
+    icon: '📈',
+  },
+  {
+    value: 'split',
+    label: 'Split rate',
+    tagline: 'Blend stability with flexibility',
+    description: 'Part of your mortgage is fixed, part tracks the market. You balance rate certainty on one portion with potential savings on the other. Popular in Ireland with ECB tracker mortgages.',
+    icon: '⚖️',
+  },
+  {
+    value: 'tracker',
+    label: 'Pure tracker',
+    tagline: 'ECB / BoE rate + margin',
+    description: 'Tracks a central bank rate (e.g. ECB or Bank of England base rate) plus a fixed margin for the full term. Transparent and directly linked to monetary policy decisions.',
+    icon: '🎯',
+  },
+];
+
+export default function Step4RateStructure({ state, onChange }: Step4Props) {
+  const selected = state.rateStructure;
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-white mb-1">Rate structure</h2>
+      <p className="text-[#94a3b8] text-sm mb-6">
+        Choose the type of interest rate arrangement for your mortgage scenarios.
+      </p>
+
+      <div className="space-y-3 mb-6">
+        {RATE_STRUCTURES.map((rs) => (
+          <button
+            key={rs.value}
+            type="button"
+            onClick={() => onChange({ rateStructure: rs.value })}
+            className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+              selected === rs.value
+                ? 'border-[#3b82f6] bg-[#3b82f6]/10'
+                : 'border-[#1e3a5f] bg-[#0f3460]/30 hover:border-[#3b82f6]/50'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{rs.icon}</span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-white">{rs.label}</span>
+                  <span className="text-xs text-[#94a3b8]">— {rs.tagline}</span>
+                </div>
+                {selected === rs.value && (
+                  <p className="text-sm text-[#94a3b8] mt-1">{rs.description}</p>
+                )}
+              </div>
+              <div className="ml-auto">
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selected === rs.value ? 'border-[#3b82f6] bg-[#3b82f6]' : 'border-[#1e3a5f]'
+                }`}>
+                  {selected === rs.value && <span className="w-2 h-2 bg-white rounded-full" />}
+                </div>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Split rate slider */}
+      {selected === 'split' && (
+        <div className="bg-[#0f3460]/50 border border-[#1e3a5f] rounded-xl p-4">
+          <label className="block text-sm font-medium text-white mb-3 flex items-center gap-1">
+            Fixed / Tracker split
+            <Tooltip content="The proportion of your mortgage at a fixed rate vs a tracker rate. E.g. 70% fixed means 70% of the loan amount pays the fixed rate, while 30% tracks the ECB rate + margin." />
+          </label>
+          <div className="space-y-2">
+            <input
+              type="range"
+              min={10}
+              max={90}
+              step={5}
+              value={Math.round(state.splitFixedProportion * 100)}
+              onChange={(e) => onChange({ splitFixedProportion: Number(e.target.value) / 100 })}
+              className="w-full accent-[#3b82f6]"
+            />
+            <div className="flex justify-between text-sm">
+              <span className="text-white font-medium">
+                {Math.round(state.splitFixedProportion * 100)}% Fixed
+              </span>
+              <span className="text-[#94a3b8]">
+                {100 - Math.round(state.splitFixedProportion * 100)}% Tracker
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mortgage term */}
+      <div className="mt-5">
+        <label className="block text-sm font-medium text-white mb-1.5 flex items-center gap-1">
+          Mortgage term
+          <Tooltip content="The total number of years you take to repay the mortgage. Longer terms = lower monthly payments but much more interest paid overall." />
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={5}
+            max={35}
+            step={1}
+            value={state.mortgageTerm}
+            onChange={(e) => onChange({ mortgageTerm: Number(e.target.value) })}
+            className="flex-1 accent-[#3b82f6]"
+          />
+          <div className="flex-shrink-0 w-24">
+            <div className="relative">
+              <input
+                type="number"
+                value={state.mortgageTerm}
+                onChange={(e) => onChange({ mortgageTerm: Math.min(35, Math.max(5, Number(e.target.value))) })}
+                className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-center focus:outline-none focus:border-[#3b82f6] transition-colors"
+                min={5}
+                max={35}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#94a3b8]">yr</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
