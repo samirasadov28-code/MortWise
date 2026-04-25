@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 
 const RequestSchema = z.object({
@@ -46,10 +45,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
+    const apiKey = process.env.GROK_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'Grok API key not configured' }, { status: 500 });
+    }
+
     const { market, ltv, term, buyerType, rateStructure } = parsed.data;
     const ctx = marketContext[market] ?? market;
-
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
     const prompt = `Generate 4 realistic mortgage rate scenarios for a ${market} buyer.
 
@@ -80,19 +82,35 @@ Return a JSON object with this exact structure:
 Include: one 3-5yr fixed, one long fixed (7-10yr), one tracker/variable, one with cashback.
 Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
 
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: prompt }],
+    const response = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'grok-3',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: prompt },
+        ],
+        max_tokens: 1024,
+        temperature: 0.3,
+      }),
     });
 
-    const rawContent = message.content[0];
-    if (rawContent.type !== 'text') {
-      return NextResponse.json({ error: 'Unexpected response format' }, { status: 500 });
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('Grok API error:', err);
+      return NextResponse.json({ error: 'Grok API request failed' }, { status: 500 });
     }
 
-    let jsonText = rawContent.text.trim();
+    const grokData = await response.json();
+    let jsonText: string = grokData.choices?.[0]?.message?.content ?? '';
+    if (!jsonText) {
+      return NextResponse.json({ error: 'Empty response from Grok' }, { status: 500 });
+    }
+
     // Strip markdown code fences if present
     jsonText = jsonText.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
 
@@ -100,12 +118,12 @@ Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
     try {
       parsed2 = JSON.parse(jsonText);
     } catch {
-      return NextResponse.json({ error: 'AI response was not valid JSON' }, { status: 500 });
+      return NextResponse.json({ error: 'Grok response was not valid JSON' }, { status: 500 });
     }
 
     const validated = ResponseSchema.safeParse(parsed2);
     if (!validated.success) {
-      return NextResponse.json({ error: 'AI response did not match expected schema' }, { status: 500 });
+      return NextResponse.json({ error: 'Grok response did not match expected schema' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -114,9 +132,6 @@ Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
     });
   } catch (error) {
     console.error('generate-rates error:', error);
-    return NextResponse.json(
-      { error: 'Rate generation failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Rate generation failed' }, { status: 500 });
   }
 }

@@ -10,8 +10,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.91.1",
     "@hookform/resolvers": "^5.2.2",
+    "@netlify/plugin-nextjs": "^5.15.9",
     "@stripe/stripe-js": "^9.3.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
