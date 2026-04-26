@@ -66,7 +66,7 @@ export default function UpgradeWall(_props: UpgradeWallProps) {
 
       <div className="text-center">
         <div className="mb-3">
-          <span className="text-3xl font-bold text-white">€4.99</span>
+          <span className="text-3xl font-bold text-white">€3.99</span>
           <span className="text-[#94a3b8] ml-2 text-sm">/ month — cancel any time</span>
         </div>
 
@@ -79,7 +79,7 @@ export default function UpgradeWall(_props: UpgradeWallProps) {
           disabled={loading}
           className="w-full py-4 px-6 bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-lg"
         >
-          {loading ? 'Redirecting to checkout…' : 'Unlock full analysis — €4.99/month'}
+          {loading ? 'Redirecting to checkout…' : 'Unlock full analysis — €3.99/month'}
         </button>
 
         <p className="mt-3 text-xs text-[#94a3b8]">

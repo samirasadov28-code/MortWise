@@ -119,7 +119,7 @@ export default function LandingPage() {
                 <span className="text-xs px-2 py-0.5 bg-[#3b82f6]/20 text-[#3b82f6] rounded-full font-medium">Best value</span>
               </div>
               <p className="text-2xl font-bold text-white mt-1">
-                €4.99 <span className="text-sm font-normal text-[#94a3b8]">/ month</span>
+                €3.99 <span className="text-sm font-normal text-[#94a3b8]">/ month</span>
               </p>
             </div>
             <ul className="space-y-2 mb-6">
