@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 interface UpgradeWallProps {
   onUnlocked?: () => void;
 }
@@ -32,7 +33,8 @@ export default function UpgradeWall(_props: UpgradeWallProps) {
     try {
       const res = await fetch('/api/create-checkout', { method: 'POST' });
       if (!res.ok) throw new Error('Failed to create checkout session');
-      const { url } = await res.json();
+      const { url, error: apiError } = await res.json();
+      if (apiError) throw new Error(apiError);
       if (url) {
         window.location.href = url;
       } else {
@@ -65,7 +67,7 @@ export default function UpgradeWall(_props: UpgradeWallProps) {
       <div className="text-center">
         <div className="mb-3">
           <span className="text-3xl font-bold text-white">€4.99</span>
-          <span className="text-[#94a3b8] ml-2 text-sm">one-time payment, yours forever</span>
+          <span className="text-[#94a3b8] ml-2 text-sm">/ month — cancel any time</span>
         </div>
 
         {error && (
@@ -77,11 +79,11 @@ export default function UpgradeWall(_props: UpgradeWallProps) {
           disabled={loading}
           className="w-full py-4 px-6 bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-lg"
         >
-          {loading ? 'Redirecting to checkout…' : 'Unlock full analysis — €4.99 once, yours forever'}
+          {loading ? 'Redirecting to checkout…' : 'Unlock full analysis — €4.99/month'}
         </button>
 
         <p className="mt-3 text-xs text-[#94a3b8]">
-          Secure payment via Stripe. No subscription. No account required.
+          Secure payment via Stripe. Cancel any time from your Stripe billing portal.
         </p>
       </div>
     </div>

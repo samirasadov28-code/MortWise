@@ -90,7 +90,7 @@ export default function LandingPage() {
           <div className="bg-[#16213e] border border-[#1e3a5f] rounded-xl p-6">
             <div className="mb-4">
               <h3 className="text-lg font-bold text-white">Free</h3>
-              <p className="text-2xl font-bold text-white mt-1">€0</p>
+              <p className="text-2xl font-bold text-white mt-1">Free</p>
             </div>
             <ul className="space-y-2 mb-6">
               {FREE_FEATURES.map((f) => (
@@ -115,7 +115,7 @@ export default function LandingPage() {
                 <span className="text-xs px-2 py-0.5 bg-[#3b82f6]/20 text-[#3b82f6] rounded-full font-medium">Best value</span>
               </div>
               <p className="text-2xl font-bold text-white mt-1">
-                €4.99 <span className="text-sm font-normal text-[#94a3b8]">one-time</span>
+                €4.99 <span className="text-sm font-normal text-[#94a3b8]">/ month</span>
               </p>
             </div>
             <ul className="space-y-2 mb-6">

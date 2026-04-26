@@ -47,9 +47,9 @@ function SuccessContent() {
             <div className="w-20 h-20 rounded-full bg-[#3b82f6]/20 border-2 border-[#3b82f6] flex items-center justify-center mx-auto mb-6">
               <span className="text-3xl">✓</span>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Full analysis unlocked!</h1>
+            <h1 className="text-2xl font-bold text-white mb-2">Subscription active!</h1>
             <p className="text-[#94a3b8] mb-6">
-              You now have access to the complete MortWise analysis suite — one-time payment, yours forever.
+              You now have full access to the complete MortWise analysis suite. You can cancel any time from your Stripe billing portal.
             </p>
             <p className="text-sm text-[#94a3b8]">Redirecting you to the calculator…</p>
           </div>
