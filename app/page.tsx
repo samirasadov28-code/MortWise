@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Disclaimer from '@/components/shared/Disclaimer';
+import { version } from '@/package.json';
 
 const FREE_FEATURES = [
   'Monthly repayment estimate',
@@ -31,9 +32,12 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="border-b border-[#1e3a5f] px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <span className="text-[#3b82f6] text-xl font-bold">Mort</span>
-            <span className="text-white text-xl font-bold">Wise</span>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <span className="text-[#3b82f6] text-xl font-bold">Mort</span>
+              <span className="text-white text-xl font-bold">Wise</span>
+            </div>
+            <span className="text-xs text-[#94a3b8]/60 font-mono">v{version}</span>
           </div>
           <Link
             href="/calculator"
