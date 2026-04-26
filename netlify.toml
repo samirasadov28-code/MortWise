@@ -4,6 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  NEXT_PUBLIC_APP_URL = "https://mortwise.netlify.app"
 
+# API routes run as Netlify serverless functions via the Next.js plugin
 [[plugins]]
   package = "@netlify/plugin-nextjs"
