@@ -1,19 +1,6 @@
-import { loadStripe } from '@stripe/stripe-js';
-
-let stripePromise: ReturnType<typeof loadStripe> | null = null;
-
-export function getStripe() {
-  if (!stripePromise) {
-    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-    if (!key) throw new Error('Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY');
-    stripePromise = loadStripe(key);
-  }
-  return stripePromise;
-}
+// Checkout is handled server-side (hosted Stripe page) — no client-side Stripe.js needed.
 
 export const UNLOCK_STORAGE_KEY = 'mortwise_unlocked';
-export const PRODUCT_PRICE_CENTS = 499;
-export const PRODUCT_CURRENCY = 'eur';
 
 export function getUnlockState(): { unlocked: boolean; sessionId?: string } {
   if (typeof window === 'undefined') return { unlocked: false };

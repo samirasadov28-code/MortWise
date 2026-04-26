@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// NOTE: Add Stripe webhooks before going to high volume to handle
-// edge cases where the success page is not visited after payment.
+// NOTE: Add Stripe webhooks before going to high volume — the current flow
+// verifies payment synchronously via session_id on the /success page.
+
+const PRICE_ID = 'price_1TQU1FLtprV4p6afrWZH5oWk';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mortwise.netlify.app';
 
 export async function POST() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
@@ -11,29 +14,14 @@ export async function POST() {
   }
 
   const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
   try {
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: 'MortWise Full Analysis',
-              description: 'Unlock the complete mortgage analysis suite — one-time payment, yours forever.',
-            },
-            unit_amount: 499,
-          },
-          quantity: 1,
-        },
-      ],
-      metadata: {
-        product: 'mortwise_full',
-      },
-      success_url: `${appUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}/calculator`,
+      line_items: [{ price: PRICE_ID, quantity: 1 }],
+      metadata: { product: 'mortwise_full' },
+      success_url: `${APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${APP_URL}/calculator`,
     });
 
     return NextResponse.json({ url: session.url });

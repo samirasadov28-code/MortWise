@@ -12,7 +12,6 @@
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@netlify/plugin-nextjs": "^5.15.9",
-    "@stripe/stripe-js": "^9.3.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "next": "14.2.35",
