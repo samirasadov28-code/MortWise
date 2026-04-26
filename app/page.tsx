@@ -48,6 +48,9 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className="max-w-5xl mx-auto px-6 py-20 text-center">
+        <div className="flex justify-center mb-6">
+          <Image src="/Logo_512.png" alt="MortWise" width={96} height={96} className="rounded-2xl shadow-md" />
+        </div>
         <h1 className="text-4xl sm:text-5xl font-bold text-[#2a2520] mb-5 leading-tight">
           Understand your mortgage —{' '}
           <span className="text-[#4a7c96]">not just the monthly number</span>
