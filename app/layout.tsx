@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   title: 'MortWise — Understand Your Mortgage',
   description: 'Compare fixed, variable, and split-rate mortgages. Stress-test against rate rises. See what you actually pay over 30 years.',
   keywords: 'mortgage calculator, mortgage comparison, first time buyer, Ireland, UK, UAE',
+  icons: {
+    icon: [
+      { url: '/Logo_192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/Logo_512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/Logo_192.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

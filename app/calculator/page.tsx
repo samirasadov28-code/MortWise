@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { WizardState, ScenarioResult } from '@/lib/types';
 import { DEFAULT_WIZARD_STATE } from '@/lib/defaults';
 import { getUnlockState } from '@/lib/stripe';
@@ -110,9 +111,8 @@ export default function CalculatorPage() {
       {/* Header */}
       <header className="border-b border-[#e8e3dc] px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-1">
-            <span className="text-[#4a7c96] font-bold">Mort</span>
-            <span className="text-[#2a2520] font-bold">Wise</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/Logo_192.png" alt="MortWise" width={32} height={32} className="rounded-md" />
           </Link>
           {state.isUnlocked && (
             <span className="text-xs px-2 py-1 bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] rounded-full">

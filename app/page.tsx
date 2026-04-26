@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import Disclaimer from '@/components/shared/Disclaimer';
 import { version } from '@/package.json';
 
@@ -33,10 +34,7 @@ export default function LandingPage() {
       <nav className="border-b border-[#e8e3dc] px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              <span className="text-[#4a7c96] text-xl font-bold">Mort</span>
-              <span className="text-[#2a2520] text-xl font-bold">Wise</span>
-            </div>
+            <Image src="/Logo_192.png" alt="MortWise" width={36} height={36} className="rounded-lg" />
             <span className="text-xs text-[#6b7a8a]/60 font-mono">v{version}</span>
           </div>
           <Link
