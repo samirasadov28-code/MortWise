@@ -50,8 +50,8 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-white mb-1">Rate structure</h2>
-      <p className="text-[#94a3b8] text-sm mb-6">
+      <h2 className="text-xl font-bold text-[#2a2520] mb-1">Rate structure</h2>
+      <p className="text-[#6b7a8a] text-sm mb-6">
         Choose the type of interest rate arrangement for your mortgage scenarios.
       </p>
 
@@ -63,24 +63,24 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
             onClick={() => onChange({ rateStructure: rs.value })}
             className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
               selected === rs.value
-                ? 'border-[#3b82f6] bg-[#3b82f6]/10'
-                : 'border-[#1e3a5f] bg-[#0f3460]/30 hover:border-[#3b82f6]/50'
+                ? 'border-[#4a7c96] bg-[#4a7c96]/10'
+                : 'border-[#e8e3dc] bg-[#eef4f7]/60 hover:border-[#4a7c96]/50'
             }`}
           >
             <div className="flex items-center gap-3">
               <span className="text-2xl">{rs.icon}</span>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-white">{rs.label}</span>
-                  <span className="text-xs text-[#94a3b8]">— {rs.tagline}</span>
+                  <span className="font-semibold text-[#2a2520]">{rs.label}</span>
+                  <span className="text-xs text-[#6b7a8a]">— {rs.tagline}</span>
                 </div>
                 {selected === rs.value && (
-                  <p className="text-sm text-[#94a3b8] mt-1">{rs.description}</p>
+                  <p className="text-sm text-[#6b7a8a] mt-1">{rs.description}</p>
                 )}
               </div>
               <div className="ml-auto">
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  selected === rs.value ? 'border-[#3b82f6] bg-[#3b82f6]' : 'border-[#1e3a5f]'
+                  selected === rs.value ? 'border-[#4a7c96] bg-[#4a7c96]' : 'border-[#e8e3dc]'
                 }`}>
                   {selected === rs.value && <span className="w-2 h-2 bg-white rounded-full" />}
                 </div>
@@ -92,8 +92,8 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
 
       {/* Split rate slider */}
       {selected === 'split' && (
-        <div className="bg-[#0f3460]/50 border border-[#1e3a5f] rounded-xl p-4">
-          <label className="block text-sm font-medium text-white mb-3 flex items-center gap-1">
+        <div className="bg-[#eef4f7]/80 border border-[#e8e3dc] rounded-xl p-4">
+          <label className="block text-sm font-medium text-[#2a2520] mb-3 flex items-center gap-1">
             Fixed / Tracker split
             <Tooltip content="The proportion of your mortgage at a fixed rate vs a tracker rate. E.g. 70% fixed means 70% of the loan amount pays the fixed rate, while 30% tracks the ECB rate + margin." />
           </label>
@@ -105,13 +105,13 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
               step={5}
               value={Math.round(state.splitFixedProportion * 100)}
               onChange={(e) => onChange({ splitFixedProportion: Number(e.target.value) / 100 })}
-              className="w-full accent-[#3b82f6]"
+              className="w-full accent-[#4a7c96]"
             />
             <div className="flex justify-between text-sm">
-              <span className="text-white font-medium">
+              <span className="text-[#2a2520] font-medium">
                 {Math.round(state.splitFixedProportion * 100)}% Fixed
               </span>
-              <span className="text-[#94a3b8]">
+              <span className="text-[#6b7a8a]">
                 {100 - Math.round(state.splitFixedProportion * 100)}% Tracker
               </span>
             </div>
@@ -121,7 +121,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
 
       {/* Mortgage term */}
       <div className="mt-5">
-        <label className="block text-sm font-medium text-white mb-1.5 flex items-center gap-1">
+        <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
           Mortgage term
           <Tooltip content="The total number of years you take to repay the mortgage. Longer terms = lower monthly payments but much more interest paid overall." />
         </label>
@@ -133,7 +133,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
             step={1}
             value={state.mortgageTerm}
             onChange={(e) => onChange({ mortgageTerm: Number(e.target.value) })}
-            className="flex-1 accent-[#3b82f6]"
+            className="flex-1 accent-[#4a7c96]"
           />
           <div className="flex-shrink-0 w-24">
             <div className="relative">
@@ -141,11 +141,11 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                 type="number"
                 value={state.mortgageTerm}
                 onChange={(e) => onChange({ mortgageTerm: Math.min(35, Math.max(5, Number(e.target.value))) })}
-                className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-center focus:outline-none focus:border-[#3b82f6] transition-colors"
+                className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-center focus:outline-none focus:border-[#4a7c96] transition-colors"
                 min={5}
                 max={35}
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#94a3b8]">yr</span>
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">yr</span>
             </div>
           </div>
         </div>

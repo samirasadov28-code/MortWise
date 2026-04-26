@@ -44,17 +44,17 @@ export default function WizardShell({
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
                     isComplete
-                      ? 'bg-[#3b82f6] text-white'
+                      ? 'bg-[#4a7c96] text-white'
                       : isCurrent
-                      ? 'bg-[#3b82f6]/20 border-2 border-[#3b82f6] text-[#3b82f6]'
-                      : 'bg-[#1e3a5f] text-[#94a3b8]'
+                      ? 'bg-[#4a7c96]/20 border-2 border-[#4a7c96] text-[#4a7c96]'
+                      : 'bg-[#e8e3dc] text-[#6b7a8a]'
                   }`}
                 >
                   {isComplete ? '✓' : stepNum}
                 </div>
                 <span
                   className={`text-xs hidden sm:block ${
-                    isCurrent ? 'text-white' : 'text-[#94a3b8]'
+                    isCurrent ? 'text-[#2a2520]' : 'text-[#6b7a8a]'
                   }`}
                 >
                   {s.label}
@@ -63,16 +63,16 @@ export default function WizardShell({
             );
           })}
         </div>
-        <div className="h-1 bg-[#1e3a5f] rounded-full overflow-hidden">
+        <div className="h-1 bg-[#e8e3dc] rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#3b82f6] transition-all duration-300"
+            className="h-full bg-[#4a7c96] transition-all duration-300"
             style={{ width: `${((step - 1) / (STEPS.length - 1)) * 100}%` }}
           />
         </div>
       </div>
 
       {/* Step content */}
-      <div className="bg-[#16213e] border border-[#1e3a5f] rounded-xl p-6 mb-6">
+      <div className="bg-white border border-[#e8e3dc] rounded-xl p-6 mb-6">
         {children}
       </div>
 
@@ -82,7 +82,7 @@ export default function WizardShell({
           type="button"
           onClick={onBack}
           disabled={step === 1}
-          className="px-5 py-2.5 border border-[#1e3a5f] rounded-lg text-[#94a3b8] hover:text-white hover:border-[#3b82f6] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
+          className="px-5 py-2.5 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
         >
           ← Back
         </button>
@@ -90,7 +90,7 @@ export default function WizardShell({
           type="button"
           onClick={onNext}
           disabled={!canNext}
-          className="px-6 py-2.5 bg-[#3b82f6] hover:bg-[#2563eb] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm"
+          className="px-6 py-2.5 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm"
         >
           {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
         </button>

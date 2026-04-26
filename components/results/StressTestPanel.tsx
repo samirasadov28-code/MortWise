@@ -19,21 +19,21 @@ export default function StressTestPanel({ results, inputs, market }: StressTestP
   const fixedPeriodYears = inputs[0]?.fixedPeriodYears;
 
   return (
-    <div className="bg-[#16213e] border border-[#1e3a5f] rounded-xl p-5">
+    <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
       <div className="flex items-start justify-between gap-3 mb-2">
-        <h3 className="text-sm font-semibold text-white">Rate-rise stress test</h3>
+        <h3 className="text-sm font-semibold text-[#2a2520]">Rate-rise stress test</h3>
       </div>
 
       {fixedPeriodYears && (
-        <p className="text-xs text-[#94a3b8] mb-4">
-          Your fixed period expires in <span className="text-white font-medium">{fixedPeriodYears} years</span>.
+        <p className="text-xs text-[#6b7a8a] mb-4">
+          Your fixed period expires in <span className="text-[#2a2520] font-medium">{fixedPeriodYears} years</span>.
           If rates have moved by then, here is what your monthly payment becomes.
         </p>
       )}
 
       {/* Slider */}
       <div className="mb-5">
-        <label className="block text-xs text-[#94a3b8] mb-2">Rate increase scenario</label>
+        <label className="block text-xs text-[#6b7a8a] mb-2">Rate increase scenario</label>
         <div className="flex gap-2 flex-wrap">
           {INCREMENTS.map((inc) => (
             <button
@@ -42,8 +42,8 @@ export default function StressTestPanel({ results, inputs, market }: StressTestP
               onClick={() => setSelectedKey(inc)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
                 selectedKey === inc
-                  ? 'bg-[#3b82f6] border-[#3b82f6] text-white'
-                  : 'bg-[#0f3460] border-[#1e3a5f] text-[#94a3b8] hover:text-white'
+                  ? 'bg-[#4a7c96] border-[#4a7c96] text-white'
+                  : 'bg-[#f9f7f4] border-[#e8e3dc] text-[#6b7a8a] hover:text-[#4a7c96]'
               }`}
             >
               {inc}
@@ -65,26 +65,26 @@ export default function StressTestPanel({ results, inputs, market }: StressTestP
 
           const severity = increasePct >= 0.4 ? 'red' : increasePct >= 0.2 ? 'amber' : 'green';
           const severityColors = {
-            red: 'border-red-700/40 bg-red-900/10',
-            amber: 'border-amber-600/40 bg-amber-900/10',
-            green: 'border-green-700/40 bg-green-900/10',
+            red: 'border-red-200 bg-red-900/10',
+            amber: 'border-amber-300 bg-amber-900/10',
+            green: 'border-green-200 bg-green-900/10',
           };
           const increaseColors = {
-            red: 'text-red-400',
-            amber: 'text-amber-400',
-            green: 'text-green-400',
+            red: 'text-red-600',
+            amber: 'text-amber-700',
+            green: 'text-green-700',
           };
 
           return (
             <div key={r.id} className={`p-4 rounded-lg border ${severityColors[severity]}`}>
-              <p className="text-sm font-semibold text-white mb-2">{r.lenderName}</p>
+              <p className="text-sm font-semibold text-[#2a2520] mb-2">{r.lenderName}</p>
               <div className="flex items-baseline justify-between">
                 <div>
-                  <p className="text-xs text-[#94a3b8]">New payment</p>
-                  <p className="text-lg font-bold text-white">{formatCurrency(newPayment, market)}/mo</p>
+                  <p className="text-xs text-[#6b7a8a]">New payment</p>
+                  <p className="text-lg font-bold text-[#2a2520]">{formatCurrency(newPayment, market)}/mo</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-[#94a3b8]">Increase</p>
+                  <p className="text-xs text-[#6b7a8a]">Increase</p>
                   <p className={`text-sm font-semibold ${increaseColors[severity]}`}>
                     +{formatCurrency(increase, market)}/mo
                   </p>
@@ -93,7 +93,7 @@ export default function StressTestPanel({ results, inputs, market }: StressTestP
                   </p>
                 </div>
               </div>
-              <p className="text-xs text-[#94a3b8] mt-2">
+              <p className="text-xs text-[#6b7a8a] mt-2">
                 Extra interest: {formatCurrency(stress.totalExtraInterest, market)} total
               </p>
             </div>

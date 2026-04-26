@@ -46,28 +46,28 @@ export default function HolidayPanel({ primaryInput, market }: HolidayPanelProps
   const sym = market === 'UK' ? '£' : market === 'UAE' ? 'AED ' : '€';
 
   return (
-    <div className="bg-[#16213e] border border-[#1e3a5f] rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">Interest holiday / payment pause</h3>
+    <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
+      <h3 className="text-sm font-semibold text-[#2a2520] mb-4">Interest holiday / payment pause</h3>
 
       <div className="grid grid-cols-2 gap-3 mb-5">
         <div>
-          <label className="block text-xs text-[#94a3b8] mb-1">Pause starts (month)</label>
+          <label className="block text-xs text-[#6b7a8a] mb-1">Pause starts (month)</label>
           <input
             type="number"
             value={holidayStart}
             onChange={(e) => setHolidayStart(Math.max(1, Number(e.target.value)))}
-            className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-sm focus:outline-none focus:border-[#3b82f6]"
+            className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
             min={1}
             max={primaryInput.mortgageTerm * 12 - 12}
           />
         </div>
         <div>
-          <label className="block text-xs text-[#94a3b8] mb-1">Duration (months)</label>
+          <label className="block text-xs text-[#6b7a8a] mb-1">Duration (months)</label>
           <input
             type="number"
             value={holidayDuration}
             onChange={(e) => setHolidayDuration(Math.min(12, Math.max(1, Number(e.target.value))))}
-            className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-sm focus:outline-none focus:border-[#3b82f6]"
+            className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
             min={1}
             max={12}
           />
@@ -77,36 +77,36 @@ export default function HolidayPanel({ primaryInput, market }: HolidayPanelProps
       {comparison && (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-            <div className="bg-[#0f3460]/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-[#94a3b8] mb-1">Extra interest</p>
-              <p className="text-base font-bold text-red-400">{formatCurrency(comparison.extraInterest, market)}</p>
+            <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
+              <p className="text-xs text-[#6b7a8a] mb-1">Extra interest</p>
+              <p className="text-base font-bold text-red-600">{formatCurrency(comparison.extraInterest, market)}</p>
             </div>
-            <div className="bg-[#0f3460]/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-[#94a3b8] mb-1">Balance at end</p>
-              <p className="text-base font-bold text-white">{formatCurrency(comparison.balanceAtHolidayEnd, market)}</p>
+            <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
+              <p className="text-xs text-[#6b7a8a] mb-1">Balance at end</p>
+              <p className="text-base font-bold text-[#2a2520]">{formatCurrency(comparison.balanceAtHolidayEnd, market)}</p>
             </div>
-            <div className="bg-[#0f3460]/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-[#94a3b8] mb-1">New payment</p>
-              <p className="text-base font-bold text-amber-400">{formatCurrency(comparison.newMonthlyPayment, market)}/mo</p>
+            <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
+              <p className="text-xs text-[#6b7a8a] mb-1">New payment</p>
+              <p className="text-base font-bold text-amber-700">{formatCurrency(comparison.newMonthlyPayment, market)}/mo</p>
             </div>
-            <div className="bg-[#0f3460]/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-[#94a3b8] mb-1">Total extra cost</p>
-              <p className="text-base font-bold text-red-400">{formatCurrency(comparison.totalExtraCost, market)}</p>
+            <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
+              <p className="text-xs text-[#6b7a8a] mb-1">Total extra cost</p>
+              <p className="text-base font-bold text-red-600">{formatCurrency(comparison.totalExtraCost, market)}</p>
             </div>
           </div>
 
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
-              <XAxis dataKey="year" stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `Yr ${v}`} />
-              <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `${sym}${(v / 1000).toFixed(0)}k`} width={60} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e8e3dc" />
+              <XAxis dataKey="year" stroke="#9aa5b0" tick={{ fontSize: 11 }} tickFormatter={(v) => `Yr ${v}`} />
+              <YAxis stroke="#9aa5b0" tick={{ fontSize: 11 }} tickFormatter={(v) => `${sym}${(v / 1000).toFixed(0)}k`} width={60} />
               <Tooltip
-                contentStyle={{ background: '#0f3460', border: '1px solid #1e3a5f', borderRadius: '8px' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
                 formatter={(v: unknown) => [formatCurrency(v as number, market), '']}
                 labelFormatter={(l) => `Year ${l}`}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />
-              <Line type="monotone" dataKey="baseline" stroke="#94a3b8" strokeWidth={1.5} dot={false} name="No holiday" />
+              <Line type="monotone" dataKey="baseline" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name="No holiday" />
               <Line type="monotone" dataKey="withHoliday" stroke="#f59e0b" strokeWidth={2} dot={false} name="With holiday" />
             </LineChart>
           </ResponsiveContainer>

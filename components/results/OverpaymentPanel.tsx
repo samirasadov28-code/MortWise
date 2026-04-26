@@ -48,48 +48,48 @@ export default function OverpaymentPanel({ primaryInput, market }: OverpaymentPa
   }, [comparison]);
 
   return (
-    <div className="bg-[#16213e] border border-[#1e3a5f] rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">Overpayment simulator</h3>
+    <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
+      <h3 className="text-sm font-semibold text-[#2a2520] mb-4">Overpayment simulator</h3>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
         <div>
-          <label className="block text-xs text-[#94a3b8] mb-1">Lump sum ({sym})</label>
+          <label className="block text-xs text-[#6b7a8a] mb-1">Lump sum ({sym})</label>
           <input
             type="number"
             value={lumpSum}
             onChange={(e) => setLumpSum(Number(e.target.value))}
-            className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-sm focus:outline-none focus:border-[#3b82f6]"
+            className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
             min={0}
             step={1000}
           />
         </div>
         <div>
-          <label className="block text-xs text-[#94a3b8] mb-1">Start year</label>
+          <label className="block text-xs text-[#6b7a8a] mb-1">Start year</label>
           <input
             type="number"
             value={startYear}
             onChange={(e) => setStartYear(Number(e.target.value))}
-            className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-sm focus:outline-none focus:border-[#3b82f6]"
+            className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
             min={1}
             max={primaryInput.mortgageTerm}
           />
         </div>
         <div>
-          <label className="block text-xs text-[#94a3b8] mb-1">Every N years</label>
+          <label className="block text-xs text-[#6b7a8a] mb-1">Every N years</label>
           <input
             type="number"
             value={frequency}
             onChange={(e) => setFrequency(Math.max(1, Number(e.target.value)))}
-            className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-sm focus:outline-none focus:border-[#3b82f6]"
+            className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
             min={1}
           />
         </div>
         <div>
-          <label className="block text-xs text-[#94a3b8] mb-1">Reduces</label>
+          <label className="block text-xs text-[#6b7a8a] mb-1">Reduces</label>
           <select
             value={reduces}
             onChange={(e) => setReduces(e.target.value as 'payment' | 'term')}
-            className="w-full px-3 py-2 bg-[#0f3460] border border-[#1e3a5f] rounded-lg text-white text-sm focus:outline-none focus:border-[#3b82f6]"
+            className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
           >
             <option value="term">Term</option>
             <option value="payment">Payment</option>
@@ -100,33 +100,33 @@ export default function OverpaymentPanel({ primaryInput, market }: OverpaymentPa
       {comparison && (
         <>
           <div className="grid grid-cols-3 gap-3 mb-5">
-            <div className="bg-[#0f3460]/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-[#94a3b8] mb-1">Months saved</p>
-              <p className="text-lg font-bold text-[#3b82f6]">{comparison.monthsSaved > 0 ? comparison.monthsSaved : '—'}</p>
+            <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
+              <p className="text-xs text-[#6b7a8a] mb-1">Months saved</p>
+              <p className="text-lg font-bold text-[#4a7c96]">{comparison.monthsSaved > 0 ? comparison.monthsSaved : '—'}</p>
             </div>
-            <div className="bg-[#0f3460]/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-[#94a3b8] mb-1">Interest saved</p>
-              <p className="text-lg font-bold text-green-400">{formatCurrency(comparison.interestSaved, market)}</p>
+            <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
+              <p className="text-xs text-[#6b7a8a] mb-1">Interest saved</p>
+              <p className="text-lg font-bold text-green-700">{formatCurrency(comparison.interestSaved, market)}</p>
             </div>
-            <div className="bg-[#0f3460]/50 rounded-lg p-3 text-center">
-              <p className="text-xs text-[#94a3b8] mb-1">Total saved</p>
-              <p className="text-lg font-bold text-green-400">{formatCurrency(comparison.totalSaved, market)}</p>
+            <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
+              <p className="text-xs text-[#6b7a8a] mb-1">Total saved</p>
+              <p className="text-lg font-bold text-green-700">{formatCurrency(comparison.totalSaved, market)}</p>
             </div>
           </div>
 
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
-              <XAxis dataKey="year" stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `Yr ${v}`} />
-              <YAxis stroke="#94a3b8" tick={{ fontSize: 11 }} tickFormatter={(v) => `${sym}${(v / 1000).toFixed(0)}k`} width={60} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e8e3dc" />
+              <XAxis dataKey="year" stroke="#9aa5b0" tick={{ fontSize: 11 }} tickFormatter={(v) => `Yr ${v}`} />
+              <YAxis stroke="#9aa5b0" tick={{ fontSize: 11 }} tickFormatter={(v) => `${sym}${(v / 1000).toFixed(0)}k`} width={60} />
               <Tooltip
-                contentStyle={{ background: '#0f3460', border: '1px solid #1e3a5f', borderRadius: '8px' }}
+                contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
                 formatter={(v: unknown) => [formatCurrency(v as number, market), '']}
                 labelFormatter={(l) => `Year ${l}`}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />
-              <Line type="monotone" dataKey="baseline" stroke="#94a3b8" strokeWidth={1.5} dot={false} name="No overpayment" />
-              <Line type="monotone" dataKey="withOverpayment" stroke="#3b82f6" strokeWidth={2} dot={false} name="With overpayment" />
+              <Line type="monotone" dataKey="baseline" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name="No overpayment" />
+              <Line type="monotone" dataKey="withOverpayment" stroke="#4a7c96" strokeWidth={2} dot={false} name="With overpayment" />
             </LineChart>
           </ResponsiveContainer>
         </>

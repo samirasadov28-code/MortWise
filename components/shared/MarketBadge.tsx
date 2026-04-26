@@ -15,7 +15,7 @@ export default function MarketBadge({ code, size = 'md' }: MarketBadgeProps) {
   };
 
   return (
-    <span className={`inline-flex items-center gap-1.5 bg-[#0f3460] border border-[#1e3a5f] rounded-full font-medium ${sizeClasses[size]}`}>
+    <span className={`inline-flex items-center gap-1.5 bg-[#f9f7f4] border border-[#e8e3dc] rounded-full font-medium ${sizeClasses[size]}`}>
       <span>{market.flag}</span>
       <span>{market.name}</span>
     </span>

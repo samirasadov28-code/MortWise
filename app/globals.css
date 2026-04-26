@@ -3,19 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --navy: #1a1a2e;
-  --navy-light: #16213e;
-  --navy-card: #0f3460;
-  --blue: #3b82f6;
-  --blue-hover: #2563eb;
-  --text: #ffffff;
-  --text-muted: #94a3b8;
-  --border: #1e3a5f;
+  --cream: #f5f3ef;
+  --cream-light: #f9f7f4;
+  --surface-tint: #eef4f7;
+  --primary: #4a7c96;
+  --primary-dark: #3a6a82;
+  --text: #2a2520;
+  --text-muted: #6b7a8a;
+  --border: #e8e3dc;
   --amber: #f59e0b;
 }
 
 body {
-  background-color: var(--navy);
+  background-color: var(--cream);
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
@@ -32,14 +32,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--navy-light);
+  background: var(--cream-light);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--blue);
+  background: var(--primary);
 }
 
 /* Input base styles */

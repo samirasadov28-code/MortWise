@@ -50,13 +50,13 @@ export default function ComparisonTable({ results, market }: ComparisonTableProp
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-[#1e3a5f]">
+    <div className="overflow-x-auto rounded-xl border border-[#e8e3dc]">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-[#0f3460] border-b border-[#1e3a5f]">
-            <th className="text-left p-4 text-[#94a3b8] font-medium w-48">Metric</th>
+          <tr className="bg-[#f9f7f4] border-b border-[#e8e3dc]">
+            <th className="text-left p-4 text-[#6b7a8a] font-medium w-48">Metric</th>
             {results.map((r) => (
-              <th key={r.id} className="p-4 text-center text-white font-semibold">
+              <th key={r.id} className="p-4 text-center text-[#2a2520] font-semibold">
                 {r.lenderName}
               </th>
             ))}
@@ -69,8 +69,8 @@ export default function ComparisonTable({ results, market }: ComparisonTableProp
             if (!hasData && ['irr', 'exitEquity', 'cashbackReceived'].includes(metric.key)) return null;
 
             return (
-              <tr key={metric.key} className="border-b border-[#1e3a5f] last:border-0 hover:bg-[#0f3460]/30 transition-colors">
-                <td className="p-4 text-[#94a3b8]">{metric.label}</td>
+              <tr key={metric.key} className="border-b border-[#e8e3dc] last:border-0 hover:bg-[#eef4f7]/60 transition-colors">
+                <td className="p-4 text-[#6b7a8a]">{metric.label}</td>
                 {results.map((r, i) => {
                   const val = r[metric.key] as number | undefined;
                   const isWinner = ranks[i] === 0;
@@ -83,8 +83,8 @@ export default function ComparisonTable({ results, market }: ComparisonTableProp
                       key={r.id}
                       className={`p-4 text-center font-medium transition-colors ${
                         isWinner && val !== undefined && val !== 0
-                          ? 'bg-[#3b82f6]/10 text-[#3b82f6]'
-                          : 'text-white'
+                          ? 'bg-[#4a7c96]/10 text-[#4a7c96]'
+                          : 'text-[#2a2520]'
                       }`}
                     >
                       {displayVal}

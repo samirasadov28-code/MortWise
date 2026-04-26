@@ -29,7 +29,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
     if (!exportRef.current) return;
     const canvas = await html2canvas(exportRef.current, {
       scale: 1.5,
-      backgroundColor: '#1a1a2e',
+      backgroundColor: '#f5f3ef',
       useCORS: true,
     });
     const imgData = canvas.toDataURL('image/png');
@@ -45,12 +45,12 @@ export default function FullResults({ results, state }: FullResultsProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-white">Full Analysis</h2>
-          <p className="text-[#94a3b8] text-sm">{ranked.length} scenario{ranked.length !== 1 ? 's' : ''} compared</p>
+          <h2 className="text-xl font-bold text-[#2a2520]">Full Analysis</h2>
+          <p className="text-[#6b7a8a] text-sm">{ranked.length} scenario{ranked.length !== 1 ? 's' : ''} compared</p>
         </div>
         <button
           onClick={handleExportPDF}
-          className="flex items-center gap-2 px-4 py-2 border border-[#1e3a5f] hover:border-[#3b82f6] rounded-lg text-[#94a3b8] hover:text-white text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 border border-[#e8e3dc] hover:border-[#4a7c96] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] text-sm transition-colors"
         >
           ↓ Export PDF
         </button>
@@ -66,7 +66,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
 
         {/* Comparison table */}
         <section>
-          <h3 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-wide mb-3">
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Side-by-side comparison
           </h3>
           <ComparisonTable results={ranked} market={state.market} />
@@ -74,7 +74,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
 
         {/* Charts */}
         <section>
-          <h3 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-wide mb-3">
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Charts
           </h3>
           <div className="space-y-4">
@@ -85,7 +85,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
 
         {/* Stress test */}
         <section>
-          <h3 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-wide mb-3">
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Rate-rise stress test
           </h3>
           <StressTestPanel results={ranked} inputs={state.scenarios} market={state.market} />
@@ -94,7 +94,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
         {/* Overpayment */}
         {state.scenarios[0] && (
           <section>
-            <h3 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-wide mb-3">
+            <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Overpayment simulator
             </h3>
             <OverpaymentPanel primaryInput={state.scenarios[0]} market={state.market} />
@@ -104,7 +104,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
         {/* Cashback */}
         {results.some((r) => r.cashbackReceived > 0) && (
           <section>
-            <h3 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-wide mb-3">
+            <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Cashback analysis
             </h3>
             <CashbackPanel results={ranked} inputs={state.scenarios} market={state.market} />
@@ -114,7 +114,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
         {/* Interest holiday */}
         {state.scenarios[0] && (
           <section>
-            <h3 className="text-sm font-semibold text-[#94a3b8] uppercase tracking-wide mb-3">
+            <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Interest holiday
             </h3>
             <HolidayPanel primaryInput={state.scenarios[0]} market={state.market} />

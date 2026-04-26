@@ -12,7 +12,7 @@ interface BalanceChartProps {
   market: MarketCode;
 }
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+const COLORS = ['#4a7c96', '#10b981', '#f59e0b', '#ef4444'];
 
 export default function BalanceChart({ results, market }: BalanceChartProps) {
   if (results.length === 0) return null;
@@ -33,26 +33,26 @@ export default function BalanceChart({ results, market }: BalanceChartProps) {
   }
 
   return (
-    <div className="bg-[#16213e] border border-[#1e3a5f] rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">Remaining balance over time</h3>
+    <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
+      <h3 className="text-sm font-semibold text-[#2a2520] mb-4">Remaining balance over time</h3>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1e3a5f" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e8e3dc" />
           <XAxis
             dataKey="year"
-            stroke="#94a3b8"
+            stroke="#9aa5b0"
             tick={{ fontSize: 11 }}
             tickFormatter={(v) => `Yr ${v}`}
           />
           <YAxis
-            stroke="#94a3b8"
+            stroke="#9aa5b0"
             tick={{ fontSize: 11 }}
             tickFormatter={(v) => formatCurrency(v, market, 0).replace(/[€£$]/, '').trim()}
             width={70}
           />
           <Tooltip
-            contentStyle={{ background: '#0f3460', border: '1px solid #1e3a5f', borderRadius: '8px' }}
-            labelStyle={{ color: '#94a3b8', fontSize: '12px' }}
+            contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
+            labelStyle={{ color: '#6b7a8a', fontSize: '12px' }}
             formatter={(v: unknown, name: unknown) => [formatCurrency(v as number, market), String(name)]}
             labelFormatter={(l) => `Year ${l}`}
           />

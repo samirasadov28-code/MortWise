@@ -9,24 +9,24 @@ interface ScenarioCardProps {
   market: MarketCode;
 }
 
-const RANK_COLORS = ['text-yellow-400', 'text-[#94a3b8]', 'text-amber-600', 'text-[#94a3b8]/60'];
+const RANK_COLORS = ['text-yellow-400', 'text-[#6b7a8a]', 'text-amber-600', 'text-[#6b7a8a]/60'];
 const RANK_LABELS = ['1st — Best value', '2nd', '3rd', '4th'];
 
 export default function ScenarioCard({ result, rank, market }: ScenarioCardProps) {
   return (
-    <div className={`bg-[#16213e] border rounded-xl p-5 ${
-      rank === 0 ? 'border-[#3b82f6]/50' : 'border-[#1e3a5f]'
+    <div className={`bg-white border rounded-xl p-5 ${
+      rank === 0 ? 'border-[#4a7c96]/50' : 'border-[#e8e3dc]'
     }`}>
       <div className="flex items-start justify-between gap-2 mb-4">
         <div>
-          <h3 className="font-bold text-white text-lg">{result.lenderName}</h3>
-          <span className={`text-xs font-semibold ${RANK_COLORS[rank] ?? 'text-[#94a3b8]'}`}>
+          <h3 className="font-bold text-[#2a2520] text-lg">{result.lenderName}</h3>
+          <span className={`text-xs font-semibold ${RANK_COLORS[rank] ?? 'text-[#6b7a8a]'}`}>
             {RANK_LABELS[rank] ?? `#${rank + 1}`} by total cost
           </span>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-white">{formatCurrency(result.firstMonthlyPayment, market)}</p>
-          <p className="text-xs text-[#94a3b8]">first month</p>
+          <p className="text-2xl font-bold text-[#2a2520]">{formatCurrency(result.firstMonthlyPayment, market)}</p>
+          <p className="text-xs text-[#6b7a8a]">first month</p>
         </div>
       </div>
 
@@ -81,11 +81,11 @@ export default function ScenarioCard({ result, rank, market }: ScenarioCardProps
 function Metric({ label, value, tooltip }: { label: string; value: string; tooltip?: string }) {
   return (
     <div>
-      <p className="text-xs text-[#94a3b8] flex items-center gap-0.5">
+      <p className="text-xs text-[#6b7a8a] flex items-center gap-0.5">
         {label}
         {tooltip && <Tooltip content={tooltip} />}
       </p>
-      <p className="text-sm font-semibold text-white mt-0.5">{value}</p>
+      <p className="text-sm font-semibold text-[#2a2520] mt-0.5">{value}</p>
     </div>
   );
 }

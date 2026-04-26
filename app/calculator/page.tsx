@@ -106,16 +106,16 @@ export default function CalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] pb-20">
+    <div className="min-h-screen bg-[#f5f3ef] pb-20">
       {/* Header */}
-      <header className="border-b border-[#1e3a5f] px-6 py-4">
+      <header className="border-b border-[#e8e3dc] px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-1">
-            <span className="text-[#3b82f6] font-bold">Mort</span>
-            <span className="text-white font-bold">Wise</span>
+            <span className="text-[#4a7c96] font-bold">Mort</span>
+            <span className="text-[#2a2520] font-bold">Wise</span>
           </Link>
           {state.isUnlocked && (
-            <span className="text-xs px-2 py-1 bg-[#3b82f6]/10 border border-[#3b82f6]/30 text-[#3b82f6] rounded-full">
+            <span className="text-xs px-2 py-1 bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] rounded-full">
               Full analysis unlocked
             </span>
           )}
@@ -142,7 +142,7 @@ export default function CalculatorPage() {
               <button
                 type="button"
                 onClick={handleBack}
-                className="text-sm text-[#94a3b8] hover:text-white flex items-center gap-1 transition-colors"
+                className="text-sm text-[#6b7a8a] hover:text-[#4a7c96] flex items-center gap-1 transition-colors"
               >
                 ← Edit inputs
               </button>

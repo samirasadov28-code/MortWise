@@ -32,42 +32,42 @@ function SuccessContent() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#f5f3ef] flex items-center justify-center p-6">
       <div className="max-w-md w-full text-center">
         {status === 'verifying' && (
           <div>
-            <div className="w-16 h-16 border-4 border-[#3b82f6] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-            <h1 className="text-2xl font-bold text-white mb-2">Verifying payment…</h1>
-            <p className="text-[#94a3b8]">Just a moment while we confirm your purchase.</p>
+            <div className="w-16 h-16 border-4 border-[#4a7c96] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+            <h1 className="text-2xl font-bold text-[#2a2520] mb-2">Verifying payment…</h1>
+            <p className="text-[#6b7a8a]">Just a moment while we confirm your purchase.</p>
           </div>
         )}
 
         {status === 'success' && (
           <div>
-            <div className="w-20 h-20 rounded-full bg-[#3b82f6]/20 border-2 border-[#3b82f6] flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 rounded-full bg-[#4a7c96]/20 border-2 border-[#4a7c96] flex items-center justify-center mx-auto mb-6">
               <span className="text-3xl">✓</span>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Subscription active!</h1>
-            <p className="text-[#94a3b8] mb-6">
+            <h1 className="text-2xl font-bold text-[#2a2520] mb-2">Subscription active!</h1>
+            <p className="text-[#6b7a8a] mb-6">
               You now have full access to the complete MortWise analysis suite. You can cancel any time from your Stripe billing portal.
             </p>
-            <p className="text-sm text-[#94a3b8]">Redirecting you to the calculator…</p>
+            <p className="text-sm text-[#6b7a8a]">Redirecting you to the calculator…</p>
           </div>
         )}
 
         {status === 'error' && (
           <div>
-            <div className="w-20 h-20 rounded-full bg-red-900/20 border-2 border-red-700 flex items-center justify-center mx-auto mb-6">
-              <span className="text-3xl text-red-400">✗</span>
+            <div className="w-20 h-20 rounded-full bg-red-50 border-2 border-red-700 flex items-center justify-center mx-auto mb-6">
+              <span className="text-3xl text-red-600">✗</span>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Payment verification failed</h1>
-            <p className="text-[#94a3b8] mb-6">
+            <h1 className="text-2xl font-bold text-[#2a2520] mb-2">Payment verification failed</h1>
+            <p className="text-[#6b7a8a] mb-6">
               We could not verify your payment. If you were charged, please contact support.
               Try returning to the calculator and attempting the purchase again.
             </p>
             <Link
               href="/calculator"
-              className="inline-block px-6 py-3 bg-[#3b82f6] hover:bg-[#2563eb] text-white font-semibold rounded-lg transition-colors"
+              className="inline-block px-6 py-3 bg-[#4a7c96] hover:bg-[#3a6a82] text-white font-semibold rounded-lg transition-colors"
             >
               Back to calculator
             </Link>
@@ -81,8 +81,8 @@ function SuccessContent() {
 export default function SuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#1a1a2e] flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-[#3b82f6] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#f5f3ef] flex items-center justify-center">
+        <div className="w-16 h-16 border-4 border-[#4a7c96] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <SuccessContent />
