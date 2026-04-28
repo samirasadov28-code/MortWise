@@ -76,6 +76,7 @@ export const DEFAULT_WIZARD_STATE: WizardState = {
   coBorrowerIncome: 0,
   govtSchemeEnabled: false,
   govtSupportAmount: 0,
+  selectedGovtSchemeName: null,
   rateStructure: 'fixed',
   splitFixedProportion: 0.7,
   mortgageTerm: 30,

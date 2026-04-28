@@ -43,7 +43,24 @@ export default function CalculatorPage() {
       const { unlocked, sessionId } = getUnlockState();
       if (!unlocked) return;
 
-      // Silently re-verify
+      // Email-based unlocks (early access list) are re-verified against the API
+      if (sessionId?.startsWith('email:')) {
+        const email = sessionId.slice('email:'.length);
+        try {
+          const res = await fetch('/api/unlock-with-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          const data = await res.json();
+          setState((s) => ({ ...s, isUnlocked: data.unlocked === true }));
+        } catch {
+          setState((s) => ({ ...s, isUnlocked: unlocked }));
+        }
+        return;
+      }
+
+      // Stripe-based unlocks: re-verify against subscription status
       try {
         const res = await fetch(`/api/verify-payment?session_id=${sessionId}`);
         const data = await res.json();

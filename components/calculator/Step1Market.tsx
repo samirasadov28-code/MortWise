@@ -2,6 +2,7 @@
 
 import type { WizardState, MarketCode } from '@/lib/types';
 import { MARKETS, LAUNCH_MARKETS, COMING_SOON_MARKETS } from '@/lib/markets';
+import Flag from '@/components/shared/Flag';
 
 interface Step1Props {
   state: WizardState;
@@ -33,7 +34,7 @@ export default function Step1Market({ state, onChange }: Step1Props) {
                   : 'border-[#e8e3dc] bg-[#eef4f7]/60 hover:border-[#4a7c96]/50'
               }`}
             >
-              <span className="text-3xl">{m.flag}</span>
+              <Flag code={code as MarketCode} size={48} />
               <span className="text-sm font-medium text-[#2a2520]">{m.name}</span>
               <span className="text-xs text-[#6b7a8a]">{m.currency}</span>
             </button>
@@ -47,7 +48,7 @@ export default function Step1Market({ state, onChange }: Step1Props) {
               key={code}
               className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-[#e8e3dc]/50 bg-[#eef4f7]/20 opacity-50 cursor-not-allowed"
             >
-              <span className="text-3xl grayscale">{m.flag}</span>
+              <Flag code={code as MarketCode} size={48} className="grayscale opacity-60" />
               <span className="text-sm font-medium text-[#6b7a8a]">{m.name}</span>
               <span className="text-xs text-[#6b7a8a]">Coming soon</span>
             </div>
@@ -57,8 +58,8 @@ export default function Step1Market({ state, onChange }: Step1Props) {
 
       {/* Market context */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-[#2a2520]">
-          {market.flag} {market.name} — key context
+        <h3 className="text-sm font-semibold text-[#2a2520] flex items-center gap-2">
+          <Flag code={selected} size={20} /> {market.name} — key context
         </h3>
 
         {market.govtSchemes.length > 0 && (

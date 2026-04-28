@@ -1,5 +1,6 @@
 import type { MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
+import Flag from './Flag';
 
 interface MarketBadgeProps {
   code: MarketCode;
@@ -13,10 +14,11 @@ export default function MarketBadge({ code, size = 'md' }: MarketBadgeProps) {
     md: 'text-sm px-3 py-1',
     lg: 'text-base px-4 py-2',
   };
+  const flagSize = size === 'sm' ? 16 : size === 'lg' ? 24 : 20;
 
   return (
     <span className={`inline-flex items-center gap-1.5 bg-[#f9f7f4] border border-[#e8e3dc] rounded-full font-medium ${sizeClasses[size]}`}>
-      <span>{market.flag}</span>
+      <Flag code={code} size={flagSize} />
       <span>{market.name}</span>
     </span>
   );

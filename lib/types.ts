@@ -136,6 +136,7 @@ export interface WizardState {
   coBorrowerIncome: number;
   govtSchemeEnabled: boolean;
   govtSupportAmount: number;
+  selectedGovtSchemeName: string | null;
   rateStructure: RateStructure;
   splitFixedProportion: number;
   mortgageTerm: number;

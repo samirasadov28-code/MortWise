@@ -121,13 +121,57 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
             <label className="block text-sm font-medium text-[#2a2520] mb-2">
               Government scheme support
             </label>
+            <p className="text-xs text-[#6b7a8a] mb-3">
+              Select one scheme to apply to your calculation. Schemes can&apos;t typically be combined to their maximums — pick the one that fits your situation.
+            </p>
             <div className="space-y-2">
+              {/* "None" option */}
+              <button
+                type="button"
+                onClick={() => onChange({
+                  govtSchemeEnabled: false,
+                  selectedGovtSchemeName: null,
+                  govtSupportAmount: 0,
+                })}
+                className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
+                  !state.govtSchemeEnabled
+                    ? 'border-[#4a7c96] bg-[#4a7c96]/10'
+                    : 'border-[#e8e3dc] bg-white hover:border-[#4a7c96]/50'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium text-[#2a2520]">No scheme</p>
+                    <p className="text-xs text-[#6b7a8a] mt-0.5">Calculate without government support</p>
+                  </div>
+                  <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
+                    !state.govtSchemeEnabled ? 'border-[#4a7c96] bg-[#4a7c96]' : 'border-[#e8e3dc]'
+                  }`}>
+                    {!state.govtSchemeEnabled && <span className="w-2 h-2 bg-white rounded-full" />}
+                  </div>
+                </div>
+              </button>
+
               {market.govtSchemes.map((scheme) => {
                 const maxAmt = typeof scheme.maxAmount === 'function'
                   ? scheme.maxAmount(state.housePrice)
                   : scheme.maxAmount;
+                const isSelected = state.govtSchemeEnabled && state.selectedGovtSchemeName === scheme.name;
                 return (
-                  <div key={scheme.name} className="bg-[#eef4f7]/80 border border-[#e8e3dc] rounded-lg p-3">
+                  <button
+                    key={scheme.name}
+                    type="button"
+                    onClick={() => onChange({
+                      govtSchemeEnabled: true,
+                      selectedGovtSchemeName: scheme.name,
+                      govtSupportAmount: maxAmt,
+                    })}
+                    className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
+                      isSelected
+                        ? 'border-[#4a7c96] bg-[#4a7c96]/10'
+                        : 'border-[#e8e3dc] bg-white hover:border-[#4a7c96]/50'
+                    }`}
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="text-sm font-medium text-[#2a2520]">{scheme.name}</p>
@@ -136,33 +180,28 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                           Eligibility: {scheme.eligibility}
                         </p>
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="text-right flex-shrink-0 flex flex-col items-end gap-2">
                         <p className="text-sm font-bold text-[#4a7c96]">
                           up to {sym}{maxAmt.toLocaleString()}
                         </p>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          isSelected ? 'border-[#4a7c96] bg-[#4a7c96]' : 'border-[#e8e3dc]'
+                        }`}>
+                          {isSelected && <span className="w-2 h-2 bg-white rounded-full" />}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
 
-            <div className="mt-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={state.govtSchemeEnabled}
-                  onChange={(e) => onChange({
-                    govtSchemeEnabled: e.target.checked,
-                    govtSupportAmount: e.target.checked ? state.govtSupportAmount : 0,
-                  })}
-                  className="accent-[#4a7c96]"
-                />
-                <span className="text-sm text-[#6b7a8a]">Include government support in calculations</span>
-              </label>
-
-              {state.govtSchemeEnabled && (
-                <div className="mt-2 relative">
+            {state.govtSchemeEnabled && (
+              <div className="mt-3">
+                <label className="block text-xs text-[#6b7a8a] mb-1.5">
+                  Adjust amount (defaults to maximum for {state.selectedGovtSchemeName ?? 'selected scheme'})
+                </label>
+                <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
                   <input
                     type="number"
@@ -173,8 +212,8 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                     min={0}
                   />
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
       </div>

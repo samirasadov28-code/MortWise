@@ -1,20 +1,24 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Disclaimer from '@/components/shared/Disclaimer';
+import Flag from '@/components/shared/Flag';
+import type { MarketCode } from '@/lib/types';
 import { version } from '@/package.json';
 
 const FREE_FEATURES = [
   'Monthly repayment estimate',
+  'Total interest & total cost over life of loan',
+  'Annual cost (12-month outlook)',
   'Rate structure selection (fixed / variable / split)',
   'Stamp duty calculation',
-  'Government scheme eligibility',
+  'Government scheme eligibility & picker',
   'LTV band analysis',
+  'Affordability check vs lender income limits',
 ];
 
 const PAID_FEATURES = [
   'Everything in Free',
   'Side-by-side comparison of up to 4 scenarios',
-  'Total interest and total cost of ownership',
   'Rate-rise stress test (+0.5% to +3.0%)',
   'Overpayment simulator with term savings',
   'Cashback & clawback break-even analysis',
@@ -25,6 +29,15 @@ const PAID_FEATURES = [
   'Exit equity analysis at any year',
   'AI-generated market rate cards',
   'PDF export of full analysis',
+];
+
+const MARKETS_LIST: Array<{ code: MarketCode; name: string; available: boolean }> = [
+  { code: 'IE', name: 'Ireland', available: true },
+  { code: 'UK', name: 'United Kingdom', available: true },
+  { code: 'UAE', name: 'UAE', available: true },
+  { code: 'US', name: 'United States', available: false },
+  { code: 'AU', name: 'Australia', available: false },
+  { code: 'CA', name: 'Canada', available: false },
 ];
 
 export default function LandingPage() {
@@ -47,29 +60,29 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero */}
-      <section className="max-w-5xl mx-auto px-6 py-20 text-center">
-        <div className="flex justify-center mb-6">
-          <Image src="/Logo_512.png" alt="MortWise" width={96} height={96} className="rounded-2xl shadow-md" />
+      <section className="max-w-5xl mx-auto px-6 py-10 sm:py-20 text-center">
+        <div className="flex justify-center mb-5 sm:mb-6">
+          <Image src="/Logo_512.png" alt="MortWise" width={80} height={80} className="rounded-2xl shadow-md sm:w-24 sm:h-24" />
         </div>
-        <h1 className="text-4xl sm:text-5xl font-bold text-[#2a2520] mb-5 leading-tight">
+        <h1 className="text-2xl sm:text-5xl font-bold text-[#2a2520] mb-4 sm:mb-5 leading-tight">
           Understand your mortgage —{' '}
           <span className="text-[#4a7c96]">not just the monthly number</span>
         </h1>
-        <p className="text-xl text-[#6b7a8a] mb-10 max-w-2xl mx-auto">
+        <p className="text-sm sm:text-xl text-[#6b7a8a] mb-7 sm:mb-10 max-w-2xl mx-auto">
           Compare fixed, variable, and split-rate mortgages side by side. Stress-test against rate rises.
           See what you actually pay over 30 years. Built for first-time buyers who are tired of jargon.
         </p>
         <Link
           href="/calculator"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-[#4a7c96] hover:bg-[#3a6a82] text-white font-bold text-lg rounded-xl transition-colors shadow-lg"
+          className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#4a7c96] hover:bg-[#3a6a82] text-white font-bold text-base sm:text-lg rounded-xl transition-colors shadow-lg"
         >
           Start free →
         </Link>
       </section>
 
       {/* Value props */}
-      <section className="max-w-5xl mx-auto px-6 pb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           <ValueProp
             icon="💰"
             title="Total cost clarity"
@@ -89,13 +102,13 @@ export default function LandingPage() {
       </section>
 
       {/* Free vs Paid */}
-      <section className="max-w-5xl mx-auto px-6 pb-16">
-        <h2 className="text-2xl font-bold text-[#2a2520] text-center mb-8">Free vs Full</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-white border border-[#e8e3dc] rounded-xl p-6">
+      <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#2a2520] text-center mb-6 sm:mb-8">Free vs Full</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="bg-white border border-[#e8e3dc] rounded-xl p-5 sm:p-6">
             <div className="mb-4">
-              <h3 className="text-lg font-bold text-[#2a2520]">Free</h3>
-              <p className="text-2xl font-bold text-[#2a2520] mt-1">Free</p>
+              <h3 className="text-base sm:text-lg font-bold text-[#2a2520]">Free</h3>
+              <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">Free</p>
             </div>
             <ul className="space-y-2 mb-6">
               {FREE_FEATURES.map((f) => (
@@ -113,13 +126,13 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <div className="bg-white border border-[#4a7c96]/40 rounded-xl p-6">
+          <div className="bg-white border border-[#4a7c96]/40 rounded-xl p-5 sm:p-6">
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold text-[#2a2520]">Full</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#2a2520]">Full</h3>
                 <span className="text-xs px-2 py-0.5 bg-[#4a7c96]/20 text-[#4a7c96] rounded-full font-medium">Best value</span>
               </div>
-              <p className="text-2xl font-bold text-[#2a2520] mt-1">
+              <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">
                 €3.99 <span className="text-sm font-normal text-[#6b7a8a]">/ month</span>
               </p>
             </div>
@@ -142,19 +155,12 @@ export default function LandingPage() {
       </section>
 
       {/* Markets */}
-      <section className="max-w-5xl mx-auto px-6 pb-16">
-        <h2 className="text-xl font-bold text-[#2a2520] text-center mb-6">Available markets</h2>
-        <div className="flex items-center justify-center gap-8 flex-wrap">
-          {[
-            { flag: '🇮🇪', name: 'Ireland', available: true },
-            { flag: '🇬🇧', name: 'United Kingdom', available: true },
-            { flag: '🇦🇪', name: 'UAE', available: true },
-            { flag: '🇺🇸', name: 'United States', available: false },
-            { flag: '🇦🇺', name: 'Australia', available: false },
-            { flag: '🇨🇦', name: 'Canada', available: false },
-          ].map(({ flag, name, available }) => (
-            <div key={name} className={`flex flex-col items-center gap-1 ${!available ? 'opacity-40' : ''}`}>
-              <span className="text-3xl">{flag}</span>
+      <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
+        <h2 className="text-lg sm:text-xl font-bold text-[#2a2520] text-center mb-5 sm:mb-6">Available markets</h2>
+        <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
+          {MARKETS_LIST.map(({ code, name, available }) => (
+            <div key={code} className={`flex flex-col items-center gap-1.5 ${!available ? 'opacity-40' : ''}`}>
+              <Flag code={code} size={48} className={!available ? 'grayscale' : ''} />
               <span className="text-xs text-[#6b7a8a]">{name}</span>
               {!available && <span className="text-xs text-[#6b7a8a]/60">Coming soon</span>}
             </div>
@@ -169,10 +175,10 @@ export default function LandingPage() {
 
 function ValueProp({ icon, title, description }: { icon: string; title: string; description: string }) {
   return (
-    <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-      <div className="text-3xl mb-3">{icon}</div>
-      <h3 className="font-bold text-[#2a2520] mb-2">{title}</h3>
-      <p className="text-sm text-[#6b7a8a] leading-relaxed">{description}</p>
+    <div className="bg-white border border-[#e8e3dc] rounded-xl p-4 sm:p-5">
+      <div className="text-2xl sm:text-3xl mb-3">{icon}</div>
+      <h3 className="font-bold text-[#2a2520] mb-2 text-sm sm:text-base">{title}</h3>
+      <p className="text-xs sm:text-sm text-[#6b7a8a] leading-relaxed">{description}</p>
     </div>
   );
 }

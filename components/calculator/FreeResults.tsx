@@ -12,6 +12,10 @@ interface FreeResultsProps {
   onUnlocked: () => void;
 }
 
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v));
+}
+
 export default function FreeResults({ results, state, onUnlocked }: FreeResultsProps) {
   if (results.length === 0) return null;
 
@@ -20,33 +24,37 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
   const market = MARKETS[state.market];
   const sym = market.currencySymbol;
 
-  const avgInterestPerMonth = best.periods.length > 0
-    ? best.periods.reduce((s, p) => s + p.interest, 0) / best.periods.length
-    : 0;
-  const avgPrincipalPerMonth = best.periods.length > 0
-    ? best.periods.reduce((s, p) => s + p.principalRepayment, 0) / best.periods.length
-    : 0;
+  // Year 1 totals (first 12 months of payments)
+  const year1Periods = best.periods.slice(0, 12);
+  const year1Cost = year1Periods.reduce((s, p) => s + p.totalPayment, 0);
 
-  const totalPaid = best.totalAmountPaid;
-  const totalInterest = best.totalInterestPaid;
-  const interestPct = totalPaid > 0 ? totalInterest / totalPaid : 0;
-  const principalPct = 1 - interestPct;
+  // Payment composition: principal repaid = loanAmount, interest = totalInterestPaid
+  // This always sums cleanly to 100%, regardless of holidays/grace periods.
+  const totalCost = best.loanAmount + best.totalInterestPaid;
+  const principalPct = totalCost > 0 ? clamp01(best.loanAmount / totalCost) : 0;
+  const interestPct = clamp01(1 - principalPct);
 
   const stampDuty = market.stampDuty(state.housePrice, state.buyerType);
   const eligibleSchemes = market.govtSchemes.filter(() => state.buyerType === 'first_time');
 
+  // Affordability check
+  const totalIncome = state.annualIncome + state.coBorrowerIncome;
+  const maxBorrow = market.maxIncomeMultiple ? totalIncome * market.maxIncomeMultiple : null;
+  const requestedLoan = state.housePrice - state.deposit;
+  const withinLimit = maxBorrow !== null && requestedLoan <= maxBorrow;
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Hero result */}
-      <div className="bg-white border border-[#4a7c96]/30 rounded-xl p-6">
+      <div className="bg-white border border-[#4a7c96]/30 rounded-xl p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
             <p className="text-[#6b7a8a] text-sm mb-1">Best scenario — {best.lenderName}</p>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl font-bold text-[#2a2520]">
+              <span className="text-3xl sm:text-4xl font-bold text-[#2a2520]">
                 {formatCurrency(best.firstMonthlyPayment, state.market)}
               </span>
-              <span className="text-[#6b7a8a]">/ month</span>
+              <span className="text-[#6b7a8a] text-sm sm:text-base">/ month</span>
             </div>
           </div>
           <div className="text-right">
@@ -56,18 +64,54 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
           </div>
         </div>
 
-        <p className="text-sm text-[#6b7a8a]">
-          Average breakdown:{' '}
-          <span className="text-[#2a2520] font-medium">{formatCurrency(avgPrincipalPerMonth, state.market)}</span> principal
-          {' '}+{' '}
-          <span className="text-[#2a2520] font-medium">{formatCurrency(avgInterestPerMonth, state.market)}</span> interest per month
-        </p>
-
-        <p className="text-xs text-[#6b7a8a] mt-1">
-          LTV: {formatPercent(state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0)} —
-          Loan: {formatCurrency(best.loanAmount, state.market)}
+        <p className="text-xs sm:text-sm text-[#6b7a8a]">
+          LTV: {formatPercent(state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0)} — Loan: {formatCurrency(best.loanAmount, state.market)}
         </p>
       </div>
+
+      {/* Cost summary - 3 stat cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <StatCard
+          label="Annual cost (year 1)"
+          value={formatCurrency(year1Cost, state.market)}
+          tooltip="What you'll pay in mortgage repayments during the first 12 months."
+        />
+        <StatCard
+          label="Total interest"
+          value={formatCurrency(best.totalInterestPaid, state.market)}
+          tooltip="The total interest you'll pay over the entire life of the loan, assuming no overpayments."
+        />
+        <StatCard
+          label="Total cost of loan"
+          value={formatCurrency(totalCost, state.market)}
+          tooltip="Loan amount + total interest. The full amount you'll repay over the term."
+        />
+      </div>
+
+      {/* Affordability check */}
+      {totalIncome > 0 && maxBorrow !== null && (
+        <div className={`rounded-xl p-5 border ${
+          withinLimit
+            ? 'bg-green-50 border-green-200'
+            : 'bg-red-50 border-red-200'
+        }`}>
+          <h3 className="text-sm font-semibold text-[#2a2520] mb-2 flex items-center gap-1">
+            Affordability check — {market.name}
+            <Tooltip content="Most lenders apply a cap on how much you can borrow as a multiple of your gross annual income. This shows whether your requested loan fits within that cap." />
+          </h3>
+          <p className="text-sm text-[#2a2520]">
+            <span className={`font-semibold ${withinLimit ? 'text-green-700' : 'text-red-600'}`}>
+              {withinLimit ? '✓ Within typical limits' : '⚠ Exceeds typical limit'}
+            </span>
+            <span className="text-[#6b7a8a] ml-2">
+              ({market.maxIncomeMultiple}× income of {sym}{totalIncome.toLocaleString()} = {sym}{maxBorrow.toLocaleString()})
+            </span>
+          </p>
+          <p className="text-xs text-[#6b7a8a] mt-1">
+            Your requested loan: {formatCurrency(requestedLoan, state.market)}
+          </p>
+        </div>
+      )}
 
       {/* Interest vs Principal bar */}
       <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
@@ -83,7 +127,7 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
             {principalPct > 0.15 && `${(principalPct * 100).toFixed(0)}% principal`}
           </div>
           <div
-            className="bg-red-400 flex items-center justify-center text-xs text-[#2a2520] font-medium transition-all"
+            className="bg-[#c9956a] flex items-center justify-center text-xs text-white font-medium transition-all"
             style={{ width: `${interestPct * 100}%` }}
           >
             {interestPct > 0.15 && `${(interestPct * 100).toFixed(0)}% interest`}
@@ -91,7 +135,7 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
         </div>
         <div className="flex justify-between mt-2 text-xs text-[#6b7a8a]">
           <span>Principal: {formatCurrency(best.loanAmount, state.market)}</span>
-          <span className="text-red-600">Interest: locked behind upgrade</span>
+          <span>Interest: {formatCurrency(best.totalInterestPaid, state.market)}</span>
         </div>
       </div>
 
@@ -137,6 +181,18 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
 
       {/* Upgrade wall */}
       <UpgradeWall onUnlocked={onUnlocked} />
+    </div>
+  );
+}
+
+function StatCard({ label, value, tooltip }: { label: string; value: string; tooltip: string }) {
+  return (
+    <div className="bg-white border border-[#e8e3dc] rounded-xl p-4">
+      <p className="text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
+        {label}
+        <Tooltip content={tooltip} />
+      </p>
+      <p className="text-lg sm:text-xl font-bold text-[#2a2520]">{value}</p>
     </div>
   );
 }

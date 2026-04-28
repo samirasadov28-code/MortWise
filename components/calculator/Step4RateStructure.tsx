@@ -129,7 +129,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
           <input
             type="range"
             min={5}
-            max={35}
+            max={40}
             step={1}
             value={state.mortgageTerm}
             onChange={(e) => onChange({ mortgageTerm: Number(e.target.value) })}
@@ -140,10 +140,10 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
               <input
                 type="number"
                 value={state.mortgageTerm}
-                onChange={(e) => onChange({ mortgageTerm: Math.min(35, Math.max(5, Number(e.target.value))) })}
+                onChange={(e) => onChange({ mortgageTerm: Math.min(40, Math.max(5, Number(e.target.value))) })}
                 className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-center focus:outline-none focus:border-[#4a7c96] transition-colors"
                 min={5}
-                max={35}
+                max={40}
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">yr</span>
             </div>
