@@ -13,7 +13,19 @@ export type MarketCode =
   // Batch 3: Mexico, Saudi Arabia, Turkey, Poland, Indonesia,
   //          Vietnam, Sweden, Norway, Belgium, New Zealand
   | 'MX' | 'SA' | 'TR' | 'PL' | 'ID'
-  | 'VN' | 'SE' | 'NO' | 'BE' | 'NZ';
+  | 'VN' | 'SE' | 'NO' | 'BE' | 'NZ'
+  // Batch 4 (Europe): Austria, Denmark, Finland, Portugal, Greece,
+  //          Czech Rep, Hungary, Romania, Luxembourg, Iceland,
+  //          Estonia, Cyprus
+  | 'AT' | 'DK' | 'FI' | 'PT' | 'GR'
+  | 'CZ' | 'HU' | 'RO' | 'LU' | 'IS'
+  | 'EE' | 'CY'
+  // Batch 4 (Asia): Hong Kong, Taiwan, Thailand, Malaysia, Philippines
+  | 'HK' | 'TW' | 'TH' | 'MY' | 'PH'
+  // Batch 4 (Middle East): Qatar, Kuwait, Israel
+  | 'QA' | 'KW' | 'IL'
+  // Batch 4 (Americas + Africa): Argentina, Chile, South Africa
+  | 'AR' | 'CL' | 'ZA';
 
 export interface ScenarioInput {
   id: string;
