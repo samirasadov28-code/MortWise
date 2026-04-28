@@ -9,7 +9,11 @@ export type MarketCode =
   // Batch 2: Australia, Canada, Netherlands, South Korea, Spain,
   //          Italy, India, Singapore, Switzerland, Brazil
   | 'AU' | 'CA' | 'NL' | 'KR' | 'ES'
-  | 'IT' | 'IN' | 'SG' | 'CH' | 'BR';
+  | 'IT' | 'IN' | 'SG' | 'CH' | 'BR'
+  // Batch 3: Mexico, Saudi Arabia, Turkey, Poland, Indonesia,
+  //          Vietnam, Sweden, Norway, Belgium, New Zealand
+  | 'MX' | 'SA' | 'TR' | 'PL' | 'ID'
+  | 'VN' | 'SE' | 'NO' | 'BE' | 'NZ';
 
 export interface ScenarioInput {
   id: string;

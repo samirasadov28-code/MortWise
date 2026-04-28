@@ -2,14 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { ComponentType, SVGProps } from 'react';
 import Disclaimer from '@/components/shared/Disclaimer';
-import Flag from '@/components/shared/Flag';
+import MarketsCarousel, { type MarketsCarouselItem } from '@/components/shared/MarketsCarousel';
 import {
   HouseCoinsIcon,
   HouseChartIcon,
   HouseGlobeIcon,
   HouseSkyline,
 } from '@/components/shared/HouseIcons';
-import type { MarketCode } from '@/lib/types';
 import { version } from '@/package.json';
 
 const FREE_FEATURES = [
@@ -38,24 +37,34 @@ const PAID_FEATURES = [
   'PDF export of full analysis',
 ];
 
-const MARKETS_LIST: Array<{ code: MarketCode; name: string; available: boolean }> = [
+const MARKETS_LIST: MarketsCarouselItem[] = [
   { code: 'IE', name: 'Ireland', available: true },
   { code: 'UK', name: 'United Kingdom', available: true },
   { code: 'UAE', name: 'UAE', available: true },
   { code: 'US', name: 'United States', available: true },
-  { code: 'CN', name: 'China', available: true },
-  { code: 'JP', name: 'Japan', available: true },
+  { code: 'CA', name: 'Canada', available: true },
+  { code: 'AU', name: 'Australia', available: true },
+  { code: 'NZ', name: 'New Zealand', available: true },
   { code: 'DE', name: 'Germany', available: true },
   { code: 'FR', name: 'France', available: true },
-  { code: 'AU', name: 'Australia', available: true },
-  { code: 'CA', name: 'Canada', available: true },
   { code: 'NL', name: 'Netherlands', available: true },
-  { code: 'KR', name: 'South Korea', available: true },
+  { code: 'BE', name: 'Belgium', available: true },
   { code: 'ES', name: 'Spain', available: true },
   { code: 'IT', name: 'Italy', available: true },
+  { code: 'CH', name: 'Switzerland', available: true },
+  { code: 'SE', name: 'Sweden', available: true },
+  { code: 'NO', name: 'Norway', available: true },
+  { code: 'PL', name: 'Poland', available: true },
+  { code: 'TR', name: 'Turkey', available: true },
+  { code: 'CN', name: 'China', available: true },
+  { code: 'JP', name: 'Japan', available: true },
+  { code: 'KR', name: 'South Korea', available: true },
   { code: 'IN', name: 'India', available: true },
   { code: 'SG', name: 'Singapore', available: true },
-  { code: 'CH', name: 'Switzerland', available: true },
+  { code: 'ID', name: 'Indonesia', available: true },
+  { code: 'VN', name: 'Vietnam', available: true },
+  { code: 'SA', name: 'Saudi Arabia', available: true },
+  { code: 'MX', name: 'Mexico', available: true },
   { code: 'BR', name: 'Brazil', available: true },
 ];
 
@@ -180,17 +189,13 @@ export default function LandingPage() {
 
       {/* Markets */}
       <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
-        <h2 className="text-lg sm:text-xl font-bold text-[#2a2520] text-center mb-2">Available housing markets</h2>
-        <p className="text-xs sm:text-sm text-[#6b7a8a] text-center mb-5 sm:mb-6">Stamp duty, deposit rules, and first-time buyer schemes are tuned per country.</p>
-        <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
-          {MARKETS_LIST.map(({ code, name, available }) => (
-            <div key={code} className={`flex flex-col items-center gap-1.5 ${!available ? 'opacity-40' : ''}`}>
-              <Flag code={code} size={48} className={!available ? 'grayscale' : ''} />
-              <span className="text-xs text-[#6b7a8a]">{name}</span>
-              {!available && <span className="text-xs text-[#6b7a8a]/60">Coming soon</span>}
-            </div>
-          ))}
-        </div>
+        <h2 className="text-lg sm:text-xl font-bold text-[#2a2520] text-center mb-2">
+          Available housing markets <span className="text-[#4a7c96]">({MARKETS_LIST.length})</span>
+        </h2>
+        <p className="text-xs sm:text-sm text-[#6b7a8a] text-center mb-5 sm:mb-6">
+          Stamp duty, deposit rules, and first-time buyer schemes are tuned per country. Use the arrows to browse.
+        </p>
+        <MarketsCarousel markets={MARKETS_LIST} />
       </section>
 
       <Disclaimer />

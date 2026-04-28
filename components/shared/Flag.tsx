@@ -19,6 +19,16 @@ const ISO_MAP: Record<MarketCode, string> = {
   SG: 'sg',
   CH: 'ch',
   BR: 'br',
+  MX: 'mx',
+  SA: 'sa',
+  TR: 'tr',
+  PL: 'pl',
+  ID: 'id',
+  VN: 'vn',
+  SE: 'se',
+  NO: 'no',
+  BE: 'be',
+  NZ: 'nz',
 };
 
 interface FlagProps {

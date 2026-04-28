@@ -19,6 +19,16 @@ const CURRENCY_MAP: Record<MarketCode, string> = {
   SG: 'SGD',
   CH: 'CHF',
   BR: 'BRL',
+  MX: 'MXN',
+  SA: 'SAR',
+  TR: 'TRY',
+  PL: 'PLN',
+  ID: 'IDR',
+  VN: 'VND',
+  SE: 'SEK',
+  NO: 'NOK',
+  BE: 'EUR',
+  NZ: 'NZD',
 };
 
 export function formatCurrency(value: number, market: MarketCode = 'IE', decimals = 0): string {
