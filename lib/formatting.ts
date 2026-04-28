@@ -11,6 +11,14 @@ const CURRENCY_MAP: Record<MarketCode, string> = {
   JP: 'JPY',
   DE: 'EUR',
   FR: 'EUR',
+  NL: 'EUR',
+  KR: 'KRW',
+  ES: 'EUR',
+  IT: 'EUR',
+  IN: 'INR',
+  SG: 'SGD',
+  CH: 'CHF',
+  BR: 'BRL',
 };
 
 export function formatCurrency(value: number, market: MarketCode = 'IE', decimals = 0): string {

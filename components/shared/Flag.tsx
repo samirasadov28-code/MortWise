@@ -11,6 +11,14 @@ const ISO_MAP: Record<MarketCode, string> = {
   JP: 'jp',
   DE: 'de',
   FR: 'fr',
+  NL: 'nl',
+  KR: 'kr',
+  ES: 'es',
+  IT: 'it',
+  IN: 'in',
+  SG: 'sg',
+  CH: 'ch',
+  BR: 'br',
 };
 
 interface FlagProps {

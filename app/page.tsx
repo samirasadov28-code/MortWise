@@ -1,7 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import type { ComponentType, SVGProps } from 'react';
 import Disclaimer from '@/components/shared/Disclaimer';
 import Flag from '@/components/shared/Flag';
+import {
+  HouseCoinsIcon,
+  HouseChartIcon,
+  HouseGlobeIcon,
+  HouseSkyline,
+} from '@/components/shared/HouseIcons';
 import type { MarketCode } from '@/lib/types';
 import { version } from '@/package.json';
 
@@ -40,8 +47,16 @@ const MARKETS_LIST: Array<{ code: MarketCode; name: string; available: boolean }
   { code: 'JP', name: 'Japan', available: true },
   { code: 'DE', name: 'Germany', available: true },
   { code: 'FR', name: 'France', available: true },
-  { code: 'AU', name: 'Australia', available: false },
-  { code: 'CA', name: 'Canada', available: false },
+  { code: 'AU', name: 'Australia', available: true },
+  { code: 'CA', name: 'Canada', available: true },
+  { code: 'NL', name: 'Netherlands', available: true },
+  { code: 'KR', name: 'South Korea', available: true },
+  { code: 'ES', name: 'Spain', available: true },
+  { code: 'IT', name: 'Italy', available: true },
+  { code: 'IN', name: 'India', available: true },
+  { code: 'SG', name: 'Singapore', available: true },
+  { code: 'CH', name: 'Switzerland', available: true },
+  { code: 'BR', name: 'Brazil', available: true },
 ];
 
 export default function LandingPage() {
@@ -84,23 +99,28 @@ export default function LandingPage() {
         </Link>
       </section>
 
+      {/* House skyline divider */}
+      <div className="max-w-5xl mx-auto px-6">
+        <HouseSkyline className="w-full h-20 sm:h-28" />
+      </div>
+
       {/* Value props */}
-      <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
+      <section className="max-w-5xl mx-auto px-6 pt-8 sm:pt-10 pb-12 sm:pb-16">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           <ValueProp
-            icon="💰"
-            title="Total cost clarity"
-            description="Don't just see the monthly payment — see the total interest, total repaid, and true cost of each mortgage option side by side."
+            Icon={HouseCoinsIcon}
+            title="Total cost of the home"
+            description="Don't just see the monthly payment — see total interest, total repaid, and the true 30-year cost of each home you might buy."
           />
           <ValueProp
-            icon="📊"
+            Icon={HouseChartIcon}
             title="Rate-rise stress test"
-            description="See exactly what your monthly payment becomes if rates rise +1%, +2%, or +3% when your fixed period expires."
+            description="See exactly what your monthly payment becomes if rates rise +1%, +2%, or +3% when your fixed period expires — before you sign."
           />
           <ValueProp
-            icon="🌍"
-            title="Market-specific context"
-            description="Accurate stamp duty, government schemes (Help to Buy, First Home Scheme), and lending rules for Ireland, UK, and UAE."
+            Icon={HouseGlobeIcon}
+            title="Local property rules"
+            description="Accurate stamp duty, first-time buyer schemes (Help to Buy, First Home Scheme, FHSA, KfW…), and lender limits for 18 housing markets."
           />
         </div>
       </section>
@@ -160,7 +180,8 @@ export default function LandingPage() {
 
       {/* Markets */}
       <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
-        <h2 className="text-lg sm:text-xl font-bold text-[#2a2520] text-center mb-5 sm:mb-6">Available markets</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-[#2a2520] text-center mb-2">Available housing markets</h2>
+        <p className="text-xs sm:text-sm text-[#6b7a8a] text-center mb-5 sm:mb-6">Stamp duty, deposit rules, and first-time buyer schemes are tuned per country.</p>
         <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
           {MARKETS_LIST.map(({ code, name, available }) => (
             <div key={code} className={`flex flex-col items-center gap-1.5 ${!available ? 'opacity-40' : ''}`}>
@@ -177,10 +198,20 @@ export default function LandingPage() {
   );
 }
 
-function ValueProp({ icon, title, description }: { icon: string; title: string; description: string }) {
+function ValueProp({
+  Icon,
+  title,
+  description,
+}: {
+  Icon: ComponentType<SVGProps<SVGSVGElement>>;
+  title: string;
+  description: string;
+}) {
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-4 sm:p-5">
-      <div className="text-2xl sm:text-3xl mb-3">{icon}</div>
+      <div className="w-10 h-10 sm:w-12 sm:h-12 mb-3 text-[#4a7c96]">
+        <Icon className="w-full h-full" />
+      </div>
       <h3 className="font-bold text-[#2a2520] mb-2 text-sm sm:text-base">{title}</h3>
       <p className="text-xs sm:text-sm text-[#6b7a8a] leading-relaxed">{description}</p>
     </div>
