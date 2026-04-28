@@ -7,6 +7,10 @@ const ISO_MAP: Record<MarketCode, string> = {
   US: 'us',
   AU: 'au',
   CA: 'ca',
+  CN: 'cn',
+  JP: 'jp',
+  DE: 'de',
+  FR: 'fr',
 };
 
 interface FlagProps {

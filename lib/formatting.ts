@@ -7,6 +7,10 @@ const CURRENCY_MAP: Record<MarketCode, string> = {
   US: 'USD',
   AU: 'AUD',
   CA: 'CAD',
+  CN: 'CNY',
+  JP: 'JPY',
+  DE: 'EUR',
+  FR: 'EUR',
 };
 
 export function formatCurrency(value: number, market: MarketCode = 'IE', decimals = 0): string {

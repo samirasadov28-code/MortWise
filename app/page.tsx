@@ -35,7 +35,11 @@ const MARKETS_LIST: Array<{ code: MarketCode; name: string; available: boolean }
   { code: 'IE', name: 'Ireland', available: true },
   { code: 'UK', name: 'United Kingdom', available: true },
   { code: 'UAE', name: 'UAE', available: true },
-  { code: 'US', name: 'United States', available: false },
+  { code: 'US', name: 'United States', available: true },
+  { code: 'CN', name: 'China', available: true },
+  { code: 'JP', name: 'Japan', available: true },
+  { code: 'DE', name: 'Germany', available: true },
+  { code: 'FR', name: 'France', available: true },
   { code: 'AU', name: 'Australia', available: false },
   { code: 'CA', name: 'Canada', available: false },
 ];

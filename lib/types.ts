@@ -1,7 +1,11 @@
 export type RepaymentType = 'annuity' | 'fixed_principal';
 export type RateStructure = 'fixed' | 'variable' | 'split' | 'tracker';
 export type BuyerType = 'first_time' | 'mover' | 'investor' | 'non_resident';
-export type MarketCode = 'IE' | 'UK' | 'UAE' | 'US' | 'AU' | 'CA';
+export type MarketCode =
+  // Detailed configs (existing)
+  | 'IE' | 'UK' | 'UAE' | 'AU' | 'CA'
+  // Batch 1: USA, China, Japan, Germany, France
+  | 'US' | 'CN' | 'JP' | 'DE' | 'FR';
 
 export interface ScenarioInput {
   id: string;
