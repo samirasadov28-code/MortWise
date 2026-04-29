@@ -9,7 +9,6 @@ import {
   HouseGlobeIcon,
   HouseSkyline,
 } from '@/components/shared/HouseIcons';
-import { version } from '@/package.json';
 
 const FREE_FEATURES = [
   'Monthly repayment estimate',
@@ -99,13 +98,13 @@ const MARKETS_LIST: MarketsCarouselItem[] = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#f5f3ef] text-[#2a2520] pb-16">
-      {/* Nav */}
-      <nav className="border-b border-[#e8e3dc] px-6 py-4">
+    <div className="min-h-screen bg-[#f5f3ef] text-[#2a2520]">
+      {/* Nav — frozen on top, always visible */}
+      <nav className="sticky top-0 z-40 border-b border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm px-6 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Image src="/Logo_192.png" alt="MortWise" width={36} height={36} className="rounded-lg" />
-            <span className="text-xs text-[#6b7a8a]/60 font-mono">v{version}</span>
+          <div className="flex items-center gap-3">
+            <Image src="/Logo_192.png" alt="MortWise" width={56} height={56} className="rounded-xl" />
+            <span className="text-base sm:text-lg font-bold text-[#2a2520]">MortWise</span>
           </div>
           <Link
             href="/calculator"

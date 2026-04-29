@@ -31,7 +31,7 @@ export default function WizardShell({
   const isLast = step === 5;
 
   return (
-    <div className="w-full max-w-3xl mx-auto pb-28 sm:pb-32">
+    <div className="w-full max-w-3xl mx-auto">
       {/* Progress bar */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
@@ -76,32 +76,27 @@ export default function WizardShell({
         {children}
       </div>
 
-      {/* Navigation — sticky at bottom of viewport so users never have to scroll to advance */}
-      <div
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-      >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            disabled={step === 1}
-            className="px-5 py-3 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm bg-white"
-          >
-            ← Back
-          </button>
-          <div className="text-xs text-[#6b7a8a] hidden sm:block">
-            Step {step} of {STEPS.length}
-          </div>
-          <button
-            type="button"
-            onClick={onNext}
-            disabled={!canNext}
-            className="px-6 sm:px-8 py-3 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm shadow-md flex-1 sm:flex-initial"
-          >
-            {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
-          </button>
+      {/* Navigation — in normal flow so it never overlays the disclaimer */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <button
+          type="button"
+          onClick={onBack}
+          disabled={step === 1}
+          className="px-5 py-3 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm bg-white"
+        >
+          ← Back
+        </button>
+        <div className="text-xs text-[#6b7a8a] hidden sm:block">
+          Step {step} of {STEPS.length}
         </div>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={!canNext}
+          className="px-6 sm:px-8 py-3 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm shadow-md flex-1 sm:flex-initial"
+        >
+          {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
+        </button>
       </div>
     </div>
   );

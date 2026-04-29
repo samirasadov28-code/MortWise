@@ -124,12 +124,13 @@ export default function CalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f3ef] pb-20">
-      {/* Header */}
-      <header className="border-b border-[#e8e3dc] px-6 py-4">
+    <div className="min-h-screen bg-[#f5f3ef]">
+      {/* Header — frozen on top, always visible */}
+      <header className="sticky top-0 z-40 border-b border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm px-6 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/Logo_192.png" alt="MortWise" width={32} height={32} className="rounded-md" />
+          <Link href="/" className="flex items-center gap-3">
+            <Image src="/Logo_192.png" alt="MortWise" width={56} height={56} className="rounded-xl" />
+            <span className="text-base sm:text-lg font-bold text-[#2a2520]">MortWise</span>
           </Link>
           {state.isUnlocked && (
             <span className="text-xs px-2 py-1 bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] rounded-full">
