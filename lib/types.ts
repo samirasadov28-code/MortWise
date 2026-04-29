@@ -25,7 +25,9 @@ export type MarketCode =
   // Batch 4 (Middle East): Qatar, Kuwait, Israel
   | 'QA' | 'KW' | 'IL'
   // Batch 4 (Americas + Africa): Argentina, Chile, South Africa
-  | 'AR' | 'CL' | 'ZA';
+  | 'AR' | 'CL' | 'ZA'
+  // Batch 5 (Eastern Europe): Ukraine
+  | 'UA';
 
 export interface ScenarioInput {
   id: string;

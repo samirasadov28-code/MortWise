@@ -49,6 +49,7 @@ import il from './il';
 import ar from './ar';
 import cl from './cl';
 import za from './za';
+import ua from './ua';
 import type { MarketConfig, MarketCode } from '../types';
 
 export const MARKETS: Record<MarketCode, MarketConfig> = {
@@ -103,6 +104,7 @@ export const MARKETS: Record<MarketCode, MarketConfig> = {
   AR: ar,
   CL: cl,
   ZA: za,
+  UA: ua,
 };
 
 // Markets that are fully supported and selectable in the wizard.
@@ -115,6 +117,7 @@ export const LAUNCH_MARKETS: MarketCode[] = [
   'HK', 'TW', 'TH', 'MY', 'PH',
   'QA', 'KW', 'IL',
   'AR', 'CL', 'ZA',
+  'UA',
 ];
 
 // Markets that show as "coming soon" in the picker.

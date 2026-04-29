@@ -52,6 +52,7 @@ const CURRENCY_MAP: Record<MarketCode, string> = {
   AR: 'ARS',
   CL: 'CLP',
   ZA: 'ZAR',
+  UA: 'UAH',
 };
 
 export function formatCurrency(value: number, market: MarketCode = 'IE', decimals = 0): string {
