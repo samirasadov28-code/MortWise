@@ -46,7 +46,16 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
           rateStructure: state.rateStructure,
         }),
       });
-      if (!res.ok) throw new Error('AI rate generation failed');
+      if (!res.ok) {
+        let serverMsg = `AI rate generation failed (HTTP ${res.status})`;
+        try {
+          const errBody = await res.json();
+          if (errBody?.error) serverMsg = errBody.error;
+        } catch {
+          // body wasn't JSON — keep the generic message
+        }
+        throw new Error(serverMsg);
+      }
       const data: AIRateResponse = await res.json();
 
       // Merge AI scenarios into existing ones

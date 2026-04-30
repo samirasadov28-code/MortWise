@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { MARKETS } from '@/lib/markets';
+import { getLenders } from '@/lib/lenders';
+
+const ALL_MARKETS = [
+  'IE','UK','UAE','US','CN','JP','DE','FR','AU','CA','NL','KR','ES','IT','IN','SG','CH','BR',
+  'MX','SA','TR','PL','ID','VN','SE','NO','BE','NZ','AT','DK','FI','PT','GR','CZ','HU','RO',
+  'LU','IS','EE','CY','HK','TW','TH','MY','PH','QA','KW','IL','AR','CL','ZA','UA',
+] as const;
 
 const RequestSchema = z.object({
-  market: z.enum(['IE', 'UK', 'UAE', 'US', 'AU', 'CA']),
+  market: z.enum(ALL_MARKETS),
   ltv: z.number().min(0.1).max(1),
   term: z.number().min(5).max(40),
   buyerType: z.enum(['first_time', 'mover', 'investor', 'non_resident']),
@@ -51,11 +59,17 @@ export async function POST(req: NextRequest) {
     }
 
     const { market, ltv, term, buyerType, rateStructure } = parsed.data;
-    const ctx = marketContext[market] ?? market;
+    const marketName = MARKETS[market]?.name ?? market;
+    const currency = MARKETS[market]?.currency ?? '';
+    const ctx = marketContext[market] ?? `${marketName} (${currency})`;
+    // Pass our hand-curated lender list to the model so it returns names of real
+    // banks the user already sees in Step 5, instead of inventing fictional ones.
+    const knownLenders = getLenders(market).map((l) => l.name).join(', ');
 
-    const prompt = `Generate 4 realistic mortgage rate scenarios for a ${market} buyer.
+    const prompt = `Generate 4 realistic mortgage rate scenarios for a ${marketName} (${market}) buyer.
 
 Context: ${ctx}
+Use only these real lenders (pick 4, do not invent banks): ${knownLenders}
 LTV: ${(ltv * 100).toFixed(0)}%
 Term: ${term} years
 Buyer type: ${buyerType}
