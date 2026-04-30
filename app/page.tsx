@@ -33,6 +33,7 @@ const PAID_FEATURES = [
   'IRR and money multiple (investor view)',
   'Exit equity analysis at any year',
   'AI-generated market rate cards',
+  'Cross-market comparison — find the cheapest overseas investment',
   'PDF export of full analysis',
 ];
 

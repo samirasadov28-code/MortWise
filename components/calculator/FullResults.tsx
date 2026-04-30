@@ -11,6 +11,7 @@ import StressTestPanel from '@/components/results/StressTestPanel';
 import OverpaymentPanel from '@/components/results/OverpaymentPanel';
 import CashbackPanel from '@/components/results/CashbackPanel';
 import HolidayPanel from '@/components/results/HolidayPanel';
+import MarketsComparison from '@/components/results/MarketsComparison';
 
 interface FullResultsProps {
   results: ScenarioResult[];
@@ -120,6 +121,14 @@ export default function FullResults({ results, state }: FullResultsProps) {
             <HolidayPanel primaryInput={state.scenarios[0]} market={state.market} />
           </section>
         )}
+
+        {/* Cross-market comparison — overseas investment */}
+        <section>
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
+            Cross-market comparison · overseas investment
+          </h3>
+          <MarketsComparison state={state} />
+        </section>
       </div>
     </div>
   );
