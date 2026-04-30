@@ -49,7 +49,6 @@ export default function SensitivityPanel({ state }: SensitivityPanelProps) {
 
     const baseResult = runAmortisation(buildInput({}));
     const baseTotal = baseResult.totalAmountPaid;
-    const baseMonthly = baseResult.firstMonthlyPayment;
 
     function describe(input: ScenarioInput): Variation {
       const r = runAmortisation(input);

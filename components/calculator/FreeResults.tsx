@@ -22,7 +22,6 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
   // Show best result (lowest total cost)
   const best = [...results].sort((a, b) => a.totalAmountPaid - b.totalAmountPaid)[0];
   const market = MARKETS[state.market];
-  const sym = market.currencySymbol;
 
   // Year 1 totals (first 12 months of payments)
   const year1Periods = best.periods.slice(0, 12);
