@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { version as buildVersion } from '@/package.json';
+import packageJson from '@/package.json';
+
+const buildVersion = packageJson.version;
 
 const POLL_INTERVAL_MS = 60_000;
 

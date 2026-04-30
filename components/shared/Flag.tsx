@@ -52,6 +52,7 @@ const ISO_MAP: Record<MarketCode, string> = {
   AR: 'ar',
   CL: 'cl',
   ZA: 'za',
+  UA: 'ua',
 };
 
 interface FlagProps {
