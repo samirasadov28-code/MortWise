@@ -5,6 +5,13 @@ import { version as buildVersion } from '@/package.json';
 
 const POLL_INTERVAL_MS = 60_000;
 
+function hardReload() {
+  // Cache-busting query param + full reload to defeat any stale CDN/browser cache
+  const url = new URL(window.location.href);
+  url.searchParams.set('v', Date.now().toString());
+  window.location.replace(url.toString());
+}
+
 export default function Disclaimer() {
   const [latestVersion, setLatestVersion] = useState<string>(buildVersion);
 
@@ -19,7 +26,7 @@ export default function Disclaimer() {
         if (cancelled || !data.version) return;
         if (data.version !== buildVersion) {
           setLatestVersion(data.version);
-          window.location.reload();
+          hardReload();
         }
       } catch {
         // network errors are fine — we'll retry next tick
@@ -41,18 +48,17 @@ export default function Disclaimer() {
       <p className="text-center text-xs text-[#6b7a8a]">
         MortWise is a calculation tool, not financial advice. Always speak to a qualified mortgage advisor before making decisions.
       </p>
-      <p className="text-center text-[11px] text-[#6b7a8a]/70 mt-1.5 font-mono">
-        v{buildVersion}
-        {updatePending && (
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="ml-2 underline hover:text-[#4a7c96]"
-          >
-            update available — reload
-          </button>
-        )}
+      <p className="text-center text-[11px] text-[#6b7a8a]/70 mt-1.5 font-mono flex items-center justify-center gap-2 flex-wrap">
+        <span>v{buildVersion}</span>
+        <button
+          type="button"
+          onClick={hardReload}
+          className={`underline hover:text-[#4a7c96] ${updatePending ? 'text-[#4a7c96] font-semibold' : ''}`}
+        >
+          {updatePending ? `update available (v${latestVersion}) — reload` : '↻ force update'}
+        </button>
       </p>
     </div>
   );
 }
+
