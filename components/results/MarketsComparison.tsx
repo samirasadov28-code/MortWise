@@ -5,7 +5,8 @@ import type { MarketCode, ScenarioInput, WizardState } from '@/lib/types';
 import { MARKETS, LAUNCH_MARKETS } from '@/lib/markets';
 import { runAmortisation } from '@/lib/engine/amortisation';
 import { formatCurrency, formatPercent } from '@/lib/formatting';
-import { toEur } from '@/lib/fx';
+import { convertCurrency, COMPARISON_CURRENCIES } from '@/lib/fx';
+import Flag from '@/components/shared/Flag';
 
 interface MarketsComparisonProps {
   state: WizardState;
@@ -14,7 +15,6 @@ interface MarketsComparisonProps {
 interface Row {
   code: MarketCode;
   name: string;
-  flag: string;
   currency: string;
   maxLTV: number;
   loanAmount: number;
@@ -22,7 +22,7 @@ interface Row {
   firstMonthlyPayment: number;
   totalAmountPaid: number;
   totalCostLocal: number;
-  totalCostEur: number;
+  totalCostBase: number;
 }
 
 const DEFAULT_INVESTOR_RATE = 0.055;
@@ -30,11 +30,12 @@ const DEFAULT_TERM = 25;
 
 export default function MarketsComparison({ state }: MarketsComparisonProps) {
   const [selected, setSelected] = useState<Set<MarketCode>>(() => {
-    // Pre-select the user's home market plus a few liquid investor markets
     const seed = new Set<MarketCode>([state.market]);
     (['UK', 'US', 'PT', 'ES', 'UAE'] as MarketCode[]).forEach((c) => seed.add(c));
     return seed;
   });
+  // Currency in which all rankings are shown. Default = EUR (IE proxy).
+  const [baseCurrencyMarket, setBaseCurrencyMarket] = useState<MarketCode>('IE');
 
   const baseRate = useMemo(() => {
     const s = state.scenarios[0];
@@ -53,7 +54,6 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
         const market = MARKETS[code];
         if (!market) return null;
 
-        // Use the lower of the user's deposit ratio and the market's max LTV cap.
         const ltv = Math.min(1 - depositRatio, market.maxLTV);
         const loanAmount = housePrice * ltv;
         const stampDuty = market.stampDuty(housePrice, {
@@ -83,7 +83,6 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
         return {
           code,
           name: market.name,
-          flag: market.flag,
           currency: market.currency,
           maxLTV: market.maxLTV,
           loanAmount,
@@ -91,12 +90,12 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
           firstMonthlyPayment: result.firstMonthlyPayment,
           totalAmountPaid: result.totalAmountPaid,
           totalCostLocal,
-          totalCostEur: toEur(totalCostLocal, code),
+          totalCostBase: convertCurrency(totalCostLocal, code, baseCurrencyMarket),
         };
       })
       .filter((r): r is Row => r !== null)
-      .sort((a, b) => a.totalCostEur - b.totalCostEur);
-  }, [selected, housePrice, depositRatio, term, baseRate]);
+      .sort((a, b) => a.totalCostBase - b.totalCostBase);
+  }, [selected, housePrice, depositRatio, term, baseRate, baseCurrencyMarket, state.propertyType]);
 
   function toggle(code: MarketCode) {
     setSelected((prev) => {
@@ -107,42 +106,65 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
     });
   }
 
+  const baseLabel =
+    COMPARISON_CURRENCIES.find((c) => c.market === baseCurrencyMarket)?.label ?? 'EUR';
+
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-      <div className="mb-4">
-        <p className="text-sm text-[#6b7a8a]">
-          Compare the same {formatCurrency(housePrice, state.market)} property purchased as an
-          investor across different countries. Total cost includes deposit, mortgage repayment,
-          and local stamp duty / transfer taxes. Figures are converted to EUR for ranking only —
-          all per-market amounts are shown in local currency.
-        </p>
-        <p className="text-xs text-[#6b7a8a]/70 mt-2">
-          Assumes a {formatPercent(baseRate, 2)} fixed rate for the full {term}-year term.
-          Each market caps loan-to-value at its own regulatory limit.
-        </p>
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div>
+          <p className="text-sm text-[#6b7a8a]">
+            Compare the same {formatCurrency(housePrice, state.market)} property purchased as an
+            investor across different countries. Total cost includes deposit, mortgage repayment,
+            and local stamp duty / transfer taxes.
+          </p>
+          <p className="text-xs text-[#6b7a8a]/70 mt-2">
+            Assumes a {formatPercent(baseRate, 2)} fixed rate for the full {term}-year term.
+            Each market caps loan-to-value at its own regulatory limit.
+          </p>
+        </div>
+
+        {/* Comparison currency selector */}
+        <div className="flex flex-col gap-1 flex-shrink-0">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-[#6b7a8a]">
+            Compare in
+          </label>
+          <select
+            value={baseCurrencyMarket}
+            onChange={(e) => setBaseCurrencyMarket(e.target.value as MarketCode)}
+            className="px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
+          >
+            {COMPARISON_CURRENCIES.map((c) => (
+              <option key={c.market} value={c.market}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Market chips */}
+      {/* Equal-size country boxes */}
       <div className="mb-4">
         <div className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-2">
           Markets ({selected.size} selected)
         </div>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
           {LAUNCH_MARKETS.map((code) => {
-            const market = MARKETS[code];
             const active = selected.has(code);
             return (
               <button
                 key={code}
                 type="button"
                 onClick={() => toggle(code)}
-                className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
+                className={`flex flex-col items-center justify-center gap-1 p-2 rounded-lg border-2 transition-colors aspect-square ${
                   active
-                    ? 'bg-[#4a7c96] text-white border-[#4a7c96]'
-                    : 'bg-white text-[#6b7a8a] border-[#e8e3dc] hover:border-[#4a7c96] hover:text-[#4a7c96]'
+                    ? 'bg-[#4a7c96]/10 border-[#4a7c96] text-[#2a2520]'
+                    : 'bg-white border-[#e8e3dc] text-[#6b7a8a] hover:border-[#4a7c96] hover:text-[#4a7c96]'
                 }`}
+                aria-pressed={active}
               >
-                {market.flag} {code}
+                <Flag code={code as MarketCode} size={28} />
+                <span className="text-[11px] font-semibold leading-tight">{code}</span>
               </button>
             );
           })}
@@ -163,7 +185,7 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
                 <th className="py-2 pr-3 font-semibold text-right">Stamp duty</th>
                 <th className="py-2 pr-3 font-semibold text-right">Monthly</th>
                 <th className="py-2 pr-3 font-semibold text-right">Total cost (local)</th>
-                <th className="py-2 pr-3 font-semibold text-right">Total cost (€)</th>
+                <th className="py-2 pr-3 font-semibold text-right">Total cost ({baseLabel})</th>
               </tr>
             </thead>
             <tbody>
@@ -172,13 +194,11 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
                 return (
                   <tr
                     key={r.code}
-                    className={`border-b border-[#e8e3dc]/60 ${
-                      cheapest ? 'bg-[#4a7c96]/5' : ''
-                    }`}
+                    className={`border-b border-[#e8e3dc]/60 ${cheapest ? 'bg-[#4a7c96]/5' : ''}`}
                   >
                     <td className="py-2.5 pr-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-base">{r.flag}</span>
+                        <Flag code={r.code} size={20} />
                         <div className="flex flex-col leading-tight">
                           <span className="font-semibold text-[#2a2520]">{r.name}</span>
                           <span className="text-[11px] text-[#6b7a8a]">{r.currency}</span>
@@ -203,7 +223,7 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
                       {formatCurrency(r.totalCostLocal, r.code)}
                     </td>
                     <td className="py-2.5 pr-3 text-right text-[#4a7c96] font-semibold">
-                      {formatCurrency(r.totalCostEur, 'IE')}
+                      {formatCurrency(r.totalCostBase, baseCurrencyMarket)}
                     </td>
                   </tr>
                 );
@@ -214,8 +234,8 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
       )}
 
       <p className="text-[11px] text-[#6b7a8a]/70 mt-3 leading-relaxed">
-        FX rates are approximations refreshed periodically and used only for ranking. Stamp duty
-        uses each market&rsquo;s investor / non-resident rate where applicable.
+        FX rates are approximations refreshed periodically and used only for ranking.
+        Stamp duty uses each market&rsquo;s investor / non-resident rate where applicable.
         Government first-time-buyer schemes are deliberately excluded — they don&rsquo;t apply to
         overseas investors.
       </p>

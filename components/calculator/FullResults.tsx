@@ -13,6 +13,7 @@ import CashbackPanel from '@/components/results/CashbackPanel';
 import HolidayPanel from '@/components/results/HolidayPanel';
 import MarketsComparison from '@/components/results/MarketsComparison';
 import BuyToLetPanel from '@/components/results/BuyToLetPanel';
+import SensitivityPanel from '@/components/results/SensitivityPanel';
 
 interface FullResultsProps {
   results: ScenarioResult[];
@@ -122,6 +123,14 @@ export default function FullResults({ results, state }: FullResultsProps) {
             <HolidayPanel primaryInput={state.scenarios[0]} market={state.market} />
           </section>
         )}
+
+        {/* Sensitivity analysis */}
+        <section>
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
+            Sensitivity analysis · all key inputs
+          </h3>
+          <SensitivityPanel state={state} />
+        </section>
 
         {/* Buy-to-let analysis */}
         <section>

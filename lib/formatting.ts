@@ -57,12 +57,25 @@ const CURRENCY_MAP: Record<MarketCode, string> = {
 
 export function formatCurrency(value: number, market: MarketCode = 'IE', decimals = 0): string {
   const currency = CURRENCY_MAP[market];
-  return new Intl.NumberFormat('en-IE', {
+  const formatter = new Intl.NumberFormat('en-IE', {
     style: 'currency',
     currency,
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-  }).format(value);
+  });
+  // Walk the formatted parts so that any currency token (€, US$, A$, £, ¥…) is
+  // followed by a space before the digits — produces "US$ 1,000,000" instead of "US$1,000,000".
+  return formatter
+    .formatToParts(value)
+    .map((part, i, arr) => {
+      if (part.type !== 'currency') return part.value;
+      const next = arr[i + 1];
+      if (!next) return part.value;
+      // Don't double-space if the formatter already inserted a literal space
+      if (next.type === 'literal' && next.value.startsWith(' ')) return part.value;
+      return `${part.value} `;
+    })
+    .join('');
 }
 
 export function formatPercent(value: number, decimals = 2): string {

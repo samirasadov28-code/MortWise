@@ -61,3 +61,22 @@ export const EUR_PER_UNIT: Record<MarketCode, number> = {
 export function toEur(amount: number, market: MarketCode): number {
   return amount * (EUR_PER_UNIT[market] ?? 1);
 }
+
+/** Convert from one market's local currency to another's, pivoting through EUR. */
+export function convertCurrency(amount: number, from: MarketCode, to: MarketCode): number {
+  const eur = amount * (EUR_PER_UNIT[from] ?? 1);
+  return eur / (EUR_PER_UNIT[to] ?? 1);
+}
+
+/** Currencies offered as the cross-market comparison base. */
+export const COMPARISON_CURRENCIES: { market: MarketCode; label: string }[] = [
+  { market: 'IE',  label: 'EUR' },
+  { market: 'US',  label: 'USD' },
+  { market: 'UK',  label: 'GBP' },
+  { market: 'CH',  label: 'CHF' },
+  { market: 'JP',  label: 'JPY' },
+  { market: 'SG',  label: 'SGD' },
+  { market: 'UAE', label: 'AED' },
+  { market: 'AU',  label: 'AUD' },
+  { market: 'CA',  label: 'CAD' },
+];

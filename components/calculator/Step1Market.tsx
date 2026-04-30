@@ -2,6 +2,7 @@
 
 import type { WizardState, MarketCode } from '@/lib/types';
 import { MARKETS, LAUNCH_MARKETS, COMING_SOON_MARKETS } from '@/lib/markets';
+import { scenariosForMarket } from '@/lib/lenders';
 import Flag from '@/components/shared/Flag';
 
 interface Step1Props {
@@ -13,30 +14,40 @@ export default function Step1Market({ state, onChange }: Step1Props) {
   const selected = state.market;
   const market = MARKETS[selected];
 
+  function selectMarket(code: MarketCode) {
+    if (code === state.market) return;
+    // Replace scenario lender names + indicative rates with the new market's lenders
+    onChange({
+      market: code,
+      scenarios: scenariosForMarket(code, state.scenarios.length || 4),
+    });
+  }
+
   return (
     <div>
       <h2 className="text-xl font-bold text-[#2a2520] mb-1">Select your market</h2>
       <p className="text-[#6b7a8a] text-sm mb-6">
-        MortWise adapts stamp duty, government schemes, and regulatory context to the market you select.
+        MortWise adapts stamp duty, government schemes, regulatory context, and bank lineup to the market you select.
       </p>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+      {/* Equal-size country grid — every box renders with identical dimensions */}
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 mb-8">
         {LAUNCH_MARKETS.map((code) => {
           const m = MARKETS[code];
           return (
             <button
               key={code}
               type="button"
-              onClick={() => onChange({ market: code as MarketCode })}
-              className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+              onClick={() => selectMarket(code as MarketCode)}
+              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all aspect-square ${
                 selected === code
                   ? 'border-[#4a7c96] bg-[#4a7c96]/10'
                   : 'border-[#e8e3dc] bg-[#eef4f7]/60 hover:border-[#4a7c96]/50'
               }`}
             >
-              <Flag code={code as MarketCode} size={48} />
-              <span className="text-sm font-medium text-[#2a2520]">{m.name}</span>
-              <span className="text-xs text-[#6b7a8a]">{m.currency}</span>
+              <Flag code={code as MarketCode} size={40} />
+              <span className="text-xs font-medium text-[#2a2520] text-center leading-tight line-clamp-2">{m.name}</span>
+              <span className="text-[10px] text-[#6b7a8a] uppercase tracking-wide">{m.currency}</span>
             </button>
           );
         })}
@@ -46,11 +57,11 @@ export default function Step1Market({ state, onChange }: Step1Props) {
           return (
             <div
               key={code}
-              className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-[#e8e3dc]/50 bg-[#eef4f7]/20 opacity-50 cursor-not-allowed"
+              className="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-[#e8e3dc]/50 bg-[#eef4f7]/20 opacity-50 cursor-not-allowed aspect-square"
             >
-              <Flag code={code as MarketCode} size={48} className="grayscale opacity-60" />
-              <span className="text-sm font-medium text-[#6b7a8a]">{m.name}</span>
-              <span className="text-xs text-[#6b7a8a]">Coming soon</span>
+              <Flag code={code as MarketCode} size={40} className="grayscale opacity-60" />
+              <span className="text-xs font-medium text-[#6b7a8a] text-center leading-tight line-clamp-2">{m.name}</span>
+              <span className="text-[10px] text-[#6b7a8a]">Coming soon</span>
             </div>
           );
         })}
