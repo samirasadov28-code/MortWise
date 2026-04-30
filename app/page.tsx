@@ -63,6 +63,7 @@ const MARKETS_LIST: MarketsCarouselItem[] = [
   { code: 'HU', name: 'Hungary', available: true },
   { code: 'RO', name: 'Romania', available: true },
   { code: 'EE', name: 'Estonia', available: true },
+  { code: 'UA', name: 'Ukraine', available: true },
   { code: 'TR', name: 'Turkey', available: true },
   // Americas
   { code: 'US', name: 'United States', available: true },
