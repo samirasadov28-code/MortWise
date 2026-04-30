@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const lu: MarketConfig = {
   code: 'LU',
@@ -18,7 +18,7 @@ const lu: MarketConfig = {
 
   // Droits d'enregistrement 6% + droits de transcription 1% = 7% standard.
   // Bëllegen Akt FTB tax credit: up to €40,000 reduces these duties (raised 2024).
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     const base = price * 0.07;
     if (buyerType === 'first_time') return Math.max(base - 40_000, 0);
     return base;

@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ph: MarketConfig = {
   code: 'PH',
@@ -18,7 +18,7 @@ const ph: MarketConfig = {
 
   // Documentary Stamp Tax 1.5% + Transfer Tax 0.5–0.75% + Registration ~0.25%.
   // Approximation: 2.5% buyer side.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.025,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.025,
 
   govtSchemes: [
     {

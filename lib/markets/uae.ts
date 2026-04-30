@@ -1,4 +1,4 @@
-import type { MarketConfig } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const uae: MarketConfig = {
   code: 'UAE',
@@ -17,7 +17,7 @@ const uae: MarketConfig = {
     { maxLtv: 0.80, label: '76–80% LTV', description: 'UAE nationals only' },
   ],
 
-  stampDuty: (price) => {
+  stampDuty: (price: number, _ctx: StampDutyContext): number => {
     return price * 0.04;
   },
 

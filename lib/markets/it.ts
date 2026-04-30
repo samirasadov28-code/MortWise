@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const it: MarketConfig = {
   code: 'IT',
@@ -17,11 +17,18 @@ const it: MarketConfig = {
     { maxLtv: 0.80, label: '71–80% LTV', description: 'Maximum (95% with Consap guarantee for FTB)' },
   ],
 
-  // Imposta di registro: 2% (FTB, prima casa) on cadastral value, 9% otherwise.
-  // Approximation against purchase price: 2% FTB, 7% non-FTB.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
-    if (buyerType === 'first_time') return price * 0.02;
-    return price * 0.07;
+  // Italian acquisition taxes split sharply on (a) buyer type and (b) seller type:
+  //   • From a private seller (typical secondary market):
+  //       FTB primary residence ("prima casa")     → 2% registration tax (cadastral basis)
+  //       Other buyer / second home / investor     → 9% registration tax (cadastral basis)
+  //   • From a developer/business (typical new build):
+  //       FTB                                       → 4% VAT
+  //       Other / investor                          → 10% VAT (22% if luxury class A/1, A/8, A/9)
+  // Approximation against purchase price below.
+  stampDuty: (price: number, { buyerType, propertyType }: StampDutyContext): number => {
+    const isFTB = buyerType === 'first_time';
+    if (propertyType === 'new_build') return price * (isFTB ? 0.04 : 0.10);
+    return price * (isFTB ? 0.02 : 0.07);
   },
 
   govtSchemes: [

@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const kr: MarketConfig = {
   code: 'KR',
@@ -18,7 +18,7 @@ const kr: MarketConfig = {
   ],
 
   // Acquisition tax: 1–3% (price-tiered) for first home; 8–12% for multi-home owners.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time') {
       if (price <= 600_000_000) return price * 0.01;
       if (price <= 900_000_000) return price * 0.02;

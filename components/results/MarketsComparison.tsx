@@ -56,7 +56,10 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
         // Use the lower of the user's deposit ratio and the market's max LTV cap.
         const ltv = Math.min(1 - depositRatio, market.maxLTV);
         const loanAmount = housePrice * ltv;
-        const stampDuty = market.stampDuty(housePrice, 'investor');
+        const stampDuty = market.stampDuty(housePrice, {
+          buyerType: 'investor',
+          propertyType: state.propertyType,
+        });
 
         const input: ScenarioInput = {
           id: `mkt-${code}`,

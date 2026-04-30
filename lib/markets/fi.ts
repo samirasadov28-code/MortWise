@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const fi: MarketConfig = {
   code: 'FI',
@@ -19,7 +19,7 @@ const fi: MarketConfig = {
 
   // Varainsiirtovero (transfer tax): 1.5% on shares of housing company (asunto-osake),
   // 3% on a freehold property. FTB exemption was abolished 2024.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.015,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.015,
 
   govtSchemes: [
     {

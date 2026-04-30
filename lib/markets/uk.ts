@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const uk: MarketConfig = {
   code: 'UK',
@@ -18,17 +18,25 @@ const uk: MarketConfig = {
     { maxLtv: 0.95, label: '91–95% LTV', description: 'Limited lenders, highest rates' },
   ],
 
-  stampDuty: (price: number, buyerType: BuyerType): number => {
-    if (buyerType === 'first_time') {
-      if (price <= 425_000) return 0;
-      if (price <= 625_000) return (price - 425_000) * 0.05;
-      // Above £625k: FTB relief withdrawn, standard rates apply
-    }
-    // Standard rates (England & Northern Ireland)
+  // SDLT (England & Northern Ireland). Same headline schedule for new builds and existing,
+  // but heavy surcharges for additional homes / buy-to-let (+5% since Oct 2024) and
+  // non-residents (+2% since Apr 2021).
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     let tax = 0;
+    if (buyerType === 'first_time' && price <= 625_000) {
+      // FTB relief: nil to £425k, 5% on slice £425k–£625k. Withdrawn entirely above £625k.
+      if (price <= 425_000) return 0;
+      return (price - 425_000) * 0.05;
+    }
+    // Standard residential band schedule
     if (price > 250_000) tax += Math.min(price - 250_000, 675_000) * 0.05;
     if (price > 925_000) tax += Math.min(price - 925_000, 575_000) * 0.10;
     if (price > 1_500_000) tax += (price - 1_500_000) * 0.12;
+
+    // Investor / second-home surcharge: +5% on entire price (Higher Rates for Additional Dwellings)
+    if (buyerType === 'investor') tax += price * 0.05;
+    // Non-resident surcharge: +2% on entire price, on top of HRAD if also an investor
+    if (buyerType === 'non_resident') tax += price * 0.02;
     return tax;
   },
 

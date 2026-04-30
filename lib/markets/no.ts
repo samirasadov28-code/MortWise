@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const no: MarketConfig = {
   code: 'NO',
@@ -17,7 +17,7 @@ const no: MarketConfig = {
   ],
 
   // Dokumentavgift (document fee) of 2.5% on freehold (selveier). Cooperative (borettslag) is exempt — pays only ~SEK 480 fixed.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.025,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.025,
 
   govtSchemes: [
     {

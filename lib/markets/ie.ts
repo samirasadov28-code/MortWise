@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ie: MarketConfig = {
   code: 'IE',
@@ -19,7 +19,7 @@ const ie: MarketConfig = {
     { maxLtv: 0.95, label: '91–95% LTV', description: 'Limited lenders, highest rates' },
   ],
 
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'investor') return price * 0.075;
     if (price <= 1_000_000) return price * 0.01;
     return 1_000_000 * 0.01 + (price - 1_000_000) * 0.02;

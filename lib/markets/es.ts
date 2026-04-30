@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const es: MarketConfig = {
   code: 'ES',
@@ -17,9 +17,14 @@ const es: MarketConfig = {
     { maxLtv: 0.80, label: '71–80% LTV', description: 'Maximum residents (90% non-resident discount limited)' },
   ],
 
-  // ITP (resale): 6–10% by region; IVA (new): 10% + AJD 0.5–1.5%.
-  // Approximation: 8% resale, 11% new build (use buyerType as proxy is weak — keep simple).
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.08,
+  // Spain treats new builds and resales completely differently:
+  //   • Secondary (existing home): ITP transfer tax, 6–10% by autonomous region (8% national average).
+  //   • New build (first sale from developer): IVA (VAT) 10% + AJD stamp duty ~1.2% national average.
+  // Investor / non-resident pays the same headline rate but typically also AJD on the mortgage deed.
+  stampDuty: (price: number, { propertyType }: StampDutyContext): number => {
+    if (propertyType === 'new_build') return price * 0.112; // 10% IVA + 1.2% AJD
+    return price * 0.08; // ITP, regional average
+  },
 
   govtSchemes: [
     {

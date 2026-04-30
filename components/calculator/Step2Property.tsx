@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { WizardState } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
+import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
 
 interface Step2Props {
@@ -119,7 +120,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           {/* LTV indicator */}
           <div className="mt-2 flex items-center justify-between">
             <span className="text-xs text-[#6b7a8a]">
-              Loan: {sym}{loanAmount.toLocaleString()} at <span className="font-semibold text-[#2a2520]">{(ltv * 100).toFixed(1)}% LTV</span>
+              Loan: {formatCurrency(loanAmount, state.market)} at <span className="font-semibold text-[#2a2520]">{(ltv * 100).toFixed(1)}% LTV</span>
             </span>
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               ltv <= 0.6 ? 'bg-green-50 text-green-700' :
@@ -160,6 +161,40 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           </label>
         </div>
 
+        {/* Property type — new build vs secondary affects stamp duty / VAT in many countries */}
+        <div>
+          <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
+            Property type
+            <Tooltip content="In Spain, France, Italy, Belgium and the Netherlands, new builds and existing (secondary) homes are taxed differently — sometimes by 5–10% of price. Pick whichever applies to your purchase." />
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => onChange({ propertyType: 'secondary' })}
+              className={`p-3 rounded-lg border-2 text-left transition-all ${
+                state.propertyType === 'secondary'
+                  ? 'border-[#4a7c96] bg-[#4a7c96]/10'
+                  : 'border-[#e8e3dc] bg-white hover:border-[#4a7c96]/50'
+              }`}
+            >
+              <p className="text-sm font-medium text-[#2a2520]">Secondary market</p>
+              <p className="text-xs text-[#6b7a8a] mt-0.5">Existing home, resale</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => onChange({ propertyType: 'new_build' })}
+              className={`p-3 rounded-lg border-2 text-left transition-all ${
+                state.propertyType === 'new_build'
+                  ? 'border-[#4a7c96] bg-[#4a7c96]/10'
+                  : 'border-[#e8e3dc] bg-white hover:border-[#4a7c96]/50'
+              }`}
+            >
+              <p className="text-sm font-medium text-[#2a2520]">New build</p>
+              <p className="text-xs text-[#6b7a8a] mt-0.5">First sale from developer</p>
+            </button>
+          </div>
+        </div>
+
         {/* Purchase date */}
         <div>
           <label className="block text-sm font-medium text-[#2a2520] mb-1.5">
@@ -179,10 +214,16 @@ export default function Step2Property({ state, onChange }: Step2Props) {
             Estimated stamp duty
           </p>
           <p className="text-lg font-bold text-[#2a2520]">
-            {sym}{market.stampDuty(state.housePrice, state.buyerType).toLocaleString()}
+            {formatCurrency(
+              market.stampDuty(state.housePrice, {
+                buyerType: state.buyerType,
+                propertyType: state.propertyType,
+              }),
+              state.market,
+            )}
           </p>
           <p className="text-xs text-[#6b7a8a] mt-0.5">
-            Based on {market.name} rates for your buyer type — not included in mortgage calculation
+            Based on {market.name} rates for {state.buyerType.replace('_', ' ')} buyers on a {state.propertyType === 'new_build' ? 'new build' : 'secondary-market'} property — paid separately
           </p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const is: MarketConfig = {
   code: 'IS',
@@ -18,7 +18,7 @@ const is: MarketConfig = {
 
   // Stimpilgjald (stamp duty): 0.8% on the deed for a private buyer.
   // Reduced to 0.4% for first-time buyers under primary-residence rules.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time') return price * 0.004;
     return price * 0.008;
   },

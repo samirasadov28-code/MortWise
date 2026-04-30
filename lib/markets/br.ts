@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const br: MarketConfig = {
   code: 'BR',
@@ -18,7 +18,7 @@ const br: MarketConfig = {
   ],
 
   // ITBI: ~2–3% by município. São Paulo 3%, Rio 3%. Plus registration ~1%.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.03,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.03,
 
   govtSchemes: [
     {

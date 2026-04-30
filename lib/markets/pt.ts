@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const pt: MarketConfig = {
   code: 'PT',
@@ -19,7 +19,7 @@ const pt: MarketConfig = {
 
   // IMT (transfer tax) — progressive scale, FTB primary-residence under €316k pays 0%.
   // Approximation: 0% if FTB primary <€316k, else ~6%.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time' && price <= 316_772) return 0;
     return price * 0.06;
   },

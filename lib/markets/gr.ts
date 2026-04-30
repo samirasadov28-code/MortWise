@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const gr: MarketConfig = {
   code: 'GR',
@@ -18,7 +18,7 @@ const gr: MarketConfig = {
 
   // Property transfer tax: 3.09% on resale; new builds since 2006 attract 24% VAT
   // (currently suspended for new construction permits 2020–2025). FTB resale exemption up to €200k.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time' && price <= 200_000) return 0;
     return price * 0.0309;
   },

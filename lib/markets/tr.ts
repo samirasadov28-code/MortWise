@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const tr: MarketConfig = {
   code: 'TR',
@@ -19,7 +19,7 @@ const tr: MarketConfig = {
 
   // Tapu harcı (title deed fee): 4% combined, conventionally split 2% buyer / 2% seller
   // — but commonly buyer pays both halves in practice.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.04,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.04,
 
   govtSchemes: [
     {

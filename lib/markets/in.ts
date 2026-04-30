@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const inMarket: MarketConfig = {
   code: 'IN',
@@ -19,7 +19,7 @@ const inMarket: MarketConfig = {
 
   // Stamp duty + registration varies by state: 5–8% combined typical.
   // Some states give 1–2% concession to women buyers.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.07,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.07,
 
   govtSchemes: [
     {

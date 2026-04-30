@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ar: MarketConfig = {
   code: 'AR',
@@ -18,7 +18,7 @@ const ar: MarketConfig = {
 
   // Provincial impuesto de sellos varies 1–4% (commonly split buyer/seller).
   // Plus escribano (notary) fees ~1.5%, registration ~0.5%.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.025,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.025,
 
   govtSchemes: [
     {

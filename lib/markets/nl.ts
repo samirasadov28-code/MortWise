@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const nl: MarketConfig = {
   code: 'NL',
@@ -18,8 +18,13 @@ const nl: MarketConfig = {
     { maxLtv: 1.00, label: '91–100% LTV', description: 'Maximum (NHG eligible)' },
   ],
 
-  // Overdrachtsbelasting: 0% under 35 (FTB ≤ €525k), 2% standard, 10.4% investor.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  // Overdrachtsbelasting (transfer tax) only applies to existing properties.
+  // New builds are sold with 21% VAT included in the price, no separate transfer tax.
+  //   • FTB <35yo, primary residence, ≤ €525k:   0% (existing) / 0% (new build, no OVB)
+  //   • Owner-occupier (mover):                   2% (existing) / 0% (new build)
+  //   • Investor / second home / non-resident:   10.4% (existing) / 0% (new build, just VAT in price)
+  stampDuty: (price: number, { buyerType, propertyType }: StampDutyContext): number => {
+    if (propertyType === 'new_build') return 0;
     if (buyerType === 'first_time' && price <= 525_000) return 0;
     if (buyerType === 'investor' || buyerType === 'non_resident') return price * 0.104;
     return price * 0.02;

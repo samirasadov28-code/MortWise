@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const cl: MarketConfig = {
   code: 'CL',
@@ -19,7 +19,7 @@ const cl: MarketConfig = {
 
   // Impuesto de timbres y estampillas (stamp duty on mortgage): ~0.8%.
   // Plus notary, conservador de bienes raíces ~1%.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.008,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.008,
 
   govtSchemes: [
     {

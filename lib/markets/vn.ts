@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const vn: MarketConfig = {
   code: 'VN',
@@ -18,7 +18,7 @@ const vn: MarketConfig = {
 
   // Registration fee 0.5%, plus 2% income tax on seller (often baked into price).
   // VAT 10% on new builds. Approximation 0.5% buyer-side + ~2% notary/stamp.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.025,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.025,
 
   govtSchemes: [
     {

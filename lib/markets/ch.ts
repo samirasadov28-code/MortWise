@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ch: MarketConfig = {
   code: 'CH',
@@ -18,7 +18,7 @@ const ch: MarketConfig = {
 
   // Notary, land registry & cantonal property transfer tax vary 0.5–3.3% by canton.
   // Approximation: 2.5%.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.025,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.025,
 
   govtSchemes: [
     {

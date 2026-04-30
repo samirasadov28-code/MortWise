@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const be: MarketConfig = {
   code: 'BE',
@@ -17,10 +17,19 @@ const be: MarketConfig = {
     { maxLtv: 1.00, label: '91–100% LTV', description: 'Rare; case-by-case (FTB young buyers)' },
   ],
 
-  // Registration duty (droit d'enregistrement / registratierechten) varies by region:
-  // Flanders 3% (sole own home), Wallonia 12.5%, Brussels 12.5% (with €175k abatement for FTB).
-  // Approximation: 6% FTB, 12% non-FTB (national average across regions).
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  // Belgian registration duty (droit d'enregistrement / registratierechten) only applies
+  // to existing properties. New builds (first sale from developer) are sold with 21% VAT
+  // included in the price, no registration duty on the building — only ~12.5% on the land share.
+  // Regional headline rates on existing homes:
+  //   Flanders 3% (sole-own-home FTB) → 12% otherwise
+  //   Wallonia 3% (modeste FTB) → 12.5% otherwise
+  //   Brussels: €200k abatement for FTB → 12.5% beyond
+  // Approximation against purchase price below.
+  stampDuty: (price: number, { buyerType, propertyType }: StampDutyContext): number => {
+    if (propertyType === 'new_build') {
+      // VAT (21%) is in the headline price; only land share (typically ~25%) attracts ~12% duty.
+      return price * 0.25 * 0.12;
+    }
     if (buyerType === 'first_time') return price * 0.06;
     return price * 0.12;
   },

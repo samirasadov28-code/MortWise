@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const nz: MarketConfig = {
   code: 'NZ',
@@ -18,7 +18,7 @@ const nz: MarketConfig = {
   ],
 
   // No stamp duty in New Zealand — a notable feature of the market.
-  stampDuty: (_price: number, _buyerType: BuyerType): number => 0,
+  stampDuty: (_price: number, _ctx: StampDutyContext): number => 0,
 
   govtSchemes: [
     {

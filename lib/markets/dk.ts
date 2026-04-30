@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const dk: MarketConfig = {
   code: 'DK',
@@ -18,7 +18,7 @@ const dk: MarketConfig = {
 
   // Tinglysningsafgift (registration duty): 0.6% of price + DKK 1,825 fixed (2024).
   // Approximation: 0.7%.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.006 + 1_825,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.006 + 1_825,
 
   govtSchemes: [
     {

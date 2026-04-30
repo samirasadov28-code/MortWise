@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const qa: MarketConfig = {
   code: 'QA',
@@ -17,7 +17,7 @@ const qa: MarketConfig = {
   ],
 
   // Property registration fee 0.25–0.50%. No traditional stamp duty or VAT.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.0035,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.0035,
 
   govtSchemes: [
     {

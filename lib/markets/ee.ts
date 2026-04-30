@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ee: MarketConfig = {
   code: 'EE',
@@ -18,7 +18,7 @@ const ee: MarketConfig = {
   ],
 
   // Notary 0.4% + state fee 0.04% on land registry. No transfer tax.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.005,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.005,
 
   govtSchemes: [
     {

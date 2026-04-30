@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const sa: MarketConfig = {
   code: 'SA',
@@ -19,7 +19,7 @@ const sa: MarketConfig = {
 
   // No traditional stamp duty. New builds attract 5% Real Estate Transaction Tax (RETT)
   // — government often subsidises this for first home Saudi citizens.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time') return 0;
     return price * 0.05;
   },

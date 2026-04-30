@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const at: MarketConfig = {
   code: 'AT',
@@ -19,7 +19,7 @@ const at: MarketConfig = {
 
   // Grunderwerbsteuer 3.5% + Eintragungsgebühr 1.1% + notary ~2%.
   // Approximation: 4.5% government fees combined.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.046,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.046,
 
   govtSchemes: [
     {

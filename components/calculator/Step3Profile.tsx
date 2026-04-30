@@ -2,6 +2,7 @@
 
 import type { WizardState, BuyerType } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
+import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
 
 interface Step3Props {
@@ -99,18 +100,18 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
           }`}>
             <p className="text-sm">
               <span className="font-medium text-[#2a2520]">
-                {market.name} lending limit: {sym}{maxBorrow.toLocaleString()}
+                {market.name} lending limit: {formatCurrency(maxBorrow, state.market)}
               </span>
               <span className="text-[#6b7a8a] ml-1">
-                ({market.maxIncomeMultiple}× income of {sym}{totalIncome.toLocaleString()})
+                ({market.maxIncomeMultiple}× income of {formatCurrency(totalIncome, state.market)})
               </span>
             </p>
             <p className={`text-xs mt-0.5 ${
               (state.housePrice - state.deposit) <= maxBorrow ? 'text-green-700' : 'text-red-600'
             }`}>
               {(state.housePrice - state.deposit) <= maxBorrow
-                ? `Your required loan (${sym}${(state.housePrice - state.deposit).toLocaleString()}) is within limits.`
-                : `Your required loan (${sym}${(state.housePrice - state.deposit).toLocaleString()}) exceeds the typical lending cap.`}
+                ? `Your required loan (${formatCurrency(state.housePrice - state.deposit, state.market)}) is within limits.`
+                : `Your required loan (${formatCurrency(state.housePrice - state.deposit, state.market)}) exceeds the typical lending cap.`}
             </p>
           </div>
         )}
@@ -182,7 +183,7 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                       </div>
                       <div className="text-right flex-shrink-0 flex flex-col items-end gap-2">
                         <p className="text-sm font-bold text-[#4a7c96]">
-                          up to {sym}{maxAmt.toLocaleString()}
+                          up to {formatCurrency(maxAmt, state.market)}
                         </p>
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                           isSelected ? 'border-[#4a7c96] bg-[#4a7c96]' : 'border-[#e8e3dc]'

@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const se: MarketConfig = {
   code: 'SE',
@@ -19,7 +19,7 @@ const se: MarketConfig = {
 
   // Stämpelskatt (stamp duty): 1.5% individuals on freehold; cooperative apartments (bostadsrätt) have no stämpelskatt.
   // Plus pantbrev (mortgage deed) 2% on the mortgage amount.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.015,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.015,
 
   govtSchemes: [
     {

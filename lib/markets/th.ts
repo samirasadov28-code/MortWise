@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const th: MarketConfig = {
   code: 'TH',
@@ -19,7 +19,7 @@ const th: MarketConfig = {
 
   // Transfer fee 2% (sometimes negotiated 50/50 buyer/seller), specific business tax 3.3% if held <5y,
   // stamp duty 0.5% (not applicable if SBT applies). Effective: ~3% buyer side typical.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.025,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.025,
 
   govtSchemes: [
     {

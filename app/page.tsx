@@ -34,6 +34,8 @@ const PAID_FEATURES = [
   'Exit equity analysis at any year',
   'AI-generated market rate cards',
   'Cross-market comparison — find the cheapest overseas investment',
+  'Buy-to-let analysis: cash flow, yield, cash-on-cash return',
+  'New-build vs secondary-market tax differentiation',
   'PDF export of full analysis',
 ];
 

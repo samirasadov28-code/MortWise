@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const cy: MarketConfig = {
   code: 'CY',
@@ -19,7 +19,7 @@ const cy: MarketConfig = {
 
   // Property transfer fees: progressive 3/5/8% (50% reduction since 2014 — now 1.5/2.5/4%).
   // VAT exemption for new builds first 130 m² primary residence (5% reduced rate).
-  stampDuty: (price: number, _buyerType: BuyerType): number => {
+  stampDuty: (price: number, _ctx: StampDutyContext): number => {
     if (price <= 85_000) return price * 0.015;
     if (price <= 170_000) return 1_275 + (price - 85_000) * 0.025;
     return 3_400 + (price - 170_000) * 0.04;

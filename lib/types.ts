@@ -1,6 +1,17 @@
 export type RepaymentType = 'annuity' | 'fixed_principal';
 export type RateStructure = 'fixed' | 'variable' | 'split' | 'tracker';
 export type BuyerType = 'first_time' | 'mover' | 'investor' | 'non_resident';
+export type PropertyType = 'new_build' | 'secondary';
+
+/**
+ * All inputs that can affect transaction taxes (stamp duty, ITP, IMT, SDLT…)
+ * across markets. Markets that don't differentiate on a given dimension
+ * simply ignore it.
+ */
+export interface StampDutyContext {
+  buyerType: BuyerType;
+  propertyType: PropertyType;
+}
 export type MarketCode =
   // Original detailed configs
   | 'IE' | 'UK' | 'UAE'
@@ -135,7 +146,7 @@ export interface MarketConfig {
     label: string;
     description: string;
   }>;
-  stampDuty: (purchasePrice: number, buyerType: BuyerType) => number;
+  stampDuty: (purchasePrice: number, ctx: StampDutyContext) => number;
   govtSchemes: Array<{
     name: string;
     description: string;
@@ -163,6 +174,7 @@ export interface WizardState {
   govtSchemeEnabled: boolean;
   govtSupportAmount: number;
   selectedGovtSchemeName: string | null;
+  propertyType: PropertyType;
   rateStructure: RateStructure;
   splitFixedProportion: number;
   mortgageTerm: number;

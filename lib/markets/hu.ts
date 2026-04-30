@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const hu: MarketConfig = {
   code: 'HU',
@@ -18,7 +18,7 @@ const hu: MarketConfig = {
 
   // Vagyonszerzési illeték (acquisition duty): 4% standard, capped at HUF 200M.
   // First-home buyers under 35 with primary-residence intent: 0% up to HUF 80M property.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time' && price <= 80_000_000) return 0;
     return Math.min(price * 0.04, 200_000_000);
   },

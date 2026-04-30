@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ca: MarketConfig = {
   code: 'CA',
@@ -21,7 +21,7 @@ const ca: MarketConfig = {
   // Provincial Land Transfer Tax varies. Ontario marginal: 0.5/1/1.5/2/2.5%.
   // Toronto/MTL add municipal LTT (~doubles cost). FTB rebates up to ~C$4k.
   // Approximation: 1.5% standard, 0.75% effective for FTB after rebate.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     const base = price * 0.015;
     if (buyerType === 'first_time') return Math.max(base - 4_000, 0);
     return base;

@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const de: MarketConfig = {
   code: 'DE',
@@ -21,7 +21,7 @@ const de: MarketConfig = {
   // Grunderwerbsteuer (real estate transfer tax) varies 3.5–6.5% by Bundesland.
   // Plus notary (~1.5%) and Grundbuch (~0.5%). Typical total fees ~10-12%.
   // Using 5% as approximation for the transfer tax alone.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.05,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.05,
 
   govtSchemes: [
     {

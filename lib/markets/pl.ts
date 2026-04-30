@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const pl: MarketConfig = {
   code: 'PL',
@@ -19,7 +19,7 @@ const pl: MarketConfig = {
 
   // PCC (tax on civil law transactions) 2% on resale; new-build VAT (8% / 23%) is in price.
   // FTB exemption from PCC for first home (announced 2023).
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time') return 0;
     return price * 0.02;
   },

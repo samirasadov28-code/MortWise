@@ -34,7 +34,10 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
   const principalPct = totalCost > 0 ? clamp01(best.loanAmount / totalCost) : 0;
   const interestPct = clamp01(1 - principalPct);
 
-  const stampDuty = market.stampDuty(state.housePrice, state.buyerType);
+  const stampDuty = market.stampDuty(state.housePrice, {
+    buyerType: state.buyerType,
+    propertyType: state.propertyType,
+  });
   const eligibleSchemes = market.govtSchemes.filter(() => state.buyerType === 'first_time');
 
   // Affordability check
@@ -104,7 +107,7 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
               {withinLimit ? '✓ Within typical limits' : '⚠ Exceeds typical limit'}
             </span>
             <span className="text-[#6b7a8a] ml-2">
-              ({market.maxIncomeMultiple}× income of {sym}{totalIncome.toLocaleString()} = {sym}{maxBorrow.toLocaleString()})
+              ({market.maxIncomeMultiple}× income of {formatCurrency(totalIncome, state.market)} = {formatCurrency(maxBorrow, state.market)})
             </span>
           </p>
           <p className="text-xs text-[#6b7a8a] mt-1">
@@ -147,7 +150,7 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
         </h3>
         <p className="text-2xl font-bold text-[#2a2520]">{formatCurrency(stampDuty, state.market)}</p>
         <p className="text-xs text-[#6b7a8a] mt-1">
-          Based on {sym}{state.housePrice.toLocaleString()} property — paid separately, not in mortgage
+          Based on {formatCurrency(state.housePrice, state.market)} property — paid separately, not in mortgage
         </p>
       </div>
 
@@ -170,7 +173,7 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
                     </div>
                   </div>
                   <span className="text-sm font-bold text-green-700 flex-shrink-0">
-                    up to {sym}{maxAmt.toLocaleString()}
+                    up to {formatCurrency(maxAmt, state.market)}
                   </span>
                 </div>
               );

@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const za: MarketConfig = {
   code: 'ZA',
@@ -18,7 +18,7 @@ const za: MarketConfig = {
 
   // Transfer duty progressive: 0% under R 1.1M, then 3/6/8/11/13% tiers.
   // FTB: same scale (no extra exemption since 2017 reform).
-  stampDuty: (price: number, _buyerType: BuyerType): number => {
+  stampDuty: (price: number, _ctx: StampDutyContext): number => {
     if (price <= 1_100_000) return 0;
     if (price <= 1_512_500) return (price - 1_100_000) * 0.03;
     if (price <= 2_117_500) return 12_375 + (price - 1_512_500) * 0.06;

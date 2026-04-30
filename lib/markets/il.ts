@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const il: MarketConfig = {
   code: 'IL',
@@ -19,7 +19,7 @@ const il: MarketConfig = {
 
   // Mas rechishá (purchase tax): 0% on FTB up to ~₪1.97M, then progressive (3.5–10%);
   // Investors / second homes pay 8% from first shekel.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'investor' || buyerType === 'non_resident' || buyerType === 'mover') {
       return price * 0.08;
     }

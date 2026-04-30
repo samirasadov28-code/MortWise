@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const mx: MarketConfig = {
   code: 'MX',
@@ -19,7 +19,7 @@ const mx: MarketConfig = {
 
   // ISAI (Impuesto Sobre Adquisición de Inmuebles) varies 2–5% by state.
   // Plus notary, registry, appraisal — total ~6–8% closing costs.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.04,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.04,
 
   govtSchemes: [
     {

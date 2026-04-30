@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const cn: MarketConfig = {
   code: 'CN',
@@ -19,7 +19,7 @@ const cn: MarketConfig = {
 
   // Deed tax: 1% (≤90 m²), 1.5% (90-144 m²), 3% (>144 m²) for first home; 3% second home.
   // Approximation as 1.5% for typical first home purchase.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time') return price * 0.015;
     return price * 0.03;
   },

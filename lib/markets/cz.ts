@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const cz: MarketConfig = {
   code: 'CZ',
@@ -17,7 +17,7 @@ const cz: MarketConfig = {
   ],
 
   // Property transfer tax (daň z nabytí) abolished in 2020.
-  stampDuty: (_price: number, _buyerType: BuyerType): number => 0,
+  stampDuty: (_price: number, _ctx: StampDutyContext): number => 0,
 
   govtSchemes: [
     {

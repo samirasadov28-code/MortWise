@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const id: MarketConfig = {
   code: 'ID',
@@ -19,7 +19,7 @@ const id: MarketConfig = {
 
   // BPHTB (acquisition duty): 5% above NJOP threshold (varies by region, ~Rp 60M-100M).
   // Plus PPN 11% on new-build above luxury threshold.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     const threshold = 80_000_000; // ~Rp 80M typical NJOP exemption
     if (buyerType === 'first_time' && price <= 2_000_000_000) return 0;
     return Math.max(price - threshold, 0) * 0.05;

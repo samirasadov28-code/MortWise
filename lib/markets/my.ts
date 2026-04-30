@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const my: MarketConfig = {
   code: 'MY',
@@ -19,7 +19,7 @@ const my: MarketConfig = {
 
   // Stamp duty (Memorandum of Transfer): tiered 1/2/3/4%.
   // FTB: full waiver up to RM 500k under MOTP 2023 stimulus.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time' && price <= 500_000) return 0;
     if (price <= 100_000) return price * 0.01;
     if (price <= 500_000) return 1_000 + (price - 100_000) * 0.02;

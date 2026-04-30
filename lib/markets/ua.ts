@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ua: MarketConfig = {
   code: 'UA',
@@ -18,7 +18,7 @@ const ua: MarketConfig = {
   ],
 
   // 1% pension fund levy + 1% state duty paid by buyer; notary/registration fees are extra.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.02,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.02,
 
   govtSchemes: [
     {

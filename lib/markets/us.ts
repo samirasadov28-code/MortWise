@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const us: MarketConfig = {
   code: 'US',
@@ -19,7 +19,7 @@ const us: MarketConfig = {
 
   // Recording / transfer taxes vary by state; ~0.5% national average.
   // First-time buyers can sometimes claim partial exemptions in some states.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.005,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.005,
 
   govtSchemes: [
     {

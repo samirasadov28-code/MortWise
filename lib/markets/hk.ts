@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const hk: MarketConfig = {
   code: 'HK',
@@ -19,7 +19,7 @@ const hk: MarketConfig = {
 
   // Ad Valorem Stamp Duty — Scale 2 (FTB / sole resident): tiered 1.5–4.25%.
   // Buyer's Stamp Duty (BSD) for foreigners abolished Feb 2024.
-  stampDuty: (price: number, _buyerType: BuyerType): number => {
+  stampDuty: (price: number, _ctx: StampDutyContext): number => {
     if (price <= 3_000_000) return 100;
     if (price <= 4_000_000) return price * 0.015;
     if (price <= 6_000_000) return price * 0.0225;

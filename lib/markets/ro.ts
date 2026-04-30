@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const ro: MarketConfig = {
   code: 'RO',
@@ -19,7 +19,7 @@ const ro: MarketConfig = {
 
   // Notarial fees ~1–2% (paid by buyer) + ANCPI registration ~0.15%.
   // No transfer tax as such; capital gains tax is on the seller.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.015,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.015,
 
   govtSchemes: [
     {

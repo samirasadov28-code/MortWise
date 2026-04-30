@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const sg: MarketConfig = {
   code: 'SG',
@@ -19,7 +19,7 @@ const sg: MarketConfig = {
 
   // Buyer's Stamp Duty (BSD): tiered 1% / 2% / 3% / 4% / 5% / 6%.
   // ABSD: 20% Singaporean 2nd home, 60% foreigners. Approximation: ~3% citizen FTB.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     let bsd = 0;
     let remaining = price;
     const tiers: Array<[number, number]> = [

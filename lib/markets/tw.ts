@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const tw: MarketConfig = {
   code: 'TW',
@@ -19,7 +19,7 @@ const tw: MarketConfig = {
 
   // Deed tax 6% on government-assessed value (公告現值, ~70% of market) ≈ 4.2% of price.
   // Plus stamp duty 0.1% and registration 0.1%.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.044,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.044,
 
   govtSchemes: [
     {

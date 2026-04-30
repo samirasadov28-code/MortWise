@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const au: MarketConfig = {
   code: 'AU',
@@ -20,7 +20,7 @@ const au: MarketConfig = {
 
   // Stamp duty varies sharply by state. NSW/VIC FTB exemptions to ~A$650k–800k,
   // standard scale ~3–5.5%. Approximation: 4% for non-FTB, 1.5% for FTB.
-  stampDuty: (price: number, buyerType: BuyerType): number => {
+  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
     if (buyerType === 'first_time' && price <= 800_000) return price * 0.015;
     return price * 0.04;
   },

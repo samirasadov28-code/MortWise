@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const jp: MarketConfig = {
   code: 'JP',
@@ -18,7 +18,7 @@ const jp: MarketConfig = {
   ],
 
   // Acquisition tax (~3% land/residence) + registration license tax (~2%) ≈ 4-5% combined.
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.04,
+  stampDuty: (price: number, _ctx: StampDutyContext): number => price * 0.04,
 
   govtSchemes: [
     {

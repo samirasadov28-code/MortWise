@@ -12,6 +12,7 @@ import OverpaymentPanel from '@/components/results/OverpaymentPanel';
 import CashbackPanel from '@/components/results/CashbackPanel';
 import HolidayPanel from '@/components/results/HolidayPanel';
 import MarketsComparison from '@/components/results/MarketsComparison';
+import BuyToLetPanel from '@/components/results/BuyToLetPanel';
 
 interface FullResultsProps {
   results: ScenarioResult[];
@@ -121,6 +122,14 @@ export default function FullResults({ results, state }: FullResultsProps) {
             <HolidayPanel primaryInput={state.scenarios[0]} market={state.market} />
           </section>
         )}
+
+        {/* Buy-to-let analysis */}
+        <section>
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
+            Buy-to-let · rental cash flow
+          </h3>
+          <BuyToLetPanel state={state} results={ranked} />
+        </section>
 
         {/* Cross-market comparison — overseas investment */}
         <section>

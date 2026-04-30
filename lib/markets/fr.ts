@@ -1,4 +1,4 @@
-import type { MarketConfig, BuyerType } from '../types';
+import type { MarketConfig, StampDutyContext } from '../types';
 
 const fr: MarketConfig = {
   code: 'FR',
@@ -17,9 +17,14 @@ const fr: MarketConfig = {
     { maxLtv: 0.90, label: '81–90% LTV', description: 'High LTV' },
   ],
 
-  // Frais de notaire (notary fees) include droits d'enregistrement.
-  // ~7-8% on existing properties, ~2-3% on new builds (VEFA).
-  stampDuty: (price: number, _buyerType: BuyerType): number => price * 0.075,
+  // "Frais de notaire" bundle in France includes droits d'enregistrement:
+  //   • Existing property (ancien): ~7–8% all-in, dominated by 5.8% transfer tax
+  //   • New build sold off-plan/VEFA (first sale): ~2–3% — TVA 20% is already in the price,
+  //     buyer only pays reduced notary fees + 0.715% stamp duty
+  stampDuty: (price: number, { propertyType }: StampDutyContext): number => {
+    if (propertyType === 'new_build') return price * 0.025;
+    return price * 0.075;
+  },
 
   govtSchemes: [
     {
