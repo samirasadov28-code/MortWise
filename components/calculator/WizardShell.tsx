@@ -1,6 +1,7 @@
 'use client';
 
 import type { WizardState } from '@/lib/types';
+import { FeedbackInline, useSuppressFloatingFeedback } from '@/components/shared/FeedbackButton';
 
 interface WizardShellProps {
   state: WizardState;
@@ -29,6 +30,10 @@ export default function WizardShell({
 }: WizardShellProps) {
   const step = state.step;
   const isLast = step === 5;
+
+  // Hide the global floating Feedback button while the wizard's sticky
+  // Back/Next bar is on screen — we render an in-flow Feedback below instead.
+  useSuppressFloatingFeedback();
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -103,6 +108,11 @@ export default function WizardShell({
             {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
           </button>
         </div>
+      </div>
+
+      {/* In-flow Feedback button — replaces the floating one while wizard is up */}
+      <div className="flex justify-center mt-6">
+        <FeedbackInline />
       </div>
     </div>
   );
