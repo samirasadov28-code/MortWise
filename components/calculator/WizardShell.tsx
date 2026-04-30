@@ -76,27 +76,33 @@ export default function WizardShell({
         {children}
       </div>
 
-      {/* Navigation — in normal flow so it never overlays the disclaimer */}
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <button
-          type="button"
-          onClick={onBack}
-          disabled={step === 1}
-          className="px-5 py-3 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm bg-white"
-        >
-          ← Back
-        </button>
-        <div className="text-xs text-[#6b7a8a] hidden sm:block">
-          Step {step} of {STEPS.length}
+      {/* Navigation — sticky at bottom of viewport during scroll, settles in flow above the
+          disclaimer when the user reaches the end of the page so it never overlaps it */}
+      <div
+        className="sticky bottom-0 z-30 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 border-t border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm"
+        style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={step === 1}
+            className="px-5 py-3 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm bg-white"
+          >
+            ← Back
+          </button>
+          <div className="text-xs text-[#6b7a8a] hidden sm:block">
+            Step {step} of {STEPS.length}
+          </div>
+          <button
+            type="button"
+            onClick={onNext}
+            disabled={!canNext}
+            className="px-6 sm:px-8 py-3 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm shadow-md flex-1 sm:flex-initial"
+          >
+            {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={!canNext}
-          className="px-6 sm:px-8 py-3 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm shadow-md flex-1 sm:flex-initial"
-        >
-          {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
-        </button>
       </div>
     </div>
   );
