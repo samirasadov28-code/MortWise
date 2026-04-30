@@ -5,6 +5,7 @@ import type { WizardState } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
+import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 
 interface Step2Props {
   state: WizardState;
@@ -52,13 +53,12 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
-            <input
-              type="number"
-              value={state.housePrice || ''}
-              onChange={(e) => handlePriceChange(Number(e.target.value))}
-              className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
-              placeholder="400,000"
+            <FormattedNumberInput
+              value={state.housePrice}
+              onValueChange={handlePriceChange}
               min={0}
+              placeholder="400,000"
+              className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
             />
           </div>
         </div>
@@ -91,14 +91,13 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           {depositMode === 'amount' ? (
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
-              <input
-                type="number"
-                value={state.deposit || ''}
-                onChange={(e) => handleDepositAmount(Number(e.target.value))}
-                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
-                placeholder="80,000"
+              <FormattedNumberInput
+                value={state.deposit}
+                onValueChange={handleDepositAmount}
                 min={0}
                 max={state.housePrice}
+                placeholder="80,000"
+                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
               />
             </div>
           ) : (
@@ -141,13 +140,12 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
-            <input
-              type="number"
-              value={state.otherFees || ''}
-              onChange={(e) => onChange({ otherFees: Number(e.target.value) })}
-              className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
-              placeholder="5,000"
+            <FormattedNumberInput
+              value={state.otherFees}
+              onValueChange={(v) => onChange({ otherFees: v })}
               min={0}
+              placeholder="5,000"
+              className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
             />
           </div>
           <label className="flex items-center gap-2 mt-2 cursor-pointer">

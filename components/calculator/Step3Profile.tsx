@@ -4,6 +4,7 @@ import type { WizardState, BuyerType } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
+import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 
 interface Step3Props {
   state: WizardState;
@@ -62,13 +63,12 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
-              <input
-                type="number"
-                value={state.annualIncome || ''}
-                onChange={(e) => onChange({ annualIncome: Number(e.target.value) })}
-                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
-                placeholder="70,000"
+              <FormattedNumberInput
+                value={state.annualIncome}
+                onValueChange={(v) => onChange({ annualIncome: v })}
                 min={0}
+                placeholder="70,000"
+                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
               />
             </div>
           </div>
@@ -79,13 +79,12 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
-              <input
-                type="number"
-                value={state.coBorrowerIncome || ''}
-                onChange={(e) => onChange({ coBorrowerIncome: Number(e.target.value) })}
-                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
-                placeholder="0"
+              <FormattedNumberInput
+                value={state.coBorrowerIncome}
+                onValueChange={(v) => onChange({ coBorrowerIncome: v })}
                 min={0}
+                placeholder="0"
+                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
               />
             </div>
           </div>
@@ -204,13 +203,12 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
-                  <input
-                    type="number"
-                    value={state.govtSupportAmount || ''}
-                    onChange={(e) => onChange({ govtSupportAmount: Number(e.target.value) })}
-                    className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
-                    placeholder="30,000"
+                  <FormattedNumberInput
+                    value={state.govtSupportAmount}
+                    onValueChange={(v) => onChange({ govtSupportAmount: v })}
                     min={0}
+                    placeholder="30,000"
+                    className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
                   />
                 </div>
               </div>
