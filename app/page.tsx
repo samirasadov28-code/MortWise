@@ -158,7 +158,7 @@ export default function LandingPage() {
           <ValueProp
             Icon={HouseGlobeIcon}
             title="Local property rules"
-            description="Accurate stamp duty, first-time buyer schemes (Help to Buy, First Home Scheme, FHSA, KfW…), and lender limits for 18 housing markets."
+            description={`Accurate stamp duty, first-time buyer schemes (Help to Buy, First Home Scheme, FHSA, KfW…), and lender limits for ${MARKETS_LIST.length} housing markets.`}
           />
         </div>
       </section>
