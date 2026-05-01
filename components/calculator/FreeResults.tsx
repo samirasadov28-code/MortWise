@@ -84,7 +84,7 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
           tooltip="The total interest you'll pay over the entire life of the loan, assuming no overpayments."
         />
         <StatCard
-          label="Total cost of loan"
+          label="Total loan payments"
           value={formatCurrency(totalCost, state.market)}
           tooltip="Loan amount + total interest. The full amount you'll repay over the term."
         />

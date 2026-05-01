@@ -175,6 +175,14 @@ export interface WizardState {
   govtSupportAmount: number;
   selectedGovtSchemeName: string | null;
   propertyType: PropertyType;
+  /**
+   * Optional: market whose currency the mortgage is denominated in. When set
+   * and different from `market`, this is treated as a foreign-currency
+   * mortgage — the property is valued in the host market's currency and the
+   * loan is converted to/from the borrowing currency at the FX table.
+   * Only used by the pro analysis.
+   */
+  loanCurrencyMarket?: MarketCode;
   rateStructure: RateStructure;
   splitFixedProportion: number;
   mortgageTerm: number;

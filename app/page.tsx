@@ -33,11 +33,12 @@ const PAID_FEATURES = [
   'IRR and money multiple (investor view)',
   'Exit equity analysis at any year',
   'AI-generated market rate cards',
-  'Full sensitivity analysis (rate, term, deposit, cashback, holiday)',
-  'Cross-market comparison with selectable comparison currency',
-  'Buy-to-let analysis: cash flow, yield, cash-on-cash return',
+  'Interactive sensitivity sliders (rate, forward rate, term, deposit, cashback, holiday — combined live)',
+  'Cross-market comparison: fixed cash invested, market-average rate, selectable comparison currency',
+  'Buy-to-let analysis: IRR, cash yield, payback period and country-specific risk notes',
+  'Foreign-currency mortgage analysis with FX-stress scenarios',
   'New-build vs secondary-market tax differentiation',
-  'PDF export of full analysis',
+  'Full-sheet PDF export with sticky always-accessible button',
 ];
 
 const MARKETS_LIST: MarketsCarouselItem[] = [

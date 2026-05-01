@@ -209,6 +209,19 @@ export function runAmortisation(input: ScenarioInput, startDate: Date = new Date
     if (m === 0) firstPayment = totalPayment;
   }
 
+  // Final-payment guard — if rounding (or a high-rate scenario where the
+  // recomputed annuity left a residue) leaves a tiny balance, fold it into
+  // the last payment so the principal is always fully repaid by maturity.
+  if (balance > 0.01 && periods.length > 0) {
+    const last = periods[periods.length - 1];
+    last.principalRepayment += balance;
+    last.totalPayment += balance;
+    last.closingBalance = 0;
+    cumulativePrincipal += balance;
+    last.cumulativePrincipal = cumulativePrincipal;
+    balance = 0;
+  }
+
   const totalInterestPaid = periods.reduce((s, p) => s + p.interest, 0);
   const totalAmountPaid = periods.reduce((s, p) => s + p.totalPayment, 0);
   const avgPayment = periods.length > 0 ? totalAmountPaid / periods.filter(p => p.totalPayment > 0).length : 0;

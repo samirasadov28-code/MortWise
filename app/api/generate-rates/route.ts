@@ -96,27 +96,51 @@ Return a JSON object with this exact structure:
 Include: one 3-5yr fixed, one long fixed (7-10yr), one tracker/variable, one with cashback.
 Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
 
-    const response = await fetch('https://api.x.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'grok-3',
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: prompt },
-        ],
-        max_tokens: 1024,
-        temperature: 0.3,
-      }),
-    });
+    // Try a list of currently-available xAI models in order — if one is gone
+    // (404 model_not_found) fall through to the next. Override via GROK_MODEL.
+    const modelCandidates = (process.env.GROK_MODEL ?? 'grok-2-latest,grok-3,grok-beta').split(',');
+    let response: Response | null = null;
+    let lastErrorBody = '';
+    let lastStatus = 0;
+    for (const raw of modelCandidates) {
+      const model = raw.trim();
+      response = await fetch('https://api.x.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: prompt },
+          ],
+          max_tokens: 1024,
+          temperature: 0.3,
+        }),
+      });
+      if (response.ok) break;
+      lastStatus = response.status;
+      lastErrorBody = await response.text();
+      // Only fall through on 404 — auth, quota, validation errors won't get
+      // fixed by trying a different model.
+      if (response.status !== 404) break;
+    }
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error('Grok API error:', err);
-      return NextResponse.json({ error: 'Grok API request failed' }, { status: 500 });
+    if (!response || !response.ok) {
+      console.error('Grok API error:', lastStatus, lastErrorBody);
+      // Pull the underlying message out so the user sees a useful reason.
+      let detail = lastErrorBody.slice(0, 200);
+      try {
+        const parsedErr = JSON.parse(lastErrorBody) as { error?: { message?: string } | string };
+        if (typeof parsedErr.error === 'string') detail = parsedErr.error;
+        else if (parsedErr.error?.message) detail = parsedErr.error.message;
+      } catch { /* not JSON */ }
+      return NextResponse.json(
+        { error: `Grok API request failed${detail ? `: ${detail}` : ''}` },
+        { status: 502 },
+      );
     }
 
     const grokData = await response.json();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { useRef } from 'react';
 import Flag from './Flag';
 import type { MarketCode } from '@/lib/types';
 
@@ -15,68 +15,12 @@ interface Props {
 }
 
 /**
- * Infinite/looping horizontal markets carousel.
- *
- * The list is rendered three times back-to-back. The user starts in the middle
- * copy. When they scroll into the first or third copy we silently jump back to
- * the equivalent position in the middle copy, so scrolling never hits a wall.
+ * Simple horizontal markets carousel — render the list once and let users
+ * pan via the arrow buttons or native scroll. No auto-loop, no jump-back
+ * trickery; that was producing the "vibrating" effect on desktop trackpads.
  */
 export default function MarketsCarousel({ markets }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const loopWidthRef = useRef<number>(0);
-  const isJumpingRef = useRef(false);
-
-  // Measure one full copy of the list and centre the viewport on the middle copy.
-  const recalibrate = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    // Total scroll width covers 3 copies; one copy is 1/3 of that.
-    const oneLoop = el.scrollWidth / 3;
-    loopWidthRef.current = oneLoop;
-    isJumpingRef.current = true;
-    el.scrollLeft = oneLoop;
-    requestAnimationFrame(() => {
-      isJumpingRef.current = false;
-    });
-  }, []);
-
-  useLayoutEffect(() => {
-    recalibrate();
-  }, [recalibrate]);
-
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-
-    const handleScroll = () => {
-      if (isJumpingRef.current) return;
-      const loop = loopWidthRef.current;
-      if (loop <= 0) return;
-      // If we've drifted into the leading or trailing copy, jump back to the
-      // matching position in the middle copy. Use scrollLeft assignment (no
-      // smooth) so it's invisible to the user.
-      if (el.scrollLeft < loop * 0.5) {
-        isJumpingRef.current = true;
-        el.scrollLeft += loop;
-        requestAnimationFrame(() => {
-          isJumpingRef.current = false;
-        });
-      } else if (el.scrollLeft > loop * 1.5) {
-        isJumpingRef.current = true;
-        el.scrollLeft -= loop;
-        requestAnimationFrame(() => {
-          isJumpingRef.current = false;
-        });
-      }
-    };
-
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', recalibrate);
-    return () => {
-      el.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', recalibrate);
-    };
-  }, [recalibrate]);
 
   const scrollByCards = (direction: 1 | -1) => {
     const el = trackRef.current;
@@ -85,12 +29,8 @@ export default function MarketsCarousel({ markets }: Props) {
     el.scrollBy({ left: dx, behavior: 'smooth' });
   };
 
-  // Triple the list for the infinite-loop illusion.
-  const tripled = [...markets, ...markets, ...markets];
-
   return (
     <div className="relative">
-      {/* Left arrow */}
       <button
         type="button"
         aria-label="Scroll markets left"
@@ -102,7 +42,6 @@ export default function MarketsCarousel({ markets }: Props) {
         </svg>
       </button>
 
-      {/* Edge fades — soft cream gradient hints at more content */}
       <div
         className="pointer-events-none absolute left-10 sm:left-12 top-0 bottom-0 w-8 z-[5] bg-gradient-to-r from-[#f5f3ef] to-transparent"
         aria-hidden="true"
@@ -112,14 +51,13 @@ export default function MarketsCarousel({ markets }: Props) {
         aria-hidden="true"
       />
 
-      {/* Track — three copies of the list */}
       <div
         ref={trackRef}
         className="flex gap-6 sm:gap-8 overflow-x-auto scroll-smooth px-12 sm:px-14 py-2 no-scrollbar"
       >
-        {tripled.map(({ code, name, available }, i) => (
+        {markets.map(({ code, name, available }) => (
           <div
-            key={`${code}-${i}`}
+            key={code}
             className={`flex flex-col items-center gap-1.5 flex-shrink-0 w-16 sm:w-20 ${
               !available ? 'opacity-40' : ''
             }`}
@@ -131,7 +69,6 @@ export default function MarketsCarousel({ markets }: Props) {
         ))}
       </div>
 
-      {/* Right arrow */}
       <button
         type="button"
         aria-label="Scroll markets right"
