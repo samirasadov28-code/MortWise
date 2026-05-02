@@ -160,7 +160,12 @@ export function runAmortisation(input: ScenarioInput, startDate: Date = new Date
         }
       }
 
-      balance = openingBalance + interestCharge - principal - overpayment;
+      // Standard amortisation: the principal portion of the payment reduces
+      // the outstanding balance. Interest doesn't get added back in here —
+      // it was already paid as part of `payment` (interest + principal).
+      // (Holiday months are handled separately above where interest IS
+      // capitalised onto the balance.)
+      balance = openingBalance - principal - overpayment;
       if (balance < 0) balance = 0;
 
       // If overpayment reduces payment (not term), recalculate monthly payment

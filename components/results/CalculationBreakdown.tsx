@@ -1,12 +1,14 @@
 'use client';
 
-import type { ScenarioResult, WizardState } from '@/lib/types';
+import type { ScenarioResult, WizardState, MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
-import { formatCurrency, formatPercent } from '@/lib/formatting';
+import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 
 interface CalculationBreakdownProps {
   results: ScenarioResult[];
   state: WizardState;
+  /** Currency to render every monetary value in. Defaults to local market. */
+  displayMarket?: MarketCode;
 }
 
 /**
@@ -15,11 +17,12 @@ interface CalculationBreakdownProps {
  * stamp duty and rolled fees are folded in. Designed to be readable for
  * non-finance users so they can sanity-check (and trust) the numbers.
  */
-export default function CalculationBreakdown({ results, state }: CalculationBreakdownProps) {
+export default function CalculationBreakdown({ results, state, displayMarket }: CalculationBreakdownProps) {
   if (results.length === 0) return null;
   const best = [...results].sort((a, b) => a.totalAmountPaid - b.totalAmountPaid)[0];
   const market = MARKETS[state.market];
-  const ccy = state.market;
+  const dm: MarketCode = displayMarket ?? state.market;
+  const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
 
   const rolledFees = state.otherFeesCoveredByDebt ? state.otherFees : 0;
   const upfrontFees = state.otherFeesCoveredByDebt ? 0 : state.otherFees;
@@ -64,26 +67,26 @@ export default function CalculationBreakdown({ results, state }: CalculationBrea
           1 · Loan amount build-up
         </h4>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="Property price" value={formatCurrency(state.housePrice, ccy)} />
-          <Line label="Cash deposit" value={`− ${formatCurrency(state.deposit, ccy)}`} dim />
-          <Line label="Loan before adjustments" value={formatCurrency(state.housePrice - state.deposit, ccy)} sub />
+          <Line label="Property price" value={fmt(state.housePrice)} />
+          <Line label="Cash deposit" value={`− ${fmt(state.deposit)}`} dim />
+          <Line label="Loan before adjustments" value={fmt(state.housePrice - state.deposit)} sub />
           {rolledFees > 0 && (
-            <Line label={`+ Other fees rolled into loan (${formatCurrency(state.otherFees, ccy)})`} value={`+ ${formatCurrency(rolledFees, ccy)}`} dim />
+            <Line label={`+ Other fees rolled into loan (${fmt(state.otherFees)})`} value={`+ ${fmt(rolledFees)}`} dim />
           )}
           {schemeSupport > 0 && (
             <Line
               label={`− Government scheme: ${state.selectedGovtSchemeName ?? 'support'}`}
-              value={`− ${formatCurrency(schemeSupport, ccy)}`}
+              value={`− ${fmt(schemeSupport)}`}
               dim
               highlight="green"
             />
           )}
-          <Line label="Net loan amount drawn" value={formatCurrency(netLoan, ccy)} bold />
+          <Line label="Net loan amount drawn" value={fmt(netLoan)} bold />
         </div>
         {schemeSupport > 0 && (
           <p className="text-xs text-green-700 mt-2 leading-relaxed">
             The {state.selectedGovtSchemeName ?? 'selected'} scheme reduces the principal you borrow by{' '}
-            {formatCurrency(schemeSupport, ccy)}, lowering both the monthly payment and the total
+            {fmt(schemeSupport)}, lowering both the monthly payment and the total
             interest you pay over the life of the loan.
           </p>
         )}
@@ -102,13 +105,13 @@ export default function CalculationBreakdown({ results, state }: CalculationBrea
           — same monthly payment over the term, principal share growing as interest share shrinks.
         </p>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="P · principal" value={formatCurrency(netLoan, ccy)} />
+          <Line label="P · principal" value={fmt(netLoan)} />
           <Line
             label="r · monthly rate"
             value={`${(monthlyRate * 100).toFixed(4)}% (annual ${formatPercent(rateForDisplay ?? 0, 2)} ÷ 12)`}
           />
           <Line label="n · months" value={`${totalMonths} (${state.mortgageTerm} yrs × 12)`} />
-          <Line label="→ first monthly payment" value={formatCurrency(best.firstMonthlyPayment, ccy)} bold />
+          <Line label="→ first monthly payment" value={fmt(best.firstMonthlyPayment)} bold />
         </div>
       </section>
 
@@ -118,18 +121,18 @@ export default function CalculationBreakdown({ results, state }: CalculationBrea
           3 · Totals over the loan life
         </h4>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="Total payments (sum of all months)" value={formatCurrency(best.totalAmountPaid, ccy)} />
-          <Line label="− Loan principal" value={`− ${formatCurrency(netLoan, ccy)}`} dim />
-          <Line label="= Total interest paid" value={formatCurrency(best.totalInterestPaid, ccy)} bold />
+          <Line label="Total payments (sum of all months)" value={fmt(best.totalAmountPaid)} />
+          <Line label="− Loan principal" value={`− ${fmt(netLoan)}`} dim />
+          <Line label="= Total interest paid" value={fmt(best.totalInterestPaid)} bold />
           {best.cashbackReceived > 0 && (
             <Line
               label="− Cashback received from lender"
-              value={`− ${formatCurrency(best.cashbackReceived, ccy)}`}
+              value={`− ${fmt(best.cashbackReceived)}`}
               dim
               highlight="green"
             />
           )}
-          <Line label="= Net total loan payments" value={formatCurrency(totalCost - best.cashbackReceived, ccy)} bold />
+          <Line label="= Net total loan payments" value={fmt(totalCost - best.cashbackReceived)} bold />
         </div>
       </section>
 
@@ -139,16 +142,16 @@ export default function CalculationBreakdown({ results, state }: CalculationBrea
           4 · Cash needed at closing (separate from the loan)
         </h4>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="Deposit" value={formatCurrency(state.deposit, ccy)} />
+          <Line label="Deposit" value={fmt(state.deposit)} />
           <Line
             label={`Stamp duty (${state.propertyType === 'new_build' ? 'new build' : 'secondary'}, ${state.buyerType.replace('_', ' ')})`}
-            value={`+ ${formatCurrency(stampDuty, ccy)}`}
+            value={`+ ${fmt(stampDuty)}`}
             dim
           />
           {upfrontFees > 0 && (
-            <Line label="Other upfront fees (legal/surveyor/broker)" value={`+ ${formatCurrency(upfrontFees, ccy)}`} dim />
+            <Line label="Other upfront fees (legal/surveyor/broker)" value={`+ ${fmt(upfrontFees)}`} dim />
           )}
-          <Line label="Total cash at closing" value={formatCurrency(cashAtClosing, ccy)} bold />
+          <Line label="Total cash at closing" value={fmt(cashAtClosing)} bold />
         </div>
       </section>
 

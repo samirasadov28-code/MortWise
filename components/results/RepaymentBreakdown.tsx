@@ -6,16 +6,19 @@ import {
 } from 'recharts';
 import type { ScenarioResult } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
-import { formatCurrency } from '@/lib/formatting';
+import { formatCurrency, formatCurrencyIn } from '@/lib/formatting';
 
 interface RepaymentBreakdownProps {
   results: ScenarioResult[];
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
-export default function RepaymentBreakdown({ results, market }: RepaymentBreakdownProps) {
+export default function RepaymentBreakdown({ results, market, displayMarket }: RepaymentBreakdownProps) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const result = results[selectedIdx];
+  const dm = displayMarket ?? market;
+  const fmt = (v: number) => formatCurrencyIn(v, market, dm);
 
   if (!result) return null;
 
@@ -55,12 +58,12 @@ export default function RepaymentBreakdown({ results, market }: RepaymentBreakdo
           <YAxis
             stroke="#9aa5b0"
             tick={{ fontSize: 11 }}
-            tickFormatter={(v) => formatCurrency(v, market, 0).replace(/[€£$A]/, '').trim()}
+            tickFormatter={(v) => fmt(v).replace(/[€£$A¥₴₪]/g, '').trim()}
             width={70}
           />
           <Tooltip
             contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
-            formatter={(v: unknown, name: unknown) => [formatCurrency(v as number, market), String(name)]}
+            formatter={(v: unknown, name: unknown) => [fmt(v as number), String(name)]}
             labelFormatter={(l) => `Year ${l}`}
           />
           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />

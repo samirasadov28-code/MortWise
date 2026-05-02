@@ -7,18 +7,21 @@ import {
 import type { ScenarioInput } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
 import { compareOverpayment } from '@/lib/engine/overpayment';
-import { formatCurrency } from '@/lib/formatting';
+import { formatCurrencyIn } from '@/lib/formatting';
 
 interface OverpaymentPanelProps {
   primaryInput: ScenarioInput;
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
-export default function OverpaymentPanel({ primaryInput, market }: OverpaymentPanelProps) {
+export default function OverpaymentPanel({ primaryInput, market, displayMarket }: OverpaymentPanelProps) {
   const [lumpSum, setLumpSum] = useState(10000);
   const [startYear, setStartYear] = useState(1);
   const [frequency, setFrequency] = useState(1);
   const [reduces, setReduces] = useState<'payment' | 'term'>('term');
+  const dm = displayMarket ?? market;
+  const fmt = (v: number) => formatCurrencyIn(v, market, dm);
 
   const sym = market === 'UK' ? '£' : market === 'UAE' ? 'AED ' : '€';
 
@@ -106,11 +109,11 @@ export default function OverpaymentPanel({ primaryInput, market }: OverpaymentPa
             </div>
             <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
               <p className="text-xs text-[#6b7a8a] mb-1">Interest saved</p>
-              <p className="text-lg font-bold text-green-700">{formatCurrency(comparison.interestSaved, market)}</p>
+              <p className="text-lg font-bold text-green-700">{fmt(comparison.interestSaved)}</p>
             </div>
             <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
               <p className="text-xs text-[#6b7a8a] mb-1">Total saved</p>
-              <p className="text-lg font-bold text-green-700">{formatCurrency(comparison.totalSaved, market)}</p>
+              <p className="text-lg font-bold text-green-700">{fmt(comparison.totalSaved)}</p>
             </div>
           </div>
 
@@ -121,7 +124,7 @@ export default function OverpaymentPanel({ primaryInput, market }: OverpaymentPa
               <YAxis stroke="#9aa5b0" tick={{ fontSize: 11 }} tickFormatter={(v) => `${sym}${(v / 1000).toFixed(0)}k`} width={60} />
               <Tooltip
                 contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
-                formatter={(v: unknown) => [formatCurrency(v as number, market), '']}
+                formatter={(v: unknown) => [fmt(v as number), '']}
                 labelFormatter={(l) => `Year ${l}`}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />

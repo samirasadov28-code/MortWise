@@ -7,16 +7,19 @@ import {
 import type { ScenarioInput } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
 import { compareHoliday } from '@/lib/engine/holiday';
-import { formatCurrency } from '@/lib/formatting';
+import { formatCurrencyIn } from '@/lib/formatting';
 
 interface HolidayPanelProps {
   primaryInput: ScenarioInput;
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
-export default function HolidayPanel({ primaryInput, market }: HolidayPanelProps) {
+export default function HolidayPanel({ primaryInput, market, displayMarket }: HolidayPanelProps) {
   const [holidayStart, setHolidayStart] = useState(24);
   const [holidayDuration, setHolidayDuration] = useState(3);
+  const dm = displayMarket ?? market;
+  const fmt = (v: number) => formatCurrencyIn(v, market, dm);
 
   const comparison = useMemo(() => {
     if (holidayDuration <= 0) return null;
@@ -79,19 +82,19 @@ export default function HolidayPanel({ primaryInput, market }: HolidayPanelProps
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
             <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
               <p className="text-xs text-[#6b7a8a] mb-1">Extra interest</p>
-              <p className="text-base font-bold text-red-600">{formatCurrency(comparison.extraInterest, market)}</p>
+              <p className="text-base font-bold text-red-600">{fmt(comparison.extraInterest)}</p>
             </div>
             <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
               <p className="text-xs text-[#6b7a8a] mb-1">Balance at end</p>
-              <p className="text-base font-bold text-[#2a2520]">{formatCurrency(comparison.balanceAtHolidayEnd, market)}</p>
+              <p className="text-base font-bold text-[#2a2520]">{fmt(comparison.balanceAtHolidayEnd)}</p>
             </div>
             <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
               <p className="text-xs text-[#6b7a8a] mb-1">New payment</p>
-              <p className="text-base font-bold text-amber-700">{formatCurrency(comparison.newMonthlyPayment, market)}/mo</p>
+              <p className="text-base font-bold text-amber-700">{fmt(comparison.newMonthlyPayment)}/mo</p>
             </div>
             <div className="bg-[#eef4f7]/80 rounded-lg p-3 text-center">
               <p className="text-xs text-[#6b7a8a] mb-1">Total extra cost</p>
-              <p className="text-base font-bold text-red-600">{formatCurrency(comparison.totalExtraCost, market)}</p>
+              <p className="text-base font-bold text-red-600">{fmt(comparison.totalExtraCost)}</p>
             </div>
           </div>
 
@@ -102,7 +105,7 @@ export default function HolidayPanel({ primaryInput, market }: HolidayPanelProps
               <YAxis stroke="#9aa5b0" tick={{ fontSize: 11 }} tickFormatter={(v) => `${sym}${(v / 1000).toFixed(0)}k`} width={60} />
               <Tooltip
                 contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
-                formatter={(v: unknown) => [formatCurrency(v as number, market), '']}
+                formatter={(v: unknown) => [fmt(v as number), '']}
                 labelFormatter={(l) => `Year ${l}`}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />

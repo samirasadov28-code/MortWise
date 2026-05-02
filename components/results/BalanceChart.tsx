@@ -5,17 +5,20 @@ import {
 } from 'recharts';
 import type { ScenarioResult } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
-import { formatCurrency } from '@/lib/formatting';
+import { formatCurrencyIn } from '@/lib/formatting';
 
 interface BalanceChartProps {
   results: ScenarioResult[];
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
 const COLORS = ['#4a7c96', '#10b981', '#f59e0b', '#ef4444'];
 
-export default function BalanceChart({ results, market }: BalanceChartProps) {
+export default function BalanceChart({ results, market, displayMarket }: BalanceChartProps) {
   if (results.length === 0) return null;
+  const dm = displayMarket ?? market;
+  const fmt = (v: number) => formatCurrencyIn(v, market, dm);
 
   const maxLen = Math.max(...results.map((r) => r.periods.length));
   const data: Record<string, number | string>[] = [];
@@ -47,13 +50,13 @@ export default function BalanceChart({ results, market }: BalanceChartProps) {
           <YAxis
             stroke="#9aa5b0"
             tick={{ fontSize: 11 }}
-            tickFormatter={(v) => formatCurrency(v, market, 0).replace(/[€£$]/, '').trim()}
+            tickFormatter={(v) => fmt(v).replace(/[€£$A¥₴₪]/g, '').trim()}
             width={70}
           />
           <Tooltip
             contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
             labelStyle={{ color: '#6b7a8a', fontSize: '12px' }}
-            formatter={(v: unknown, name: unknown) => [formatCurrency(v as number, market), String(name)]}
+            formatter={(v: unknown, name: unknown) => [fmt(v as number), String(name)]}
             labelFormatter={(l) => `Year ${l}`}
           />
           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />

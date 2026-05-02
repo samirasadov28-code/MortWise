@@ -1,17 +1,20 @@
 import type { ScenarioResult, ScenarioInput } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
 import { analyseCashback } from '@/lib/engine/cashback';
-import { formatCurrency } from '@/lib/formatting';
+import { formatCurrencyIn } from '@/lib/formatting';
 
 interface CashbackPanelProps {
   results: ScenarioResult[];
   inputs: ScenarioInput[];
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
-export default function CashbackPanel({ results, inputs, market }: CashbackPanelProps) {
+export default function CashbackPanel({ results, inputs, market, displayMarket }: CashbackPanelProps) {
   const cashbackScenarios = results.filter((r) => r.cashbackReceived > 0);
   if (cashbackScenarios.length === 0) return null;
+  const dm = displayMarket ?? market;
+  const fmt = (v: number) => formatCurrencyIn(v, market, dm);
 
   // Find the non-cashback scenario for break-even comparison
   const baselineResult = results.find((r) => r.cashbackReceived === 0);
@@ -41,7 +44,7 @@ export default function CashbackPanel({ results, inputs, market }: CashbackPanel
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium text-[#2a2520]">{r.lenderName}</h4>
               <span className="text-lg font-bold text-[#4a7c96]">
-                {formatCurrency(analysis.grossCashback, market)} gross cashback
+                {fmt(analysis.grossCashback)} gross cashback
               </span>
             </div>
 
@@ -62,9 +65,9 @@ export default function CashbackPanel({ results, inputs, market }: CashbackPanel
                       <tr key={year} className="border-b border-[#e8e3dc]/50 hover:bg-[#eef4f7]/40">
                         <td className="py-1.5 text-[#2a2520]">Year {year}</td>
                         <td className={`py-1.5 text-right ${clawback > 0 ? 'text-red-600' : 'text-green-700'}`}>
-                          {clawback > 0 ? `-${formatCurrency(clawback, market)}` : 'None'}
+                          {clawback > 0 ? `-${fmt(clawback)}` : 'None'}
                         </td>
-                        <td className="py-1.5 text-right text-[#2a2520]">{formatCurrency(net, market)}</td>
+                        <td className="py-1.5 text-right text-[#2a2520]">{fmt(net)}</td>
                       </tr>
                     ))}
                   </tbody>

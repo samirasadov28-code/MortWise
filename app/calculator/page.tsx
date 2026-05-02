@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import type { WizardState, ScenarioResult } from '@/lib/types';
+import type { WizardState, ScenarioResult, MarketCode } from '@/lib/types';
 import { DEFAULT_WIZARD_STATE } from '@/lib/defaults';
+import { COMPARISON_CURRENCIES } from '@/lib/fx';
+import { MARKETS } from '@/lib/markets';
 import { getUnlockState } from '@/lib/stripe';
 import { runScenarios } from '@/lib/engine/scenarios';
 import Disclaimer from '@/components/shared/Disclaimer';
@@ -38,6 +40,15 @@ export default function CalculatorPage() {
   const [results, setResults] = useState<ScenarioResult[]>([]);
   // Full-access users can toggle "view as free" to compare the two views side-by-side.
   const [viewAsFree, setViewAsFree] = useState(false);
+  // Currency in which all results are shown (cards, tables, charts, breakdowns).
+  // Defaults to the local market currency; user can switch in the results header.
+  const [displayMarket, setDisplayMarket] = useState<MarketCode>(state.market);
+
+  // Reset display currency to the new market's local currency whenever the
+  // user picks a different market in Step 1.
+  useEffect(() => {
+    setDisplayMarket(state.market);
+  }, [state.market]);
 
   // Check unlock status on mount and after payment
   useEffect(() => {
@@ -150,23 +161,44 @@ export default function CalculatorPage() {
             <Image src="/Logo_192.png" alt="MortWise" width={56} height={56} className="rounded-xl" />
             <span className="text-base sm:text-lg font-bold text-[#2a2520]">MortWise</span>
           </Link>
-          {state.isUnlocked && (
-            <div className="flex items-center gap-2">
-              {phase === 'results' && (
-                <button
-                  type="button"
-                  onClick={() => setViewAsFree((v) => !v)}
-                  className="text-xs px-3 py-1 border border-[#4a7c96]/30 hover:border-[#4a7c96] hover:bg-[#4a7c96] hover:text-white text-[#4a7c96] rounded-full font-medium transition-colors"
-                  aria-pressed={viewAsFree}
-                >
-                  {viewAsFree ? 'View Full' : 'View Free'}
-                </button>
-              )}
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* Global comparison currency — visible whenever the user is on
+                the results screen, regardless of paid/free. */}
+            {phase === 'results' && (
+              <select
+                value={displayMarket}
+                onChange={(e) => setDisplayMarket(e.target.value as MarketCode)}
+                aria-label="Display currency"
+                className="text-xs px-2 py-1 border border-[#e8e3dc] hover:border-[#4a7c96] bg-white text-[#2a2520] rounded-full font-medium focus:outline-none focus:border-[#4a7c96]"
+              >
+                <option value={state.market}>
+                  {MARKETS[state.market].currency} (local)
+                </option>
+                {COMPARISON_CURRENCIES
+                  .filter((c) => c.market !== state.market)
+                  .map((c) => (
+                    <option key={c.market} value={c.market}>
+                      {c.label}
+                    </option>
+                  ))}
+              </select>
+            )}
+            {state.isUnlocked && phase === 'results' && (
+              <button
+                type="button"
+                onClick={() => setViewAsFree((v) => !v)}
+                className="text-xs px-3 py-1 border border-[#4a7c96]/30 hover:border-[#4a7c96] hover:bg-[#4a7c96] hover:text-white text-[#4a7c96] rounded-full font-medium transition-colors"
+                aria-pressed={viewAsFree}
+              >
+                {viewAsFree ? 'View Full' : 'View Free'}
+              </button>
+            )}
+            {state.isUnlocked && (
               <span className="text-xs px-2 py-1 bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] rounded-full">
                 Full analysis unlocked
               </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </header>
 
@@ -197,13 +229,16 @@ export default function CalculatorPage() {
             </div>
 
             {state.isUnlocked && !viewAsFree ? (
-              <FullResults results={results} state={state} />
+              <FullResults results={results} state={state} displayMarket={displayMarket} />
             ) : (
+              // When a paid user clicks "View Free" we show the full free
+              // experience — including the upgrade wall — so they can see
+              // exactly what's being advertised to non-paying users.
               <FreeResults
                 results={results}
                 state={state}
                 onUnlocked={handleUnlocked}
-                hideUpgradeWall={state.isUnlocked}
+                displayMarket={displayMarket}
               />
             )}
           </div>

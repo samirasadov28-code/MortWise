@@ -1,20 +1,24 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { WizardState, ScenarioResult } from '@/lib/types';
+import type { WizardState, ScenarioResult, MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
-import { formatCurrency, formatPercent } from '@/lib/formatting';
+import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import { newtonRaphsonIRR } from '@/lib/engine/irr';
 
 interface BuyToLetPanelProps {
   state: WizardState;
   results: ScenarioResult[];
+  /** Display currency. Defaults to local market currency. */
+  displayMarket?: MarketCode;
 }
 
 const DEFAULT_OPERATING_COST_RATIO = 0.25;
 
-export default function BuyToLetPanel({ state, results }: BuyToLetPanelProps) {
+export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLetPanelProps) {
   const market = MARKETS[state.market];
+  const dm: MarketCode = displayMarket ?? state.market;
+  const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
   const best = useMemo(
     () => [...results].sort((a, b) => a.totalAmountPaid - b.totalAmountPaid)[0],
     [results],
@@ -137,14 +141,14 @@ export default function BuyToLetPanel({ state, results }: BuyToLetPanelProps) {
 
       {/* Detail rows */}
       <dl className="text-sm divide-y divide-[#e8e3dc]/60 border-t border-[#e8e3dc]/60">
-        <Row label="Cash invested (deposit + stamp duty + fees)" value={formatCurrency(cashInvested, state.market)} />
-        <Row label="Stamp duty at investor rate" value={formatCurrency(stampDuty, state.market)} />
-        <Row label="Year-1 gross rent" value={formatCurrency(analysis.grossYr1, state.market)} />
-        <Row label="Year-1 net rent (after opex)" value={formatCurrency(analysis.netYr1, state.market)} />
-        <Row label="Year-1 mortgage payments" value={formatCurrency(analysis.annualMortgageYr1, state.market)} />
+        <Row label="Cash invested (deposit + stamp duty + fees)" value={fmt(cashInvested)} />
+        <Row label="Stamp duty at investor rate" value={fmt(stampDuty)} />
+        <Row label="Year-1 gross rent" value={fmt(analysis.grossYr1)} />
+        <Row label="Year-1 net rent (after opex)" value={fmt(analysis.netYr1)} />
+        <Row label="Year-1 mortgage payments" value={fmt(analysis.annualMortgageYr1)} />
         <Row
           label="Year-1 cash flow"
-          value={formatCurrency(analysis.annualCashFlowYr1, state.market)}
+          value={fmt(analysis.annualCashFlowYr1)}
           tone={cashFlowPositive ? 'good' : 'bad'}
         />
         <Row

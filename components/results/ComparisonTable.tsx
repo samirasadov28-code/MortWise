@@ -1,10 +1,11 @@
 import type { ScenarioResult } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
-import { formatCurrency, formatPercent, formatMonths } from '@/lib/formatting';
+import { formatCurrencyIn, formatPercent, formatMonths } from '@/lib/formatting';
 
 interface ComparisonTableProps {
   results: ScenarioResult[];
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
 type MetricKey = keyof Pick<ScenarioResult,
@@ -13,27 +14,32 @@ type MetricKey = keyof Pick<ScenarioResult,
   'actualRepaymentPeriodMonths' | 'irr' | 'exitEquity'
 >;
 
+type Formatter = (v: number) => string;
+
 interface MetricDef {
   key: MetricKey;
   label: string;
-  format: (v: number, market: MarketCode) => string;
+  /** Function returning a formatter built from the panel-level fmt() helper. */
+  format: (fmt: Formatter, v: number) => string;
   lowerIsBetter: boolean;
 }
 
 const METRICS: MetricDef[] = [
-  { key: 'firstMonthlyPayment', label: 'First monthly payment', format: formatCurrency, lowerIsBetter: true },
-  { key: 'averageMonthlyPayment', label: 'Average monthly payment', format: formatCurrency, lowerIsBetter: true },
-  { key: 'totalInterestPaid', label: 'Total interest paid', format: formatCurrency, lowerIsBetter: true },
-  { key: 'totalAmountPaid', label: 'Total amount repaid', format: formatCurrency, lowerIsBetter: true },
-  { key: 'effectiveAnnualRate', label: 'Effective annual rate', format: (v) => formatPercent(v), lowerIsBetter: true },
-  { key: 'cashbackReceived', label: 'Cashback received', format: formatCurrency, lowerIsBetter: false },
-  { key: 'actualRepaymentPeriodMonths', label: 'Actual term', format: (v) => formatMonths(v), lowerIsBetter: true },
-  { key: 'irr', label: 'IRR', format: (v) => formatPercent(v), lowerIsBetter: false },
-  { key: 'exitEquity', label: 'Exit equity', format: formatCurrency, lowerIsBetter: false },
+  { key: 'firstMonthlyPayment', label: 'First monthly payment', format: (fmt, v) => fmt(v), lowerIsBetter: true },
+  { key: 'averageMonthlyPayment', label: 'Average monthly payment', format: (fmt, v) => fmt(v), lowerIsBetter: true },
+  { key: 'totalInterestPaid', label: 'Total interest paid', format: (fmt, v) => fmt(v), lowerIsBetter: true },
+  { key: 'totalAmountPaid', label: 'Total amount repaid', format: (fmt, v) => fmt(v), lowerIsBetter: true },
+  { key: 'effectiveAnnualRate', label: 'Effective annual rate', format: (_fmt, v) => formatPercent(v), lowerIsBetter: true },
+  { key: 'cashbackReceived', label: 'Cashback received', format: (fmt, v) => fmt(v), lowerIsBetter: false },
+  { key: 'actualRepaymentPeriodMonths', label: 'Actual term', format: (_fmt, v) => formatMonths(v), lowerIsBetter: true },
+  { key: 'irr', label: 'IRR', format: (_fmt, v) => formatPercent(v), lowerIsBetter: false },
+  { key: 'exitEquity', label: 'Exit equity', format: (fmt, v) => fmt(v), lowerIsBetter: false },
 ];
 
-export default function ComparisonTable({ results, market }: ComparisonTableProps) {
+export default function ComparisonTable({ results, market, displayMarket }: ComparisonTableProps) {
   if (results.length === 0) return null;
+  const dm = displayMarket ?? market;
+  const fmt: Formatter = (v) => formatCurrencyIn(v, market, dm);
 
   function getRankings(key: MetricKey): number[] {
     const values = results.map((r) => r[key] as number | undefined);
@@ -75,7 +81,7 @@ export default function ComparisonTable({ results, market }: ComparisonTableProp
                   const val = r[metric.key] as number | undefined;
                   const isWinner = ranks[i] === 0;
                   const displayVal = val !== undefined
-                    ? metric.format(val, market)
+                    ? metric.format(fmt, val)
                     : '—';
 
                   return (

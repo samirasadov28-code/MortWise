@@ -1,12 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { ScenarioInput, WizardState } from '@/lib/types';
+import type { ScenarioInput, WizardState, MarketCode } from '@/lib/types';
 import { runAmortisation } from '@/lib/engine/amortisation';
-import { formatCurrency } from '@/lib/formatting';
+import { formatCurrencyIn } from '@/lib/formatting';
 
 interface SensitivityPanelProps {
   state: WizardState;
+  displayMarket?: MarketCode;
 }
 
 /**
@@ -24,8 +25,10 @@ interface SensitivityPanelProps {
  *  - Cashback 0–5%
  *  - Payment holiday 0–18 months
  */
-export default function SensitivityPanel({ state }: SensitivityPanelProps) {
+export default function SensitivityPanel({ state, displayMarket }: SensitivityPanelProps) {
   const baseScenario = state.scenarios[0];
+  const dm: MarketCode = displayMarket ?? state.market;
+  const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
   const baseRate = (baseScenario?.fixedRate ?? baseScenario?.variableRate) ?? 0;
   const baseTerm = state.mortgageTerm;
   const baseDepositPct = state.housePrice > 0 ? state.deposit / state.housePrice : 0.2;
@@ -151,13 +154,13 @@ export default function SensitivityPanel({ state }: SensitivityPanelProps) {
 
       {/* Live result panel */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#eef4f7]/60 border border-[#4a7c96]/20 rounded-lg p-4">
-        <Stat label="New monthly" value={formatCurrency(result.monthly, state.market)} />
-        <Stat label="New total paid" value={formatCurrency(result.total, state.market)} />
+        <Stat label="New monthly" value={fmt(result.monthly)} />
+        <Stat label="New total paid" value={fmt(result.total)} />
         <Stat
           label="Δ vs base"
           value={
             isBase ? '—'
-              : `${positive ? '+' : ''}${formatCurrency(result.delta, state.market)}`
+              : `${positive ? '+' : ''}${fmt(result.delta)}`
           }
           tone={isBase ? 'neutral' : positive ? 'bad' : 'good'}
         />
@@ -262,7 +265,7 @@ export default function SensitivityPanel({ state }: SensitivityPanelProps) {
 
       <p className="text-[11px] text-[#6b7a8a]/70">
         Base scenario: {baseScenario.lenderName} · {(baseRate * 100).toFixed(2)}% · {baseTerm} yrs ·
-        {' '}{formatCurrency(result.baseMonthly, state.market)}/mo · {formatCurrency(result.baseTotal, state.market)} total.
+        {' '}{fmt(result.baseMonthly)}/mo · {fmt(result.baseTotal)} total.
       </p>
     </div>
   );

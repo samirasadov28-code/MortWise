@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import type { ScenarioResult, WizardState } from '@/lib/types';
+import type { ScenarioResult, WizardState, MarketCode } from '@/lib/types';
 import { rankScenarios } from '@/lib/engine/scenarios';
 import ScenarioCard from '@/components/results/ScenarioCard';
 import ComparisonTable from '@/components/results/ComparisonTable';
@@ -20,9 +20,12 @@ import CalculationBreakdown from '@/components/results/CalculationBreakdown';
 interface FullResultsProps {
   results: ScenarioResult[];
   state: WizardState;
+  /** Currency to render every monetary value in. Defaults to local market. */
+  displayMarket?: MarketCode;
 }
 
-export default function FullResults({ results, state }: FullResultsProps) {
+export default function FullResults({ results, state, displayMarket }: FullResultsProps) {
+  const dm: MarketCode = displayMarket ?? state.market;
   const exportRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
   const ranked = rankScenarios(results);
@@ -113,7 +116,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
       <div ref={exportRef} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {ranked.map((r, i) => (
-            <ScenarioCard key={r.id} result={r} rank={i} market={state.market} />
+            <ScenarioCard key={r.id} result={r} rank={i} market={state.market} displayMarket={dm} />
           ))}
         </div>
 
@@ -122,14 +125,14 @@ export default function FullResults({ results, state }: FullResultsProps) {
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Calculation breakdown
           </h3>
-          <CalculationBreakdown results={ranked} state={state} />
+          <CalculationBreakdown results={ranked} state={state} displayMarket={dm} />
         </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Side-by-side comparison
           </h3>
-          <ComparisonTable results={ranked} market={state.market} />
+          <ComparisonTable results={ranked} market={state.market} displayMarket={dm} />
         </section>
 
         <section>
@@ -137,8 +140,8 @@ export default function FullResults({ results, state }: FullResultsProps) {
             Charts
           </h3>
           <div className="space-y-4">
-            <BalanceChart results={ranked} market={state.market} />
-            <RepaymentBreakdown results={ranked} market={state.market} />
+            <BalanceChart results={ranked} market={state.market} displayMarket={dm} />
+            <RepaymentBreakdown results={ranked} market={state.market} displayMarket={dm} />
           </div>
         </section>
 
@@ -146,7 +149,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Rate-rise stress test
           </h3>
-          <StressTestPanel results={ranked} inputs={state.scenarios} market={state.market} />
+          <StressTestPanel results={ranked} inputs={state.scenarios} market={state.market} displayMarket={dm} />
         </section>
 
         {state.scenarios[0] && (
@@ -154,7 +157,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
             <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Overpayment simulator
             </h3>
-            <OverpaymentPanel primaryInput={state.scenarios[0]} market={state.market} />
+            <OverpaymentPanel primaryInput={state.scenarios[0]} market={state.market} displayMarket={dm} />
           </section>
         )}
 
@@ -163,7 +166,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
             <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Cashback analysis
             </h3>
-            <CashbackPanel results={ranked} inputs={state.scenarios} market={state.market} />
+            <CashbackPanel results={ranked} inputs={state.scenarios} market={state.market} displayMarket={dm} />
           </section>
         )}
 
@@ -172,7 +175,7 @@ export default function FullResults({ results, state }: FullResultsProps) {
             <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Interest holiday
             </h3>
-            <HolidayPanel primaryInput={state.scenarios[0]} market={state.market} />
+            <HolidayPanel primaryInput={state.scenarios[0]} market={state.market} displayMarket={dm} />
           </section>
         )}
 
@@ -180,14 +183,14 @@ export default function FullResults({ results, state }: FullResultsProps) {
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Sensitivity analysis · all key inputs
           </h3>
-          <SensitivityPanel state={state} />
+          <SensitivityPanel state={state} displayMarket={dm} />
         </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
             Buy-to-let · rental cash flow
           </h3>
-          <BuyToLetPanel state={state} results={ranked} />
+          <BuyToLetPanel state={state} results={ranked} displayMarket={dm} />
         </section>
 
         <section>

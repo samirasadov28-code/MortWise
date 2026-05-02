@@ -1,18 +1,21 @@
 import type { ScenarioResult } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
-import { formatCurrency, formatPercent, formatMonths } from '@/lib/formatting';
+import { formatCurrencyIn, formatPercent, formatMonths } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
 
 interface ScenarioCardProps {
   result: ScenarioResult;
   rank: number;
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
 const RANK_COLORS = ['text-yellow-400', 'text-[#6b7a8a]', 'text-amber-600', 'text-[#6b7a8a]/60'];
 const RANK_LABELS = ['1st — Best value', '2nd', '3rd', '4th'];
 
-export default function ScenarioCard({ result, rank, market }: ScenarioCardProps) {
+export default function ScenarioCard({ result, rank, market, displayMarket }: ScenarioCardProps) {
+  const dm = displayMarket ?? market;
+  const fmt = (v: number) => formatCurrencyIn(v, market, dm);
   return (
     <div className={`bg-white border rounded-xl p-5 ${
       rank === 0 ? 'border-[#4a7c96]/50' : 'border-[#e8e3dc]'
@@ -25,21 +28,21 @@ export default function ScenarioCard({ result, rank, market }: ScenarioCardProps
           </span>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-[#2a2520]">{formatCurrency(result.firstMonthlyPayment, market)}</p>
+          <p className="text-2xl font-bold text-[#2a2520]">{fmt(result.firstMonthlyPayment)}</p>
           <p className="text-xs text-[#6b7a8a]">first month</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 text-sm">
-        <Metric label="Avg monthly payment" value={formatCurrency(result.averageMonthlyPayment, market)} />
+        <Metric label="Avg monthly payment" value={fmt(result.averageMonthlyPayment)} />
         <Metric
           label="Total interest"
-          value={formatCurrency(result.totalInterestPaid, market)}
+          value={fmt(result.totalInterestPaid)}
           tooltip="Total interest paid over the full term, or to the exit year if specified."
         />
         <Metric
           label="Total repaid"
-          value={formatCurrency(result.totalAmountPaid, market)}
+          value={fmt(result.totalAmountPaid)}
           tooltip="Principal + total interest + any capitalised holiday interest."
         />
         <Metric
@@ -55,7 +58,7 @@ export default function ScenarioCard({ result, rank, market }: ScenarioCardProps
         {result.cashbackReceived > 0 && (
           <Metric
             label="Net cashback"
-            value={formatCurrency(result.cashbackReceived - result.cashbackClawbackRisk, market)}
+            value={fmt(result.cashbackReceived - result.cashbackClawbackRisk)}
             tooltip="Gross cashback minus any clawback applicable at the exit year."
           />
         )}
@@ -69,7 +72,7 @@ export default function ScenarioCard({ result, rank, market }: ScenarioCardProps
         {result.exitEquity !== undefined && (
           <Metric
             label="Exit equity"
-            value={formatCurrency(result.exitEquity, market)}
+            value={fmt(result.exitEquity)}
             tooltip="Estimated equity after selling the property at the exit year, minus remaining mortgage balance."
           />
         )}

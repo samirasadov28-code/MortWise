@@ -97,7 +97,29 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
       </div>
 
       {aiError && (
-        <p className="text-red-600 text-sm mb-4">{aiError}</p>
+        <div className="text-red-700 text-sm mb-4 p-3 rounded-lg bg-red-50 border border-red-200 space-y-1">
+          <p className="font-semibold">AI rate generator unavailable</p>
+          <p className="leading-relaxed">
+            {aiError.split(/(\bhttps?:\/\/\S+)/g).map((part, i) =>
+              /^https?:\/\//.test(part) ? (
+                <a
+                  key={i}
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-medium hover:text-red-900 break-all"
+                >
+                  {part}
+                </a>
+              ) : (
+                <span key={i}>{part}</span>
+              ),
+            )}
+          </p>
+          <p className="text-xs text-red-600/80">
+            Tip: this is a temporary fallback — you can still enter rates manually for each lender below.
+          </p>
+        </div>
       )}
 
       {aiMeta && (

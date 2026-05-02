@@ -3,18 +3,21 @@
 import { useState } from 'react';
 import type { ScenarioResult, ScenarioInput } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
-import { formatCurrency } from '@/lib/formatting';
+import { formatCurrencyIn } from '@/lib/formatting';
 
 interface StressTestPanelProps {
   results: ScenarioResult[];
   inputs: ScenarioInput[];
   market: MarketCode;
+  displayMarket?: MarketCode;
 }
 
 const INCREMENTS = ['+0.5%', '+1.0%', '+1.5%', '+2.0%', '+3.0%'];
 
-export default function StressTestPanel({ results, inputs, market }: StressTestPanelProps) {
+export default function StressTestPanel({ results, inputs, market, displayMarket }: StressTestPanelProps) {
   const [selectedKey, setSelectedKey] = useState(INCREMENTS[1]);
+  const dm = displayMarket ?? market;
+  const fmt = (v: number) => formatCurrencyIn(v, market, dm);
 
   const fixedPeriodYears = inputs[0]?.fixedPeriodYears;
 
@@ -81,12 +84,12 @@ export default function StressTestPanel({ results, inputs, market }: StressTestP
               <div className="flex items-baseline justify-between">
                 <div>
                   <p className="text-xs text-[#6b7a8a]">New payment</p>
-                  <p className="text-lg font-bold text-[#2a2520]">{formatCurrency(newPayment, market)}/mo</p>
+                  <p className="text-lg font-bold text-[#2a2520]">{fmt(newPayment)}/mo</p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-[#6b7a8a]">Increase</p>
                   <p className={`text-sm font-semibold ${increaseColors[severity]}`}>
-                    +{formatCurrency(increase, market)}/mo
+                    +{fmt(increase)}/mo
                   </p>
                   <p className={`text-xs ${increaseColors[severity]}`}>
                     +{(increasePct * 100).toFixed(0)}%
@@ -94,7 +97,7 @@ export default function StressTestPanel({ results, inputs, market }: StressTestP
                 </div>
               </div>
               <p className="text-xs text-[#6b7a8a] mt-2">
-                Extra interest: {formatCurrency(stress.totalExtraInterest, market)} total
+                Extra interest: {fmt(stress.totalExtraInterest)} total
               </p>
             </div>
           );

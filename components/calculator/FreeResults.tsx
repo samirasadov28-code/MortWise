@@ -1,8 +1,8 @@
 'use client';
 
-import type { ScenarioResult, WizardState } from '@/lib/types';
+import type { ScenarioResult, WizardState, MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
-import { formatCurrency, formatPercent } from '@/lib/formatting';
+import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import UpgradeWall from '@/components/shared/UpgradeWall';
 import Tooltip from '@/components/shared/Tooltip';
 import CalculationBreakdown from '@/components/results/CalculationBreakdown';
@@ -13,13 +13,17 @@ interface FreeResultsProps {
   onUnlocked: () => void;
   /** Suppress the upgrade CTA when a full-access user is "viewing as free". */
   hideUpgradeWall?: boolean;
+  /** Currency to render every monetary value in. Defaults to local market. */
+  displayMarket?: MarketCode;
 }
 
 function clamp01(v: number) {
   return Math.max(0, Math.min(1, v));
 }
 
-export default function FreeResults({ results, state, onUnlocked, hideUpgradeWall }: FreeResultsProps) {
+export default function FreeResults({ results, state, onUnlocked, hideUpgradeWall, displayMarket }: FreeResultsProps) {
+  const dm: MarketCode = displayMarket ?? state.market;
+  const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
   if (results.length === 0) return null;
 
   // Show best result (lowest total cost)
@@ -57,7 +61,7 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
             <p className="text-[#6b7a8a] text-sm mb-1">Best scenario — {best.lenderName}</p>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-bold text-[#2a2520]">
-                {formatCurrency(best.firstMonthlyPayment, state.market)}
+                {fmt(best.firstMonthlyPayment)}
               </span>
               <span className="text-[#6b7a8a] text-sm sm:text-base">/ month</span>
             </div>
@@ -70,7 +74,7 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
         </div>
 
         <p className="text-xs sm:text-sm text-[#6b7a8a]">
-          LTV: {formatPercent(state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0)} — Loan: {formatCurrency(best.loanAmount, state.market)}
+          LTV: {formatPercent(state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0)} — Loan: {fmt(best.loanAmount)}
         </p>
       </div>
 
@@ -78,17 +82,17 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <StatCard
           label="Annual cost (year 1)"
-          value={formatCurrency(year1Cost, state.market)}
+          value={fmt(year1Cost)}
           tooltip="What you'll pay in mortgage repayments during the first 12 months."
         />
         <StatCard
           label="Total interest"
-          value={formatCurrency(best.totalInterestPaid, state.market)}
+          value={fmt(best.totalInterestPaid)}
           tooltip="The total interest you'll pay over the entire life of the loan, assuming no overpayments."
         />
         <StatCard
           label="Total loan payments"
-          value={formatCurrency(totalCost, state.market)}
+          value={fmt(totalCost)}
           tooltip="Loan amount + total interest. The full amount you'll repay over the term."
         />
       </div>
@@ -109,11 +113,11 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
               {withinLimit ? '✓ Within typical limits' : '⚠ Exceeds typical limit'}
             </span>
             <span className="text-[#6b7a8a] ml-2">
-              ({market.maxIncomeMultiple}× income of {formatCurrency(totalIncome, state.market)} = {formatCurrency(maxBorrow, state.market)})
+              ({market.maxIncomeMultiple}× income of {fmt(totalIncome)} = {fmt(maxBorrow)})
             </span>
           </p>
           <p className="text-xs text-[#6b7a8a] mt-1">
-            Your requested loan: {formatCurrency(requestedLoan, state.market)}
+            Your requested loan: {fmt(requestedLoan)}
           </p>
         </div>
       )}
@@ -139,8 +143,8 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
           </div>
         </div>
         <div className="flex justify-between mt-2 text-xs text-[#6b7a8a]">
-          <span>Principal: {formatCurrency(best.loanAmount, state.market)}</span>
-          <span>Interest: {formatCurrency(best.totalInterestPaid, state.market)}</span>
+          <span>Principal: {fmt(best.loanAmount)}</span>
+          <span>Interest: {fmt(best.totalInterestPaid)}</span>
         </div>
       </div>
 
@@ -150,9 +154,9 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
           Stamp duty — {market.name}
           <Tooltip content="Stamp duty (or land transfer tax) is a one-off tax paid to the government when you buy a property. It varies by country, price, and buyer type." />
         </h3>
-        <p className="text-2xl font-bold text-[#2a2520]">{formatCurrency(stampDuty, state.market)}</p>
+        <p className="text-2xl font-bold text-[#2a2520]">{fmt(stampDuty)}</p>
         <p className="text-xs text-[#6b7a8a] mt-1">
-          Based on {formatCurrency(state.housePrice, state.market)} property — paid separately, not in mortgage
+          Based on {fmt(state.housePrice)} property — paid separately, not in mortgage
         </p>
       </div>
 
@@ -175,7 +179,7 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
                     </div>
                   </div>
                   <span className="text-sm font-bold text-green-700 flex-shrink-0">
-                    up to {formatCurrency(maxAmt, state.market)}
+                    up to {fmt(maxAmt)}
                   </span>
                 </div>
               );
@@ -186,7 +190,7 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
 
       {/* Calculation breakdown — show the math so users can see exactly how
           the loan amount, monthly payment, schemes and stamp duty fit together. */}
-      <CalculationBreakdown results={results} state={state} />
+      <CalculationBreakdown results={results} state={state} displayMarket={dm} />
 
       {/* Upgrade wall — hidden when a full-access user is viewing the free view */}
       {!hideUpgradeWall && <UpgradeWall onUnlocked={onUnlocked} />}
