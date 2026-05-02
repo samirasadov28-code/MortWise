@@ -15,6 +15,7 @@ import MarketsComparison from '@/components/results/MarketsComparison';
 import BuyToLetPanel from '@/components/results/BuyToLetPanel';
 import SensitivityPanel from '@/components/results/SensitivityPanel';
 import ForeignCurrencyPanel from '@/components/results/ForeignCurrencyPanel';
+import CalculationBreakdown from '@/components/results/CalculationBreakdown';
 
 interface FullResultsProps {
   results: ScenarioResult[];
@@ -115,6 +116,14 @@ export default function FullResults({ results, state }: FullResultsProps) {
             <ScenarioCard key={r.id} result={r} rank={i} market={state.market} />
           ))}
         </div>
+
+        {/* Calculation walkthrough — explicit math from inputs to monthly + total. */}
+        <section>
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
+            Calculation breakdown
+          </h3>
+          <CalculationBreakdown results={ranked} state={state} />
+        </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">

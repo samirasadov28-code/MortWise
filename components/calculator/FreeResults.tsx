@@ -5,18 +5,21 @@ import { MARKETS } from '@/lib/markets';
 import { formatCurrency, formatPercent } from '@/lib/formatting';
 import UpgradeWall from '@/components/shared/UpgradeWall';
 import Tooltip from '@/components/shared/Tooltip';
+import CalculationBreakdown from '@/components/results/CalculationBreakdown';
 
 interface FreeResultsProps {
   results: ScenarioResult[];
   state: WizardState;
   onUnlocked: () => void;
+  /** Suppress the upgrade CTA when a full-access user is "viewing as free". */
+  hideUpgradeWall?: boolean;
 }
 
 function clamp01(v: number) {
   return Math.max(0, Math.min(1, v));
 }
 
-export default function FreeResults({ results, state, onUnlocked }: FreeResultsProps) {
+export default function FreeResults({ results, state, onUnlocked, hideUpgradeWall }: FreeResultsProps) {
   if (results.length === 0) return null;
 
   // Show best result (lowest total cost)
@@ -181,8 +184,12 @@ export default function FreeResults({ results, state, onUnlocked }: FreeResultsP
         </div>
       )}
 
-      {/* Upgrade wall */}
-      <UpgradeWall onUnlocked={onUnlocked} />
+      {/* Calculation breakdown — show the math so users can see exactly how
+          the loan amount, monthly payment, schemes and stamp duty fit together. */}
+      <CalculationBreakdown results={results} state={state} />
+
+      {/* Upgrade wall — hidden when a full-access user is viewing the free view */}
+      {!hideUpgradeWall && <UpgradeWall onUnlocked={onUnlocked} />}
     </div>
   );
 }

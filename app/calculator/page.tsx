@@ -36,6 +36,8 @@ export default function CalculatorPage() {
 
   const [phase, setPhase] = useState<Phase>('wizard');
   const [results, setResults] = useState<ScenarioResult[]>([]);
+  // Full-access users can toggle "view as free" to compare the two views side-by-side.
+  const [viewAsFree, setViewAsFree] = useState(false);
 
   // Check unlock status on mount and after payment
   useEffect(() => {
@@ -136,9 +138,21 @@ export default function CalculatorPage() {
             <span className="text-base sm:text-lg font-bold text-[#2a2520]">MortWise</span>
           </Link>
           {state.isUnlocked && (
-            <span className="text-xs px-2 py-1 bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] rounded-full">
-              Full analysis unlocked
-            </span>
+            <div className="flex items-center gap-2">
+              {phase === 'results' && (
+                <button
+                  type="button"
+                  onClick={() => setViewAsFree((v) => !v)}
+                  className="text-xs px-3 py-1 border border-[#4a7c96]/30 hover:border-[#4a7c96] hover:bg-[#4a7c96] hover:text-white text-[#4a7c96] rounded-full font-medium transition-colors"
+                  aria-pressed={viewAsFree}
+                >
+                  {viewAsFree ? 'View Full' : 'View Free'}
+                </button>
+              )}
+              <span className="text-xs px-2 py-1 bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] rounded-full">
+                Full analysis unlocked
+              </span>
+            </div>
           )}
         </div>
       </header>
@@ -169,10 +183,15 @@ export default function CalculatorPage() {
               </button>
             </div>
 
-            {state.isUnlocked ? (
+            {state.isUnlocked && !viewAsFree ? (
               <FullResults results={results} state={state} />
             ) : (
-              <FreeResults results={results} state={state} onUnlocked={handleUnlocked} />
+              <FreeResults
+                results={results}
+                state={state}
+                onUnlocked={handleUnlocked}
+                hideUpgradeWall={state.isUnlocked}
+              />
             )}
           </div>
         )}
