@@ -188,6 +188,17 @@ export interface WizardState {
   mortgageTerm: number;
   /** Months of payment holiday at the start of the loan (interest still accrues). */
   paymentHolidayMonths: number;
+  /**
+   * Currency the user types property price / deposit / fees in. Defaults to
+   * the local market's currency. When different, the figures shown in step 2
+   * are converted on the fly via lib/fx and the canonical values stored on
+   * housePrice / deposit / otherFees are always in the local market currency.
+   */
+  displayCurrencyMarket?: MarketCode;
+  /** Wizard-level cashback amount in local market currency (0 for none). */
+  wizardCashbackAmount: number;
+  /** Years the lender can claw back cashback if you switch (typically 5). */
+  wizardCashbackClawbackYears: number;
   scenarios: ScenarioInput[];
   isUnlocked: boolean;
 }

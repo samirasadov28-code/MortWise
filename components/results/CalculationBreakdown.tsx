@@ -21,7 +21,6 @@ export default function CalculationBreakdown({ results, state }: CalculationBrea
   const market = MARKETS[state.market];
   const ccy = state.market;
 
-  const baseLoan = state.housePrice * (state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0.8);
   const rolledFees = state.otherFeesCoveredByDebt ? state.otherFees : 0;
   const upfrontFees = state.otherFeesCoveredByDebt ? 0 : state.otherFees;
   const schemeSupport = state.govtSchemeEnabled ? state.govtSupportAmount : 0;

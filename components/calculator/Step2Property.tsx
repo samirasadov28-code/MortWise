@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import type { WizardState } from '@/lib/types';
+import type { WizardState, MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { formatCurrency } from '@/lib/formatting';
+import { convertCurrency, COMPARISON_CURRENCIES } from '@/lib/fx';
 import Tooltip from '@/components/shared/Tooltip';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 
@@ -15,28 +16,48 @@ interface Step2Props {
 export default function Step2Property({ state, onChange }: Step2Props) {
   const [depositMode, setDepositMode] = useState<'amount' | 'percent'>('amount');
   const market = MARKETS[state.market];
-  const sym = market.currencySymbol;
+
+  // Currency the user enters values in. Defaults to the local market currency
+  // (the "base case"). All values stored on state are always in local currency.
+  const displayMarket: MarketCode = state.displayCurrencyMarket ?? state.market;
+  const displayCurrency = MARKETS[displayMarket].currency;
+  const sym = MARKETS[displayMarket].currencySymbol;
+  const isLocal = displayMarket === state.market;
+  // 1 unit local = `localToDisplay` units of display currency.
+  const localToDisplay = convertCurrency(1, state.market, displayMarket);
+  const displayToLocal = convertCurrency(1, displayMarket, state.market);
 
   const ltv = state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0;
   const ltvBand = market.ltvBands.find((b) => ltv <= b.maxLtv) ?? market.ltvBands[market.ltvBands.length - 1];
 
-  function handlePriceChange(val: number) {
+  function handlePriceChange(displayVal: number) {
+    const localVal = Math.round(displayVal * displayToLocal);
     const newDeposit = depositMode === 'percent'
-      ? val * (state.deposit / (state.housePrice || 1))
+      ? localVal * (state.deposit / (state.housePrice || 1))
       : state.deposit;
-    onChange({ housePrice: val, deposit: Math.min(newDeposit, val) });
+    onChange({ housePrice: localVal, deposit: Math.min(newDeposit, localVal) });
   }
 
-  function handleDepositAmount(val: number) {
-    onChange({ deposit: Math.min(val, state.housePrice) });
+  function handleDepositAmount(displayVal: number) {
+    const localVal = Math.round(displayVal * displayToLocal);
+    onChange({ deposit: Math.min(localVal, state.housePrice) });
   }
 
   function handleDepositPercent(pct: number) {
     onChange({ deposit: (pct / 100) * state.housePrice });
   }
 
+  function handleOtherFeesChange(displayVal: number) {
+    onChange({ otherFees: Math.round(displayVal * displayToLocal) });
+  }
+
   const depositPct = state.housePrice > 0 ? (state.deposit / state.housePrice) * 100 : 0;
   const loanAmount = state.housePrice - state.deposit;
+
+  // Display-currency values for the inputs
+  const housePriceDisplay = Math.round(state.housePrice * localToDisplay);
+  const depositDisplay = Math.round(state.deposit * localToDisplay);
+  const otherFeesDisplay = Math.round(state.otherFees * localToDisplay);
 
   return (
     <div>
@@ -46,6 +67,37 @@ export default function Step2Property({ state, onChange }: Step2Props) {
       </p>
 
       <div className="space-y-5">
+        {/* Currency selector — local market currency is the base case */}
+        <div className="flex items-end gap-3">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
+              Enter values in
+              <Tooltip content={`Default is ${market.currency} (the local currency of ${market.name}). Pick a different currency to enter the price in your home / preferred currency — values are converted on the fly using approximate FX rates.`} />
+            </label>
+            <select
+              value={displayMarket}
+              onChange={(e) => onChange({ displayCurrencyMarket: e.target.value as MarketCode })}
+              className="w-full px-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
+            >
+              <option value={state.market}>
+                {market.currency} — local ({market.name})
+              </option>
+              {COMPARISON_CURRENCIES
+                .filter((c) => c.market !== state.market)
+                .map((c) => (
+                  <option key={c.market} value={c.market}>
+                    {c.label} — {MARKETS[c.market].name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          {!isLocal && (
+            <div className="text-xs text-[#6b7a8a] flex-shrink-0 pb-2">
+              1 {displayCurrency} ≈ {displayToLocal.toFixed(displayToLocal > 100 ? 0 : 4)} {market.currency}
+            </div>
+          )}
+        </div>
+
         {/* Property price */}
         <div>
           <label className="block text-sm font-medium text-[#2a2520] mb-1.5">
@@ -54,13 +106,18 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
             <FormattedNumberInput
-              value={state.housePrice}
+              value={housePriceDisplay}
               onValueChange={handlePriceChange}
               min={0}
               placeholder="400,000"
               className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
             />
           </div>
+          {!isLocal && state.housePrice > 0 && (
+            <p className="text-xs text-[#6b7a8a] mt-1.5">
+              ≈ {formatCurrency(state.housePrice, state.market)} in local currency
+            </p>
+          )}
         </div>
 
         {/* Deposit */}
@@ -92,10 +149,10 @@ export default function Step2Property({ state, onChange }: Step2Props) {
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
               <FormattedNumberInput
-                value={state.deposit}
+                value={depositDisplay}
                 onValueChange={handleDepositAmount}
                 min={0}
-                max={state.housePrice}
+                max={housePriceDisplay}
                 placeholder="80,000"
                 className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
               />
@@ -141,8 +198,8 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
             <FormattedNumberInput
-              value={state.otherFees}
-              onValueChange={(v) => onChange({ otherFees: v })}
+              value={otherFeesDisplay}
+              onValueChange={handleOtherFeesChange}
               min={0}
               placeholder="5,000"
               className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"

@@ -1,7 +1,11 @@
 'use client';
 
-import type { WizardState, RateStructure } from '@/lib/types';
+import type { WizardState, RateStructure, MarketCode } from '@/lib/types';
+import { MARKETS } from '@/lib/markets';
+import { convertCurrency } from '@/lib/fx';
+import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
+import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 
 interface Step4Props {
   state: WizardState;
@@ -150,6 +154,66 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
           </div>
         </div>
       </div>
+
+      {/* Cashback */}
+      {(() => {
+        const displayMarket: MarketCode = state.displayCurrencyMarket ?? state.market;
+        const sym = MARKETS[displayMarket].currencySymbol;
+        const isLocal = displayMarket === state.market;
+        const localToDisplay = convertCurrency(1, state.market, displayMarket);
+        const displayToLocal = convertCurrency(1, displayMarket, state.market);
+        const cashbackDisplay = Math.round(state.wizardCashbackAmount * localToDisplay);
+        const requestedLoan = Math.max(0, state.housePrice - state.deposit);
+        const impliedPct = requestedLoan > 0 ? state.wizardCashbackAmount / requestedLoan : 0;
+        return (
+          <div className="mt-5">
+            <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
+              Lender cashback
+              <Tooltip content="A one-off amount the lender pays you at drawdown — typical in Ireland (~1–3% of the loan) and rare elsewhere. Netted against your total loan payments. Most lenders claw it back if you switch within the clawback window." />
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <p className="text-xs text-[#6b7a8a] mb-1">Cashback amount</p>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
+                  <FormattedNumberInput
+                    value={cashbackDisplay}
+                    onValueChange={(v) => onChange({ wizardCashbackAmount: Math.round(v * displayToLocal) })}
+                    min={0}
+                    placeholder="0"
+                    className="w-full pl-8 pr-4 py-2.5 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                  />
+                </div>
+                {!isLocal && state.wizardCashbackAmount > 0 && (
+                  <p className="text-[11px] text-[#6b7a8a] mt-1">
+                    ≈ {formatCurrency(state.wizardCashbackAmount, state.market)} in local currency
+                  </p>
+                )}
+                {state.wizardCashbackAmount > 0 && requestedLoan > 0 && (
+                  <p className="text-[11px] text-[#6b7a8a] mt-1">
+                    {(impliedPct * 100).toFixed(2)}% of the loan amount
+                  </p>
+                )}
+              </div>
+              <div>
+                <p className="text-xs text-[#6b7a8a] mb-1">Clawback period (years)</p>
+                <input
+                  type="number"
+                  min={0}
+                  max={10}
+                  step={1}
+                  value={state.wizardCashbackClawbackYears}
+                  onChange={(e) => onChange({ wizardCashbackClawbackYears: Math.min(10, Math.max(0, Number(e.target.value))) })}
+                  className="w-full px-4 py-2.5 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                />
+                <p className="text-[11px] text-[#6b7a8a] mt-1">
+                  Years the lender can claw back the cashback if you switch.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Payment holiday */}
       <div className="mt-5">

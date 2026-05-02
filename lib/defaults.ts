@@ -82,6 +82,8 @@ export const DEFAULT_WIZARD_STATE: WizardState = {
   splitFixedProportion: 0.7,
   mortgageTerm: 30,
   paymentHolidayMonths: 0,
+  wizardCashbackAmount: 0,
+  wizardCashbackClawbackYears: 5,
   scenarios: DEFAULT_SCENARIOS,
   isUnlocked: false,
 };

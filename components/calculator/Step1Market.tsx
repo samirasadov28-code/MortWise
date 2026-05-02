@@ -17,9 +17,11 @@ export default function Step1Market({ state, onChange }: Step1Props) {
   function selectMarket(code: MarketCode) {
     if (code === state.market) return;
     // Replace scenario lender names + indicative rates with the new market's lenders
+    // and reset the Step 2 display-currency back to local for the new market.
     onChange({
       market: code,
       scenarios: scenariosForMarket(code, state.scenarios.length || 4),
+      displayCurrencyMarket: code,
     });
   }
 
