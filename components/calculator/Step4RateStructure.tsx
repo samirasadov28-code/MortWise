@@ -150,6 +150,44 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
           </div>
         </div>
       </div>
+
+      {/* Payment holiday */}
+      <div className="mt-5">
+        <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
+          Payment holiday
+          <Tooltip content="Months at the start of the loan with zero payments. Interest still accrues and is capitalised onto the balance — useful for self-build or job-transition periods." />
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={0}
+            max={24}
+            step={1}
+            value={state.paymentHolidayMonths}
+            onChange={(e) => onChange({ paymentHolidayMonths: Number(e.target.value) })}
+            className="flex-1 accent-[#4a7c96]"
+          />
+          <div className="flex-shrink-0 w-24">
+            <div className="relative">
+              <input
+                type="number"
+                value={state.paymentHolidayMonths}
+                onChange={(e) => onChange({ paymentHolidayMonths: Math.min(24, Math.max(0, Number(e.target.value))) })}
+                className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-center focus:outline-none focus:border-[#4a7c96] transition-colors"
+                min={0}
+                max={24}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">mo</span>
+            </div>
+          </div>
+        </div>
+        {state.paymentHolidayMonths > 0 && (
+          <p className="text-xs text-amber-700 mt-2">
+            Interest accrues during the holiday and is added to the loan balance — your monthly
+            payment after the holiday will be higher to compensate.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

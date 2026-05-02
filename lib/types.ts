@@ -186,6 +186,8 @@ export interface WizardState {
   rateStructure: RateStructure;
   splitFixedProportion: number;
   mortgageTerm: number;
+  /** Months of payment holiday at the start of the loan (interest still accrues). */
+  paymentHolidayMonths: number;
   scenarios: ScenarioInput[];
   isUnlocked: boolean;
 }

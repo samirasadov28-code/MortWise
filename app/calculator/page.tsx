@@ -101,6 +101,9 @@ export default function CalculatorPage() {
         govtSupportAmount: state.govtSchemeEnabled ? state.govtSupportAmount : 0,
         splitFixedProportion: state.rateStructure === 'split' ? state.splitFixedProportion : undefined,
         splitVariableProportion: state.rateStructure === 'split' ? 1 - state.splitFixedProportion : undefined,
+        // Wizard-level payment holiday — applies to all scenarios uniformly.
+        holidayStart: state.paymentHolidayMonths > 0 ? 1 : s.holidayStart,
+        holidayDuration: state.paymentHolidayMonths > 0 ? state.paymentHolidayMonths : s.holidayDuration,
       }));
 
       const computed = runScenarios(preparedScenarios, startDate);

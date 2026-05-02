@@ -72,7 +72,7 @@ export const DEFAULT_WIZARD_STATE: WizardState = {
   otherFeesCoveredByDebt: false,
   purchaseDate: new Date().toISOString().slice(0, 7),
   buyerType: 'first_time',
-  annualIncome: 0,
+  annualIncome: 70000,
   coBorrowerIncome: 0,
   govtSchemeEnabled: false,
   govtSupportAmount: 0,
@@ -81,6 +81,7 @@ export const DEFAULT_WIZARD_STATE: WizardState = {
   rateStructure: 'fixed',
   splitFixedProportion: 0.7,
   mortgageTerm: 30,
+  paymentHolidayMonths: 0,
   scenarios: DEFAULT_SCENARIOS,
   isUnlocked: false,
 };

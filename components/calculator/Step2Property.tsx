@@ -193,17 +193,58 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           </div>
         </div>
 
-        {/* Purchase date */}
+        {/* Purchase date — independent month + year so any year is reachable
+            in one click instead of paging through a native month picker. */}
         <div>
           <label className="block text-sm font-medium text-[#2a2520] mb-1.5">
             Planned purchase date
           </label>
-          <input
-            type="month"
-            value={state.purchaseDate}
-            onChange={(e) => onChange({ purchaseDate: e.target.value })}
-            className="w-full px-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
-          />
+          {(() => {
+            const [yearStr, monthStr] = (state.purchaseDate || '').split('-');
+            const yearNum = Number(yearStr) || new Date().getFullYear();
+            const monthNum = Number(monthStr) || (new Date().getMonth() + 1);
+            const months = [
+              'January','February','March','April','May','June',
+              'July','August','September','October','November','December',
+            ];
+            const currentYear = new Date().getFullYear();
+            // Cover ±10 yrs from now → 21-year picker, plus include the
+            // selected year if it sits outside that range.
+            const yearStart = currentYear - 10;
+            const years = Array.from({ length: 21 }, (_, i) => yearStart + i);
+            if (!years.includes(yearNum)) years.push(yearNum);
+            years.sort((a, b) => a - b);
+
+            const update = (y: number, m: number) => {
+              const mm = String(m).padStart(2, '0');
+              onChange({ purchaseDate: `${y}-${mm}` });
+            };
+
+            return (
+              <div className="grid grid-cols-2 gap-2">
+                <select
+                  value={monthNum}
+                  onChange={(e) => update(yearNum, Number(e.target.value))}
+                  className="w-full px-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                  aria-label="Purchase month"
+                >
+                  {months.map((label, i) => (
+                    <option key={label} value={i + 1}>{label}</option>
+                  ))}
+                </select>
+                <select
+                  value={yearNum}
+                  onChange={(e) => update(Number(e.target.value), monthNum)}
+                  className="w-full px-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                  aria-label="Purchase year"
+                >
+                  {years.map((y) => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Stamp duty preview */}

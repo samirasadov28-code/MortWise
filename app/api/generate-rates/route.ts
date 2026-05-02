@@ -96,9 +96,14 @@ Return a JSON object with this exact structure:
 Include: one 3-5yr fixed, one long fixed (7-10yr), one tracker/variable, one with cashback.
 Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
 
-    // Try a list of currently-available xAI models in order — if one is gone
-    // (404 model_not_found) fall through to the next. Override via GROK_MODEL.
-    const modelCandidates = (process.env.GROK_MODEL ?? 'grok-2-latest,grok-3,grok-beta').split(',');
+    // Try the candidate models in order. xAI returns 404 for model-not-found
+    // sometimes and 422 for "invalid model" / "model not available to your
+    // tier" other times — both should fall through to the next candidate.
+    // 401/403/429 won't be fixed by changing the model, so fail fast on those.
+    // Override the list via GROK_MODEL env (comma-separated).
+    const modelCandidates = (
+      process.env.GROK_MODEL ?? 'grok-3,grok-3-mini,grok-2-1212,grok-beta'
+    ).split(',');
     let response: Response | null = null;
     let lastErrorBody = '';
     let lastStatus = 0;
@@ -123,9 +128,12 @@ Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
       if (response.ok) break;
       lastStatus = response.status;
       lastErrorBody = await response.text();
-      // Only fall through on 404 — auth, quota, validation errors won't get
-      // fixed by trying a different model.
-      if (response.status !== 404) break;
+      const looksLikeModelIssue =
+        response.status === 404 ||
+        response.status === 422 ||
+        /model/i.test(lastErrorBody);
+      // Fail fast on auth / quota / rate-limit — different model won't help.
+      if (!looksLikeModelIssue) break;
     }
 
     if (!response || !response.ok) {
