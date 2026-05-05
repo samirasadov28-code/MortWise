@@ -11,13 +11,30 @@ interface CashbackPanelProps {
 }
 
 export default function CashbackPanel({ results, inputs, market, displayMarket }: CashbackPanelProps) {
-  const cashbackScenarios = results.filter((r) => r.cashbackReceived > 0);
-  if (cashbackScenarios.length === 0) return null;
   const dm = displayMarket ?? market;
   const fmt = (v: number) => formatCurrencyIn(v, market, dm);
-
+  const cashbackScenarios = results.filter((r) => r.cashbackReceived > 0);
   // Find the non-cashback scenario for break-even comparison
   const baselineResult = results.find((r) => r.cashbackReceived === 0);
+
+  if (cashbackScenarios.length === 0) {
+    return (
+      <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
+        <p className="text-sm text-[#6b7a8a]">
+          None of your scenarios include lender cashback, so there&rsquo;s nothing to analyse here.
+        </p>
+        <p className="text-xs text-[#6b7a8a]/80 mt-2 leading-relaxed">
+          Cashback is a one-off payment some lenders give you at drawdown
+          (typical in Ireland, ~1–3% of the loan; rare elsewhere). To model it:
+          set a wizard-level cashback amount in <strong>Step 4 · Rate type</strong>,
+          or enter a per-lender cashback % under each scenario in
+          <strong> Step 5 · Lender scenarios</strong>. The analysis below will then show the
+          gross amount, the clawback schedule, and the break-even point versus
+          a non-cashback alternative.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">

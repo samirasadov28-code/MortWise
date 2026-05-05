@@ -7,6 +7,7 @@ import type { WizardState, ScenarioResult, MarketCode } from '@/lib/types';
 import { DEFAULT_WIZARD_STATE } from '@/lib/defaults';
 import { COMPARISON_CURRENCIES } from '@/lib/fx';
 import { MARKETS } from '@/lib/markets';
+import { buildPreparedScenarios } from '@/lib/wizard';
 import { getUnlockState } from '@/lib/stripe';
 import { runScenarios } from '@/lib/engine/scenarios';
 import Disclaimer from '@/components/shared/Disclaimer';
@@ -105,32 +106,7 @@ export default function CalculatorPage() {
         ? new Date(state.purchaseDate + '-01')
         : new Date();
 
-      const requestedLoan = Math.max(0, state.housePrice - state.deposit);
-      const preparedScenarios = state.scenarios.map((s) => {
-        // Wizard-level cashback is a fixed currency amount; convert to a
-        // percent of the loan so the engine can apply it uniformly.
-        const wizardCashbackPct = state.wizardCashbackAmount > 0 && requestedLoan > 0
-          ? state.wizardCashbackAmount / requestedLoan
-          : undefined;
-        return {
-          ...s,
-          housePrice: state.housePrice,
-          loanToValue: state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0.8,
-          mortgageTerm: state.mortgageTerm,
-          rateStructure: state.rateStructure,
-          govtSupportAmount: state.govtSchemeEnabled ? state.govtSupportAmount : 0,
-          splitFixedProportion: state.rateStructure === 'split' ? state.splitFixedProportion : undefined,
-          splitVariableProportion: state.rateStructure === 'split' ? 1 - state.splitFixedProportion : undefined,
-          // Wizard-level payment holiday — applies to all scenarios uniformly.
-          holidayStart: state.paymentHolidayMonths > 0 ? 1 : s.holidayStart,
-          holidayDuration: state.paymentHolidayMonths > 0 ? state.paymentHolidayMonths : s.holidayDuration,
-          // Wizard-level cashback overrides the per-scenario value when set.
-          cashbackPercent: wizardCashbackPct ?? s.cashbackPercent,
-          cashbackClawbackYears: wizardCashbackPct !== undefined
-            ? state.wizardCashbackClawbackYears
-            : s.cashbackClawbackYears,
-        };
-      });
+      const preparedScenarios = buildPreparedScenarios(state);
 
       const computed = runScenarios(preparedScenarios, startDate);
       setResults(computed);

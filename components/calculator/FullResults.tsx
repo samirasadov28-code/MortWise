@@ -16,6 +16,7 @@ import BuyToLetPanel from '@/components/results/BuyToLetPanel';
 import SensitivityPanel from '@/components/results/SensitivityPanel';
 import ForeignCurrencyPanel from '@/components/results/ForeignCurrencyPanel';
 import CalculationBreakdown from '@/components/results/CalculationBreakdown';
+import { buildPreparedScenarios } from '@/lib/wizard';
 
 interface FullResultsProps {
   results: ScenarioResult[];
@@ -29,6 +30,11 @@ export default function FullResults({ results, state, displayMarket }: FullResul
   const exportRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
   const ranked = rankScenarios(results);
+  // Sub-panels (overpayment, holiday) need a "ready to amortise" scenario that
+  // already has the wizard's housePrice / term / cashback / etc. merged in —
+  // not the raw seed scenario from the lender list.
+  const preparedScenarios = buildPreparedScenarios(state);
+  const primaryPrepared = preparedScenarios[0];
 
   async function handleExportPDF() {
     if (typeof window === 'undefined' || exporting) return;
@@ -157,25 +163,23 @@ export default function FullResults({ results, state, displayMarket }: FullResul
             <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Overpayment simulator
             </h3>
-            <OverpaymentPanel primaryInput={state.scenarios[0]} market={state.market} displayMarket={dm} />
+            <OverpaymentPanel primaryInput={primaryPrepared} market={state.market} displayMarket={dm} />
           </section>
         )}
 
-        {results.some((r) => r.cashbackReceived > 0) && (
-          <section>
-            <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-              Cashback analysis
-            </h3>
-            <CashbackPanel results={ranked} inputs={state.scenarios} market={state.market} displayMarket={dm} />
-          </section>
-        )}
+        <section>
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
+            Cashback analysis
+          </h3>
+          <CashbackPanel results={ranked} inputs={preparedScenarios} market={state.market} displayMarket={dm} />
+        </section>
 
         {state.scenarios[0] && (
           <section>
             <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
               Interest holiday
             </h3>
-            <HolidayPanel primaryInput={state.scenarios[0]} market={state.market} displayMarket={dm} />
+            <HolidayPanel primaryInput={primaryPrepared} market={state.market} displayMarket={dm} />
           </section>
         )}
 
