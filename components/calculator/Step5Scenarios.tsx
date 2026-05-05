@@ -15,12 +15,14 @@ interface AIRateResponse {
   scenarios: Partial<ScenarioInput>[];
   generatedAt: string;
   disclaimer: string;
+  provider?: string;
+  model?: string;
 }
 
 export default function Step5Scenarios({ state, onChange }: Step5Props) {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
-  const [aiMeta, setAiMeta] = useState<{ generatedAt: string; disclaimer: string } | null>(null);
+  const [aiMeta, setAiMeta] = useState<{ generatedAt: string; disclaimer: string; provider?: string; model?: string } | null>(null);
   const [aiGeneratedIds, setAiGeneratedIds] = useState<Set<string>>(new Set());
 
   const ltv = state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0.8;
@@ -67,7 +69,12 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
 
       const newAiIds = new Set(updated.map((s) => s.id));
       setAiGeneratedIds(newAiIds);
-      setAiMeta({ generatedAt: data.generatedAt, disclaimer: data.disclaimer });
+      setAiMeta({
+        generatedAt: data.generatedAt,
+        disclaimer: data.disclaimer,
+        provider: data.provider,
+        model: data.model,
+      });
       onChange({ scenarios: updated });
     } catch (err) {
       setAiError(err instanceof Error ? err.message : 'Failed to generate rates');
@@ -124,7 +131,12 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
 
       {aiMeta && (
         <div className="mb-4">
-          <AIRateBanner generatedAt={aiMeta.generatedAt} disclaimer={aiMeta.disclaimer} />
+          <AIRateBanner
+            generatedAt={aiMeta.generatedAt}
+            disclaimer={aiMeta.disclaimer}
+            provider={aiMeta.provider}
+            model={aiMeta.model}
+          />
         </div>
       )}
 

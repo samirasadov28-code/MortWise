@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { MARKETS } from '@/lib/markets';
 import { getLenders } from '@/lib/lenders';
 
+// ─── Request / Response schemas ───────────────────────────────────────────────
+
 const ALL_MARKETS = [
   'IE','UK','UAE','US','CN','JP','DE','FR','AU','CA','NL','KR','ES','IT','IN','SG','CH','BR',
   'MX','SA','TR','PL','ID','VN','SE','NO','BE','NZ','AT','DK','FI','PT','GR','CZ','HU','RO',
@@ -45,6 +47,149 @@ const marketContext: Record<string, string> = {
   CA: 'Canada, Bank of Canada rate, 5yr fixed typical ~4.5-5.5%, variable at prime-0.5 to prime+0.5',
 };
 
+// ─── Provider plumbing ────────────────────────────────────────────────────────
+
+type ProviderName = 'gemini' | 'groq' | 'grok';
+
+type CallResult =
+  | { ok: true; text: string }
+  | { ok: false; status: number; body: string };
+
+interface ProviderConfig {
+  name: ProviderName;
+  apiKey: string;
+  models: string[];
+  /** Run a single completion against this provider. */
+  call: (model: string, system: string, user: string, apiKey: string) => Promise<CallResult>;
+}
+
+/** OpenAI-compatible providers (Groq, xAI/Grok) share the same wire format. */
+async function callOpenAICompat(
+  baseUrl: string,
+  model: string,
+  system: string,
+  user: string,
+  apiKey: string,
+  jsonMode: boolean,
+): Promise<CallResult> {
+  const body: Record<string, unknown> = {
+    model,
+    messages: [
+      { role: 'system', content: system },
+      { role: 'user', content: user },
+    ],
+    max_tokens: 1024,
+    temperature: 0.3,
+  };
+  if (jsonMode) body.response_format = { type: 'json_object' };
+
+  const res = await fetch(`${baseUrl}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) return { ok: false, status: res.status, body: await res.text() };
+  const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  return { ok: true, text: data.choices?.[0]?.message?.content ?? '' };
+}
+
+/** Google Gemini's REST API uses a different shape from OpenAI-compat. */
+async function callGemini(
+  model: string,
+  system: string,
+  user: string,
+  apiKey: string,
+): Promise<CallResult> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 1024,
+        // Force the response to be parseable JSON — Gemini's killer feature
+        // for this use case.
+        responseMimeType: 'application/json',
+      },
+    }),
+  });
+  if (!res.ok) return { ok: false, status: res.status, body: await res.text() };
+  const data = (await res.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  };
+  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
+  return { ok: true, text };
+}
+
+const callGroq = (m: string, s: string, u: string, k: string) =>
+  callOpenAICompat('https://api.groq.com/openai/v1', m, s, u, k, true);
+const callGrok = (m: string, s: string, u: string, k: string) =>
+  callOpenAICompat('https://api.x.ai/v1', m, s, u, k, false);
+
+/**
+ * Build the configured-provider list from environment variables.
+ * Order is: AI_PROVIDER_ORDER (or default gemini→groq→grok), filtered to those
+ * with an API key. If none are configured, the route fails fast with a helpful
+ * error mentioning all three env vars.
+ */
+function buildProviders(): ProviderConfig[] {
+  const all: Record<ProviderName, ProviderConfig | null> = {
+    gemini: process.env.GEMINI_API_KEY
+      ? {
+          name: 'gemini',
+          apiKey: process.env.GEMINI_API_KEY,
+          models: (process.env.GEMINI_MODEL ?? 'gemini-2.0-flash,gemini-2.5-flash,gemini-1.5-flash').split(','),
+          call: callGemini,
+        }
+      : null,
+    groq: process.env.GROQ_API_KEY
+      ? {
+          name: 'groq',
+          apiKey: process.env.GROQ_API_KEY,
+          models: (process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile,llama-3.1-70b-versatile,llama-3.1-8b-instant').split(','),
+          call: callGroq,
+        }
+      : null,
+    grok: process.env.GROK_API_KEY
+      ? {
+          name: 'grok',
+          apiKey: process.env.GROK_API_KEY,
+          models: (process.env.GROK_MODEL ?? 'grok-3,grok-3-mini,grok-2-1212,grok-beta').split(','),
+          call: callGrok,
+        }
+      : null,
+  };
+
+  const orderEnv = (process.env.AI_PROVIDER_ORDER ?? 'gemini,groq,grok').split(',');
+  return orderEnv
+    .map((n) => n.trim().toLowerCase() as ProviderName)
+    .map((n) => all[n])
+    .filter((p): p is ProviderConfig => p !== null);
+}
+
+/**
+ * Best-effort error detail extraction from a provider's error response body —
+ * works for OpenAI-compat (`{error: {message}}`) and Gemini
+ * (`{error: {message}}`) and falls back to raw text.
+ */
+function extractDetail(body: string): string {
+  if (!body) return '';
+  try {
+    const parsed = JSON.parse(body) as { error?: { message?: string } | string };
+    if (typeof parsed.error === 'string') return parsed.error;
+    if (parsed.error?.message) return parsed.error.message;
+  } catch { /* not JSON */ }
+  return body.slice(0, 200);
+}
+
+// ─── Route handler ────────────────────────────────────────────────────────────
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -53,17 +198,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
-    const apiKey = process.env.GROK_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Grok API key not configured' }, { status: 500 });
+    const providers = buildProviders();
+    if (providers.length === 0) {
+      return NextResponse.json(
+        {
+          error:
+            'No AI provider configured. Set GEMINI_API_KEY (recommended, free tier at https://aistudio.google.com), GROQ_API_KEY (free tier at https://console.groq.com), or GROK_API_KEY in your environment variables.',
+        },
+        { status: 500 },
+      );
     }
 
     const { market, ltv, term, buyerType, rateStructure } = parsed.data;
     const marketName = MARKETS[market]?.name ?? market;
     const currency = MARKETS[market]?.currency ?? '';
     const ctx = marketContext[market] ?? `${marketName} (${currency})`;
-    // Pass our hand-curated lender list to the model so it returns names of real
-    // banks the user already sees in Step 5, instead of inventing fictional ones.
     const knownLenders = getLenders(market).map((l) => l.name).join(', ');
 
     const prompt = `Generate 4 realistic mortgage rate scenarios for a ${marketName} (${market}) buyer.
@@ -96,86 +245,64 @@ Return a JSON object with this exact structure:
 Include: one 3-5yr fixed, one long fixed (7-10yr), one tracker/variable, one with cashback.
 Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
 
-    // Try the candidate models in order. xAI returns 404 for model-not-found
-    // sometimes and 422 for "invalid model" / "model not available to your
-    // tier" other times — both should fall through to the next candidate.
-    // 401/403/429 won't be fixed by changing the model, so fail fast on those.
-    // Override the list via GROK_MODEL env (comma-separated).
-    const modelCandidates = (
-      process.env.GROK_MODEL ?? 'grok-3,grok-3-mini,grok-2-1212,grok-beta'
-    ).split(',');
-    let response: Response | null = null;
-    let lastErrorBody = '';
-    let lastStatus = 0;
-    for (const raw of modelCandidates) {
-      const model = raw.trim();
-      response = await fetch('https://api.x.ai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
+    // Try every configured provider in order. Within each provider, try its
+    // candidate models in order. Surface a clear error mentioning the provider
+    // and model that failed last.
+    const errors: string[] = [];
+    for (const provider of providers) {
+      for (const rawModel of provider.models) {
+        const model = rawModel.trim();
+        if (!model) continue;
+        const result = await provider.call(model, SYSTEM_PROMPT, prompt, provider.apiKey);
+
+        if (!result.ok) {
+          const detail = extractDetail(result.body);
+          errors.push(`${provider.name}/${model} (${result.status}): ${detail || 'unknown error'}`);
+          // Auth / forbidden — different model won't help, skip rest of provider
+          if (result.status === 401 || result.status === 403) break;
+          // Rate limited — skip rest of provider, try next provider
+          if (result.status === 429) break;
+          // Otherwise (404 model-not-found, 422 model-invalid, 5xx) try next model
+          continue;
+        }
+
+        // Got a response — strip any markdown code fences and validate.
+        const cleaned = result.text
+          .replace(/^```(?:json)?\n?/i, '')
+          .replace(/\n?```$/i, '')
+          .trim();
+        if (!cleaned) {
+          errors.push(`${provider.name}/${model}: empty response`);
+          continue;
+        }
+        let parsedJson: unknown;
+        try {
+          parsedJson = JSON.parse(cleaned);
+        } catch {
+          errors.push(`${provider.name}/${model}: response was not valid JSON`);
+          continue;
+        }
+        const validated = ResponseSchema.safeParse(parsedJson);
+        if (!validated.success) {
+          errors.push(`${provider.name}/${model}: response did not match schema`);
+          continue;
+        }
+
+        return NextResponse.json({
+          ...validated.data,
+          provider: provider.name,
           model,
-          messages: [
-            { role: 'system', content: SYSTEM_PROMPT },
-            { role: 'user', content: prompt },
-          ],
-          max_tokens: 1024,
-          temperature: 0.3,
-        }),
-      });
-      if (response.ok) break;
-      lastStatus = response.status;
-      lastErrorBody = await response.text();
-      const looksLikeModelIssue =
-        response.status === 404 ||
-        response.status === 422 ||
-        /model/i.test(lastErrorBody);
-      // Fail fast on auth / quota / rate-limit — different model won't help.
-      if (!looksLikeModelIssue) break;
+          generatedAt: new Date().toISOString(),
+        });
+      }
     }
 
-    if (!response || !response.ok) {
-      console.error('Grok API error:', lastStatus, lastErrorBody);
-      // Pull the underlying message out so the user sees a useful reason.
-      let detail = lastErrorBody.slice(0, 200);
-      try {
-        const parsedErr = JSON.parse(lastErrorBody) as { error?: { message?: string } | string };
-        if (typeof parsedErr.error === 'string') detail = parsedErr.error;
-        else if (parsedErr.error?.message) detail = parsedErr.error.message;
-      } catch { /* not JSON */ }
-      return NextResponse.json(
-        { error: `Grok API request failed${detail ? `: ${detail}` : ''}` },
-        { status: 502 },
-      );
-    }
-
-    const grokData = await response.json();
-    let jsonText: string = grokData.choices?.[0]?.message?.content ?? '';
-    if (!jsonText) {
-      return NextResponse.json({ error: 'Empty response from Grok' }, { status: 500 });
-    }
-
-    // Strip markdown code fences if present
-    jsonText = jsonText.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim();
-
-    let parsed2: unknown;
-    try {
-      parsed2 = JSON.parse(jsonText);
-    } catch {
-      return NextResponse.json({ error: 'Grok response was not valid JSON' }, { status: 500 });
-    }
-
-    const validated = ResponseSchema.safeParse(parsed2);
-    if (!validated.success) {
-      return NextResponse.json({ error: 'Grok response did not match expected schema' }, { status: 500 });
-    }
-
-    return NextResponse.json({
-      ...validated.data,
-      generatedAt: new Date().toISOString(),
-    });
+    console.error('All AI providers failed:', errors);
+    const lastTwo = errors.slice(-2).join(' · ');
+    return NextResponse.json(
+      { error: `AI rate generation failed across ${providers.length} provider(s). ${lastTwo}` },
+      { status: 502 },
+    );
   } catch (error) {
     console.error('generate-rates error:', error);
     return NextResponse.json({ error: 'Rate generation failed' }, { status: 500 });
