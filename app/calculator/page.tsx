@@ -19,6 +19,7 @@ import Step4RateStructure from '@/components/calculator/Step4RateStructure';
 import Step5Scenarios from '@/components/calculator/Step5Scenarios';
 import FreeResults from '@/components/calculator/FreeResults';
 import FullResults from '@/components/calculator/FullResults';
+import MortgageChat from '@/components/shared/MortgageChat';
 
 type Phase = 'wizard' | 'results';
 
@@ -220,6 +221,10 @@ export default function CalculatorPage() {
           </div>
         )}
       </main>
+
+      {/* Floating mortgage chat — hide it inside the wizard sheets, where the
+          sticky Back/Next bar already occupies the bottom-right area. */}
+      <MortgageChat state={state} results={results} hidden={phase === 'wizard'} />
 
       <Disclaimer />
     </div>
