@@ -175,13 +175,13 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
               <div>
                 <p className="text-xs text-[#6b7a8a] mb-1">Cashback amount</p>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
                   <FormattedNumberInput
                     value={cashbackDisplay}
                     onValueChange={(v) => onChange({ wizardCashbackAmount: Math.round(v * displayToLocal) })}
                     min={0}
                     placeholder="0"
-                    className="w-full pl-8 pr-4 py-2.5 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                    className="w-full pl-4 pr-14 py-2.5 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
                   />
                 </div>
                 {!isLocal && state.wizardCashbackAmount > 0 && (

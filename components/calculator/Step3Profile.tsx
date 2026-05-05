@@ -62,13 +62,13 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
               <Tooltip content="Your total pre-tax income from all sources. Used to check against the lender income multiple cap (e.g. 3.5× in Ireland)." />
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
               <FormattedNumberInput
                 value={state.annualIncome}
                 onValueChange={(v) => onChange({ annualIncome: v })}
                 min={0}
                 placeholder="70,000"
-                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                className="w-full pl-4 pr-14 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
               />
             </div>
           </div>
@@ -78,13 +78,13 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
               Co-borrower income (optional)
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
               <FormattedNumberInput
                 value={state.coBorrowerIncome}
                 onValueChange={(v) => onChange({ coBorrowerIncome: v })}
                 min={0}
                 placeholder="0"
-                className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                className="w-full pl-4 pr-14 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
               />
             </div>
           </div>
@@ -202,13 +202,13 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                   Adjust amount (defaults to maximum for {state.selectedGovtSchemeName ?? 'selected scheme'})
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
                   <FormattedNumberInput
                     value={state.govtSupportAmount}
                     onValueChange={(v) => onChange({ govtSupportAmount: v })}
                     min={0}
                     placeholder="30,000"
-                    className="w-full pl-8 pr-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
+                    className="w-full pl-4 pr-14 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] placeholder-[#9aa5b0] focus:outline-none focus:border-[#4a7c96] transition-colors"
                   />
                 </div>
               </div>
