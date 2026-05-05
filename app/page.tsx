@@ -175,7 +175,9 @@ export default function LandingPage() {
           <div className="bg-white border border-[#e8e3dc] rounded-xl p-5 sm:p-6">
             <div className="mb-4">
               <h3 className="text-base sm:text-lg font-bold text-[#2a2520]">Free</h3>
-              <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">Free</p>
+              <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">
+                €0 <span className="text-sm font-normal text-[#6b7a8a]">/ month</span>
+              </p>
             </div>
             <ul className="space-y-2 mb-6">
               {FREE_FEATURES.map((f) => (
