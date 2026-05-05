@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { WizardState, ScenarioResult, MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import { newtonRaphsonIRR } from '@/lib/engine/irr';
+import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 
 interface BuyToLetPanelProps {
   state: WizardState;
@@ -117,14 +118,22 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
         deal pays itself back.
       </p>
 
-      {/* Inputs */}
+      {/* Inputs — monthly rent uses FormattedNumberInput (commas, currency on right);
+          percentage / year fields use draft-string state so the user can fully
+          delete the value and retype, including the last "0". */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
-        <Field label="Monthly rent" value={monthlyRent} setValue={setMonthlyRent} step={50} prefix={market.currencySymbol} />
-        <Field label="Opex %" value={Math.round(opexRatio * 100)} setValue={(v) => setOpexRatio(v / 100)} step={1} suffix="%" max={100} />
-        <Field label="Occupancy %" value={Math.round(occupancy * 100)} setValue={(v) => setOccupancy(v / 100)} step={1} suffix="%" max={100} />
-        <Field label="Hold (yrs)" value={holdYears} setValue={setHoldYears} step={1} min={1} max={state.mortgageTerm} />
-        <Field label="Rent inflation %/yr" value={Math.round(rentInflation * 1000) / 10} setValue={(v) => setRentInflation(v / 100)} step={0.5} suffix="%" />
-        <Field label="Property appreciation %/yr" value={Math.round(appreciation * 1000) / 10} setValue={(v) => setAppreciation(v / 100)} step={0.5} suffix="%" />
+        <CurrencyField
+          label="Monthly rent"
+          value={monthlyRent}
+          setValue={setMonthlyRent}
+          symbol={market.currencySymbol}
+          placeholder="2,000"
+        />
+        <NumberField label="Opex %" value={Math.round(opexRatio * 100)} setValue={(v) => setOpexRatio(v / 100)} suffix="%" max={100} placeholder="25" />
+        <NumberField label="Occupancy %" value={Math.round(occupancy * 100)} setValue={(v) => setOccupancy(v / 100)} suffix="%" max={100} placeholder="95" />
+        <NumberField label="Hold (yrs)" value={holdYears} setValue={setHoldYears} min={1} max={state.mortgageTerm} placeholder="10" />
+        <NumberField label="Rent inflation %/yr" value={Math.round(rentInflation * 1000) / 10} setValue={(v) => setRentInflation(v / 100)} suffix="%" allowDecimal placeholder="2.0" />
+        <NumberField label="Property appreciation %/yr" value={Math.round(appreciation * 1000) / 10} setValue={(v) => setAppreciation(v / 100)} suffix="%" allowDecimal placeholder="3.0" />
       </div>
 
       {/* Headline metrics */}
@@ -193,17 +202,20 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
   );
 }
 
-function Field({
-  label, value, setValue, step, prefix, suffix, min, max,
+/**
+ * Currency input with comma-separator formatting and the currency symbol on
+ * the right. Reuses our shared FormattedNumberInput which already lets the
+ * user fully delete the digits — including the last "0" — and treats empty
+ * as 0 internally.
+ */
+function CurrencyField({
+  label, value, setValue, symbol, placeholder,
 }: {
   label: string;
   value: number;
   setValue: (n: number) => void;
-  step: number;
-  prefix?: string;
-  suffix?: string;
-  min?: number;
-  max?: number;
+  symbol: string;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -211,20 +223,78 @@ function Field({
         {label}
       </label>
       <div className="relative">
-        {prefix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{prefix}</span>
-        )}
+        <FormattedNumberInput
+          value={value}
+          onValueChange={setValue}
+          min={0}
+          placeholder={placeholder}
+          className="w-full pl-3 pr-12 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-xs pointer-events-none">{symbol}</span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Plain numeric input that holds its own draft-string state so the user can
+ * fully delete the digits — including the last 0 — without the parent's
+ * number snapping back into the input. Syncs to parent on every keystroke.
+ * Resyncs from the parent when the parent's value changes externally
+ * (e.g. on Reset).
+ */
+function NumberField({
+  label, value, setValue, min, max, suffix, allowDecimal, placeholder,
+}: {
+  label: string;
+  value: number;
+  setValue: (n: number) => void;
+  min?: number;
+  max?: number;
+  suffix?: string;
+  allowDecimal?: boolean;
+  placeholder?: string;
+}) {
+  const [draft, setDraft] = useState<string>(value === 0 ? '' : String(value));
+  // Re-sync if the parent's value drifts away from what our string would parse to.
+  useEffect(() => {
+    const parsed = Number(draft);
+    if (Number.isFinite(parsed) && parsed === value) return;
+    setDraft(value === 0 ? '' : String(value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  function handleChange(raw: string) {
+    const allowed = allowDecimal ? /[^0-9.]/g : /[^0-9]/g;
+    const cleaned = raw.replace(allowed, '');
+    setDraft(cleaned);
+    if (cleaned === '' || cleaned === '.') {
+      setValue(0);
+      return;
+    }
+    let n = Number(cleaned);
+    if (!Number.isFinite(n)) return;
+    if (typeof max === 'number' && n > max) n = max;
+    if (typeof min === 'number' && n < min) n = min;
+    setValue(n);
+  }
+
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
+        {label}
+      </label>
+      <div className="relative">
         <input
-          type="number"
-          value={Number.isFinite(value) ? value : ''}
-          step={step}
-          min={min}
-          max={max}
-          onChange={(e) => setValue(Number(e.target.value))}
-          className={`w-full ${prefix ? 'pl-8' : 'pl-3'} ${suffix ? 'pr-8' : 'pr-3'} py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]`}
+          type="text"
+          inputMode={allowDecimal ? 'decimal' : 'numeric'}
+          value={draft}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder={placeholder}
+          className={`w-full pl-3 ${suffix ? 'pr-9' : 'pr-3'} py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]`}
         />
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{suffix}</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-xs pointer-events-none">{suffix}</span>
         )}
       </div>
     </div>

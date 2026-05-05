@@ -68,15 +68,51 @@ export function convertCurrency(amount: number, from: MarketCode, to: MarketCode
   return eur / (EUR_PER_UNIT[to] ?? 1);
 }
 
-/** Currencies offered as the cross-market comparison base. */
+/**
+ * Currencies offered as the cross-market comparison base. One representative
+ * market per unique currency code in the platform — covers all 52 markets'
+ * currencies (EUR, GBP, USD, JPY, CHF, AUD, CAD, NZD, SGD, HKD, CNY, KRW, TWD,
+ * THB, MYR, PHP, IDR, INR, VND, SEK, NOK, DKK, ISK, PLN, CZK, HUF, RON, TRY,
+ * UAH, AED, SAR, QAR, KWD, ILS, MXN, BRL, ARS, CLP, ZAR).
+ */
 export const COMPARISON_CURRENCIES: { market: MarketCode; label: string }[] = [
   { market: 'IE',  label: 'EUR' },
   { market: 'US',  label: 'USD' },
   { market: 'UK',  label: 'GBP' },
   { market: 'CH',  label: 'CHF' },
   { market: 'JP',  label: 'JPY' },
-  { market: 'SG',  label: 'SGD' },
-  { market: 'UAE', label: 'AED' },
   { market: 'AU',  label: 'AUD' },
   { market: 'CA',  label: 'CAD' },
+  { market: 'NZ',  label: 'NZD' },
+  { market: 'SG',  label: 'SGD' },
+  { market: 'HK',  label: 'HKD' },
+  { market: 'CN',  label: 'CNY' },
+  { market: 'KR',  label: 'KRW' },
+  { market: 'TW',  label: 'TWD' },
+  { market: 'TH',  label: 'THB' },
+  { market: 'MY',  label: 'MYR' },
+  { market: 'PH',  label: 'PHP' },
+  { market: 'ID',  label: 'IDR' },
+  { market: 'IN',  label: 'INR' },
+  { market: 'VN',  label: 'VND' },
+  { market: 'SE',  label: 'SEK' },
+  { market: 'NO',  label: 'NOK' },
+  { market: 'DK',  label: 'DKK' },
+  { market: 'IS',  label: 'ISK' },
+  { market: 'PL',  label: 'PLN' },
+  { market: 'CZ',  label: 'CZK' },
+  { market: 'HU',  label: 'HUF' },
+  { market: 'RO',  label: 'RON' },
+  { market: 'TR',  label: 'TRY' },
+  { market: 'UA',  label: 'UAH' },
+  { market: 'UAE', label: 'AED' },
+  { market: 'SA',  label: 'SAR' },
+  { market: 'QA',  label: 'QAR' },
+  { market: 'KW',  label: 'KWD' },
+  { market: 'IL',  label: 'ILS' },
+  { market: 'MX',  label: 'MXN' },
+  { market: 'BR',  label: 'BRL' },
+  { market: 'AR',  label: 'ARS' },
+  { market: 'CL',  label: 'CLP' },
+  { market: 'ZA',  label: 'ZAR' },
 ];

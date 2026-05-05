@@ -188,7 +188,7 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
                   type="number"
                   step="0.01"
                   value={scenario.fixedRate !== undefined ? (scenario.fixedRate * 100).toFixed(2) : ''}
-                  onChange={(e) => onChange({ fixedRate: Number(e.target.value) / 100 })}
+                  onChange={(e) => onChange({ fixedRate: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                   placeholder="3.80"
                 />
@@ -198,7 +198,7 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
                 <input
                   type="number"
                   value={scenario.fixedPeriodYears ?? ''}
-                  onChange={(e) => onChange({ fixedPeriodYears: Number(e.target.value) })}
+                  onChange={(e) => onChange({ fixedPeriodYears: e.target.value === "" ? undefined : Number(e.target.value) })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                   placeholder="5"
                   min={1}
@@ -219,7 +219,7 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
                   type="number"
                   step="0.01"
                   value={scenario.trackerBaseRate !== undefined ? (scenario.trackerBaseRate * 100).toFixed(2) : ''}
-                  onChange={(e) => onChange({ trackerBaseRate: Number(e.target.value) / 100 })}
+                  onChange={(e) => onChange({ trackerBaseRate: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                   placeholder="2.60"
                 />
@@ -233,7 +233,7 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
                   type="number"
                   step="0.01"
                   value={scenario.trackerMargin !== undefined ? (scenario.trackerMargin * 100).toFixed(2) : ''}
-                  onChange={(e) => onChange({ trackerMargin: Number(e.target.value) / 100 })}
+                  onChange={(e) => onChange({ trackerMargin: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                   placeholder="0.95"
                 />
@@ -250,7 +250,7 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
               type="number"
               step="0.01"
               value={scenario.variableRate !== undefined ? (scenario.variableRate * 100).toFixed(2) : ''}
-              onChange={(e) => onChange({ variableRate: Number(e.target.value) / 100 })}
+              onChange={(e) => onChange({ variableRate: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
               className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
               placeholder="4.20"
             />

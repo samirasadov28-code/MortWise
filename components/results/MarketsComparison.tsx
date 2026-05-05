@@ -8,6 +8,7 @@ import { formatCurrency, formatPercent } from '@/lib/formatting';
 import { convertCurrency, COMPARISON_CURRENCIES } from '@/lib/fx';
 import { getLenders } from '@/lib/lenders';
 import Flag from '@/components/shared/Flag';
+import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 
 interface MarketsComparisonProps {
   state: WizardState;
@@ -20,8 +21,8 @@ interface Row {
   maxLTV: number;
   avgFixedRate: number;
   avgFixedYears: number;
-  cashInvestedLocal: number;
-  affordablePrice: number;
+  propertyPriceLocal: number;
+  depositLocal: number;
   loanAmount: number;
   stampDuty: number;
   firstMonthlyPayment: number;
@@ -45,17 +46,16 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
     (['UK', 'US', 'PT', 'ES', 'UAE'] as MarketCode[]).forEach((c) => seed.add(c));
     return seed;
   });
-  // Currency in which all rankings are shown. Default = EUR (IE proxy).
-  const [baseCurrencyMarket, setBaseCurrencyMarket] = useState<MarketCode>('IE');
-  // The cash the investor brings to the table, in the comparison currency.
-  // Defaults to deposit + stamp duty + other fees from the home market scenario.
-  const [investedAmount, setInvestedAmount] = useState<number>(() => {
-    const home = MARKETS[state.market];
-    const stamp = home.stampDuty(state.housePrice, {
-      buyerType: 'investor',
-      propertyType: state.propertyType,
-    });
-    return Math.round(state.deposit + stamp + state.otherFees);
+  // Currency the user enters the price in, AND the currency in which the
+  // ranking column is shown. Defaults to USD — the most common cross-border
+  // pricing currency for international property buyers.
+  const [baseCurrencyMarket, setBaseCurrencyMarket] = useState<MarketCode>('US');
+  // The property price the user wants to buy at, expressed in baseCurrency.
+  // Same nominal price applies across every selected market — we convert to
+  // each market's local currency for the engine + tax calc.
+  const [priceInBase, setPriceInBase] = useState<number>(() => {
+    // Default = the home-market house price converted to USD
+    return Math.round(convertCurrency(state.housePrice, state.market, 'US'));
   });
 
   const term = state.mortgageTerm || 25;
@@ -65,51 +65,31 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
       .map((code): Row | null => {
         const market = MARKETS[code];
         if (!market) return null;
+        if (priceInBase <= 0) return null;
 
-        // Convert the user's invested amount (in baseCurrency) into the
-        // local currency to be deployed in this market.
-        const cashLocal = convertCurrency(investedAmount, baseCurrencyMarket, code);
+        // Same property price across all markets — convert to this market's
+        // local currency for stamp duty + amortisation.
+        const propertyPriceLocal = convertCurrency(priceInBase, baseCurrencyMarket, code);
 
         // Use the market's average curated rate + fixed period as a fair proxy.
         const { avgFixedRate, avgFixedYears } = averageLenderTerms(code);
 
-        // Solve for the property price the investor can afford given:
-        //   cashLocal = depositPct * price + stampDuty(price) + assumed other fees
-        // We use the market's regulatory max LTV → depositPct = 1 - maxLTV.
-        // Stamp duty is computed for an investor purchase. We solve iteratively
-        // because stampDuty can be non-linear (e.g. UK SDLT bands).
-        const depositPct = 1 - market.maxLTV;
-        const otherFees = 0; // already folded into cashInvested through the user-entered total
-        const solveAffordablePrice = (cash: number): number => {
-          let lo = 0;
-          let hi = cash * 100; // generous upper bound
-          for (let i = 0; i < 60; i++) {
-            const mid = (lo + hi) / 2;
-            const stamp = market.stampDuty(mid, {
-              buyerType: 'investor',
-              propertyType: state.propertyType,
-            });
-            const required = mid * depositPct + stamp + otherFees;
-            if (required > cash) hi = mid; else lo = mid;
-          }
-          return lo;
-        };
+        // Apply the market's regulatory max LTV → loan amount + deposit.
+        const ltv = market.maxLTV;
+        const loanAmount = propertyPriceLocal * ltv;
+        const depositLocal = propertyPriceLocal - loanAmount;
 
-        const affordablePrice = Math.max(0, solveAffordablePrice(cashLocal));
-        if (affordablePrice <= 0) return null;
-
-        const stampDuty = market.stampDuty(affordablePrice, {
+        const stampDuty = market.stampDuty(propertyPriceLocal, {
           buyerType: 'investor',
           propertyType: state.propertyType,
         });
-        const loanAmount = affordablePrice * market.maxLTV;
 
         const input: ScenarioInput = {
           id: `mkt-${code}`,
           lenderName: code,
-          housePrice: affordablePrice,
+          housePrice: propertyPriceLocal,
           otherFees: 0,
-          loanToValue: market.maxLTV,
+          loanToValue: ltv,
           otherFeesCoveredByDebt: false,
           mortgageTerm: term,
           rateStructure: 'fixed',
@@ -121,7 +101,7 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
         };
         const result = runAmortisation(input);
 
-        const totalCostLocal = result.totalAmountPaid + stampDuty + (affordablePrice - loanAmount);
+        const totalCostLocal = result.totalAmountPaid + stampDuty + depositLocal;
 
         return {
           code,
@@ -130,8 +110,8 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
           maxLTV: market.maxLTV,
           avgFixedRate,
           avgFixedYears: Math.min(avgFixedYears, term),
-          cashInvestedLocal: cashLocal,
-          affordablePrice,
+          propertyPriceLocal,
+          depositLocal,
           loanAmount,
           stampDuty,
           firstMonthlyPayment: result.firstMonthlyPayment,
@@ -142,7 +122,7 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
       })
       .filter((r): r is Row => r !== null)
       .sort((a, b) => a.totalCostBase - b.totalCostBase);
-  }, [selected, investedAmount, baseCurrencyMarket, term, state.propertyType]);
+  }, [selected, priceInBase, baseCurrencyMarket, term, state.propertyType]);
 
   function toggle(code: MarketCode) {
     setSelected((prev) => {
@@ -154,56 +134,58 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
   }
 
   const baseLabel =
-    COMPARISON_CURRENCIES.find((c) => c.market === baseCurrencyMarket)?.label ?? 'EUR';
+    COMPARISON_CURRENCIES.find((c) => c.market === baseCurrencyMarket)?.label ?? 'USD';
 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
       <div className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <p className="text-sm text-[#6b7a8a]">
-            Same cash on the table everywhere — converted to local currency, applied as
-            deposit + investor stamp duty, then a property is bought at the market&rsquo;s
-            max LTV using the average lender rate. Compare what your cash buys you across
-            countries.
+            Same property price across countries — entered in your chosen
+            currency, converted to each market&rsquo;s local currency, then
+            modelled with that market&rsquo;s max LTV, average lender rate,
+            and investor stamp duty.
           </p>
           <p className="text-xs text-[#6b7a8a]/70 mt-2">
-            Loan term {term} years. Per-market figures shown in local currency; ranking
-            uses the comparison currency below.
+            Loan term {term} years. Local-currency figures shown alongside the
+            ranking column in {baseLabel}.
           </p>
         </div>
+      </div>
 
-        {/* Comparison currency selector */}
-        <div className="flex flex-col gap-1 flex-shrink-0">
-          <label className="text-[11px] font-semibold uppercase tracking-wide text-[#6b7a8a]">
-            Compare in
+      {/* Property price + comparison currency */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
+            Property price (in {baseLabel})
+          </label>
+          <div className="relative">
+            <FormattedNumberInput
+              value={priceInBase}
+              onValueChange={setPriceInBase}
+              min={0}
+              placeholder="500,000"
+              className="w-full pl-3 pr-14 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-xs pointer-events-none">{baseLabel}</span>
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
+            Comparison currency
           </label>
           <select
             value={baseCurrencyMarket}
             onChange={(e) => setBaseCurrencyMarket(e.target.value as MarketCode)}
-            className="px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
+            className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
           >
             {COMPARISON_CURRENCIES.map((c) => (
               <option key={c.market} value={c.market}>
-                {c.label}
+                {c.label} — {MARKETS[c.market].name}
               </option>
             ))}
           </select>
         </div>
-      </div>
-
-      {/* Cash to invest */}
-      <div className="mb-4">
-        <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-          Cash to invest ({baseLabel})
-        </label>
-        <input
-          type="number"
-          value={investedAmount || ''}
-          step={1000}
-          min={0}
-          onChange={(e) => setInvestedAmount(Number(e.target.value))}
-          className="w-full max-w-xs px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
-        />
       </div>
 
       {/* Equal-size country boxes */}
@@ -236,7 +218,7 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
 
       {rows.length === 0 ? (
         <p className="text-sm text-[#6b7a8a] py-6 text-center">
-          Select at least one market and enter a cash amount to compare.
+          Select at least one market and enter a property price to compare.
         </p>
       ) : (
         <div className="overflow-x-auto">
@@ -246,10 +228,10 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
                 <th className="py-2 pr-3 font-semibold">Market</th>
                 <th className="py-2 pr-3 font-semibold text-right">Avg rate</th>
                 <th className="py-2 pr-3 font-semibold text-right">Max LTV</th>
-                <th className="py-2 pr-3 font-semibold text-right">Affordable price</th>
+                <th className="py-2 pr-3 font-semibold text-right">Price (local)</th>
+                <th className="py-2 pr-3 font-semibold text-right">Deposit</th>
                 <th className="py-2 pr-3 font-semibold text-right">Stamp duty</th>
                 <th className="py-2 pr-3 font-semibold text-right">Monthly</th>
-                <th className="py-2 pr-3 font-semibold text-right">Total cost (local)</th>
                 <th className="py-2 pr-3 font-semibold text-right">Total cost ({baseLabel})</th>
               </tr>
             </thead>
@@ -277,10 +259,10 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
                       <span className="block text-[10px] text-[#6b7a8a]/70">{r.avgFixedYears}y fix</span>
                     </td>
                     <td className="py-2.5 pr-3 text-right text-[#6b7a8a]">{formatPercent(r.maxLTV, 0)}</td>
-                    <td className="py-2.5 pr-3 text-right text-[#2a2520]">{formatCurrency(r.affordablePrice, r.code)}</td>
+                    <td className="py-2.5 pr-3 text-right text-[#2a2520]">{formatCurrency(r.propertyPriceLocal, r.code)}</td>
+                    <td className="py-2.5 pr-3 text-right text-[#6b7a8a]">{formatCurrency(r.depositLocal, r.code)}</td>
                     <td className="py-2.5 pr-3 text-right text-[#6b7a8a]">{formatCurrency(r.stampDuty, r.code)}</td>
                     <td className="py-2.5 pr-3 text-right text-[#2a2520]">{formatCurrency(r.firstMonthlyPayment, r.code)}</td>
-                    <td className="py-2.5 pr-3 text-right text-[#2a2520] font-semibold">{formatCurrency(r.totalCostLocal, r.code)}</td>
                     <td className="py-2.5 pr-3 text-right text-[#4a7c96] font-semibold">{formatCurrency(r.totalCostBase, baseCurrencyMarket)}</td>
                   </tr>
                 );
@@ -291,10 +273,11 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
       )}
 
       <p className="text-[11px] text-[#6b7a8a]/70 mt-3 leading-relaxed">
-        Affordable price is solved so deposit + investor stamp duty exactly absorbs the
-        cash you put in (the loan funds the rest at the market&rsquo;s max LTV). Avg rate
-        is the mean of the curated lender roster for that country. FX rates and per-market
-        averages are approximations refreshed periodically; FTB schemes are excluded.
+        The same property price (in {baseLabel}) is converted to each market&rsquo;s local
+        currency. Deposit = price × (1 − max LTV). Avg rate is the mean of the curated lender
+        roster for that country. FX rates are approximations refreshed periodically.
+        Government first-time-buyer schemes are excluded — they don&rsquo;t apply to overseas
+        investors.
       </p>
     </div>
   );
