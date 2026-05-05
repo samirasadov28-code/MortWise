@@ -6,7 +6,7 @@ import {
 } from 'recharts';
 import type { ScenarioResult } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
-import { formatCurrency, formatCurrencyIn } from '@/lib/formatting';
+import { formatCurrencyIn } from '@/lib/formatting';
 
 interface RepaymentBreakdownProps {
   results: ScenarioResult[];
