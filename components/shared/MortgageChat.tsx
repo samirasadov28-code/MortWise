@@ -1,8 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type { ScenarioResult, WizardState } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
+import {
+  subscribeFloating,
+  getFloatingSuppressed,
+  getFloatingSuppressedServer,
+} from '@/lib/floatingVisibility';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -12,8 +17,6 @@ interface ChatMessage {
 interface MortgageChatProps {
   state?: WizardState;
   results?: ScenarioResult[];
-  /** If true, hide the floating launcher (used on wizard sheets where space is tight). */
-  hidden?: boolean;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -23,15 +26,34 @@ const SUGGESTED_PROMPTS = [
   'What happens if rates go up by 2%?',
 ];
 
-export default function MortgageChat({ state, results, hidden }: MortgageChatProps) {
+export default function MortgageChat({ state, results }: MortgageChatProps) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [provider, setProvider] = useState<string | null>(null);
+  const [storedState, setStoredState] = useState<WizardState | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const hidden = useSyncExternalStore(subscribeFloating, getFloatingSuppressed, getFloatingSuppressedServer);
+
+  // Pick up the wizard's persisted state from sessionStorage so the chat has
+  // context even when mounted globally (where it can't be passed `state` as a
+  // prop). Refreshes whenever the panel opens.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (state) return;
+    if (!open) return;
+    try {
+      const saved = sessionStorage.getItem('mortwise_wizard');
+      if (saved) setStoredState(JSON.parse(saved) as WizardState);
+    } catch {
+      // ignore
+    }
+  }, [open, state]);
+
+  const effectiveState = state ?? storedState;
 
   // Auto-scroll to the latest message.
   useEffect(() => {
@@ -48,21 +70,22 @@ export default function MortgageChat({ state, results, hidden }: MortgageChatPro
   }, [open]);
 
   function buildContext() {
-    if (!state) return undefined;
-    const market = MARKETS[state.market];
+    const s = effectiveState;
+    if (!s) return undefined;
+    const market = MARKETS[s.market];
     const best = results?.length
       ? [...results].sort((a, b) => a.totalAmountPaid - b.totalAmountPaid)[0]
       : undefined;
     return {
-      market: state.market,
+      market: s.market,
       marketName: market?.name,
       currency: market?.currency,
-      housePrice: state.housePrice || undefined,
-      deposit: state.deposit || undefined,
-      mortgageTerm: state.mortgageTerm,
-      rateStructure: state.rateStructure,
-      buyerType: state.buyerType,
-      propertyType: state.propertyType,
+      housePrice: s.housePrice || undefined,
+      deposit: s.deposit || undefined,
+      mortgageTerm: s.mortgageTerm,
+      rateStructure: s.rateStructure,
+      buyerType: s.buyerType,
+      propertyType: s.propertyType,
       bestLender: best?.lenderName,
       bestMonthlyPayment: best?.firstMonthlyPayment,
       bestTotalInterest: best?.totalInterestPaid,
@@ -116,13 +139,15 @@ export default function MortgageChat({ state, results, hidden }: MortgageChatPro
 
   return (
     <>
-      {/* Floating launcher — bottom-right, sits above the Feedback button */}
+      {/* Floating launcher — bottom-LEFT corner. Feedback sits bottom-right;
+          they no longer stack. Hidden inside wizard sheets via the shared
+          floatingVisibility store so they don't fight the sticky Back/Next bar. */}
       {!hidden && (
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ask the mortgage assistant"
-          className="fixed bottom-20 right-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
+          className="fixed bottom-8 left-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
         >
           <span aria-hidden>💬</span>
           Ask MortWise

@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
 import FeedbackButton from '@/components/shared/FeedbackButton';
+import MortgageChat from '@/components/shared/MortgageChat';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.className} bg-[#f5f3ef] text-[#2a2520] min-h-screen`}>
         {children}
         <FeedbackButton />
+        <MortgageChat />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-5W0SH4M6KV"
           strategy="afterInteractive"

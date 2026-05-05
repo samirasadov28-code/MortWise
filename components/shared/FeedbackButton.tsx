@@ -1,40 +1,24 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import {
+  subscribeFloating,
+  getFloatingSuppressed,
+  getFloatingSuppressedServer,
+  setFloatingSuppressed,
+} from '@/lib/floatingVisibility';
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
-// ─── Tiny pub/sub so the floating button can be hidden by mounted children ────
-let suppressed = false;
-const listeners = new Set<() => void>();
-
-function subscribe(fn: () => void) {
-  listeners.add(fn);
-  return () => {
-    listeners.delete(fn);
-  };
-}
-function getSnapshot() {
-  return suppressed;
-}
-function getServerSnapshot() {
-  return false;
-}
-function setSuppressed(v: boolean) {
-  if (suppressed === v) return;
-  suppressed = v;
-  listeners.forEach((l) => l());
-}
-
 /**
- * Hook for any component that wants to hide the global floating Feedback
- * button while it is mounted (e.g. wizard sheets that already have a sticky
- * Back/Next bar — two floating elements at once is too cluttered).
+ * Hook for any component that wants to hide the global floating widgets
+ * (FeedbackButton + MortgageChat) while it is mounted — e.g. wizard sheets
+ * that already have a sticky Back/Next bar.
  */
 export function useSuppressFloatingFeedback() {
   useEffect(() => {
-    setSuppressed(true);
-    return () => setSuppressed(false);
+    setFloatingSuppressed(true);
+    return () => setFloatingSuppressed(false);
   }, []);
 }
 
@@ -183,7 +167,7 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
-  const isSuppressed = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const isSuppressed = useSyncExternalStore(subscribeFloating, getFloatingSuppressed, getFloatingSuppressedServer);
 
   return (
     <>
