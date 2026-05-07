@@ -139,7 +139,7 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
 
   return (
     <>
-      {/* Floating launcher — bottom-LEFT corner. Feedback sits bottom-right;
+      {/* Floating launcher — bottom-RIGHT corner. Feedback sits bottom-left;
           they no longer stack. Hidden inside wizard sheets via the shared
           floatingVisibility store so they don't fight the sticky Back/Next bar. */}
       {!hidden && (
@@ -147,7 +147,7 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ask the mortgage assistant"
-          className="fixed bottom-8 left-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
+          className="fixed bottom-8 right-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
         >
           <span aria-hidden>💬</span>
           Ask MortWise

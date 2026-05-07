@@ -1,14 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import type { ComponentType, SVGProps } from 'react';
 import Disclaimer from '@/components/shared/Disclaimer';
 import MarketsCarousel, { type MarketsCarouselItem } from '@/components/shared/MarketsCarousel';
+import LanguagePicker from '@/components/shared/LanguagePicker';
 import {
   HouseCoinsIcon,
   HouseChartIcon,
   HouseGlobeIcon,
   HouseSkyline,
 } from '@/components/shared/HouseIcons';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 const FREE_FEATURES = [
   'Monthly repayment estimate',
@@ -103,21 +107,25 @@ const MARKETS_LIST: MarketsCarouselItem[] = [
 ];
 
 export default function LandingPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-[#f5f3ef] text-[#2a2520]">
       {/* Nav — frozen on top, always visible */}
       <nav className="sticky top-0 z-40 border-b border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm px-6 py-3">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Image src="/Logo_192.png" alt="MortWise" width={56} height={56} className="rounded-xl" />
-            <span className="text-base sm:text-lg font-bold text-[#2a2520]">MortWise</span>
+            <span className="text-base sm:text-lg font-bold text-[#2a2520]">{t('brand.name')}</span>
           </div>
-          <Link
-            href="/calculator"
-            className="px-4 py-2 bg-[#4a7c96] hover:bg-[#3a6a82] text-white text-sm font-semibold rounded-lg transition-colors"
-          >
-            Start free →
-          </Link>
+          <div className="flex items-center gap-2">
+            <LanguagePicker compact />
+            <Link
+              href="/calculator"
+              className="px-4 py-2 bg-[#4a7c96] hover:bg-[#3a6a82] text-white text-sm font-semibold rounded-lg transition-colors"
+            >
+              {t('nav.startFree')}
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -127,18 +135,17 @@ export default function LandingPage() {
           <Image src="/Logo_512.png" alt="MortWise" width={80} height={80} className="rounded-2xl shadow-md sm:w-24 sm:h-24" />
         </div>
         <h1 className="text-2xl sm:text-5xl font-bold text-[#2a2520] mb-4 sm:mb-5 leading-tight">
-          Understand your mortgage —{' '}
-          <span className="text-[#4a7c96]">not just the monthly number</span>
+          {t('landing.heroTitle')}{' '}
+          <span className="text-[#4a7c96]">{t('landing.heroTitleAccent')}</span>
         </h1>
         <p className="text-sm sm:text-xl text-[#6b7a8a] mb-7 sm:mb-10 max-w-2xl mx-auto">
-          Compare fixed, variable, and split-rate mortgages side by side. Stress-test against rate rises.
-          See what you actually pay over 30 years. Built for first-time buyers who are tired of jargon.
+          {t('landing.heroSubtitle')}
         </p>
         <Link
           href="/calculator"
           className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-[#4a7c96] hover:bg-[#3a6a82] text-white font-bold text-base sm:text-lg rounded-xl transition-colors shadow-lg"
         >
-          Start free →
+          {t('landing.heroCta')}
         </Link>
       </section>
 
@@ -152,31 +159,31 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           <ValueProp
             Icon={HouseCoinsIcon}
-            title="Total cost of the home"
-            description="Don't just see the monthly payment — see total interest, total repaid, and the true 30-year cost of each home you might buy."
+            title={t('landing.valueProp1Title')}
+            description={t('landing.valueProp1Desc')}
           />
           <ValueProp
             Icon={HouseChartIcon}
-            title="Rate-rise stress test"
-            description="See exactly what your monthly payment becomes if rates rise +1%, +2%, or +3% when your fixed period expires — before you sign."
+            title={t('landing.valueProp2Title')}
+            description={t('landing.valueProp2Desc')}
           />
           <ValueProp
             Icon={HouseGlobeIcon}
-            title="Local property rules"
-            description={`Accurate stamp duty, first-time buyer schemes (Help to Buy, First Home Scheme, FHSA, KfW…), and lender limits for ${MARKETS_LIST.length} housing markets.`}
+            title={t('landing.valueProp3Title')}
+            description={t('landing.valueProp3DescTpl', { count: MARKETS_LIST.length })}
           />
         </div>
       </section>
 
       {/* Free vs Paid */}
       <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
-        <h2 className="text-xl sm:text-2xl font-bold text-[#2a2520] text-center mb-6 sm:mb-8">Free vs Full</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-[#2a2520] text-center mb-6 sm:mb-8">{t('landing.freeVsFull')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div className="bg-white border border-[#e8e3dc] rounded-xl p-5 sm:p-6">
             <div className="mb-4">
-              <h3 className="text-base sm:text-lg font-bold text-[#2a2520]">Free</h3>
+              <h3 className="text-base sm:text-lg font-bold text-[#2a2520]">{t('landing.free')}</h3>
               <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">
-                €0 <span className="text-sm font-normal text-[#6b7a8a]">/ month</span>
+                €0 <span className="text-sm font-normal text-[#6b7a8a]">{t('landing.perMonth')}</span>
               </p>
             </div>
             <ul className="space-y-2 mb-6">
@@ -191,18 +198,18 @@ export default function LandingPage() {
               href="/calculator"
               className="block text-center py-3 border border-[#e8e3dc] hover:border-[#4a7c96] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] text-sm font-medium transition-colors"
             >
-              Start free
+              {t('landing.heroCta')}
             </Link>
           </div>
 
           <div className="bg-white border border-[#4a7c96]/40 rounded-xl p-5 sm:p-6">
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-bold text-[#2a2520]">Full</h3>
-                <span className="text-xs px-2 py-0.5 bg-[#4a7c96]/20 text-[#4a7c96] rounded-full font-medium">Best value</span>
+                <h3 className="text-base sm:text-lg font-bold text-[#2a2520]">{t('landing.full')}</h3>
+                <span className="text-xs px-2 py-0.5 bg-[#4a7c96]/20 text-[#4a7c96] rounded-full font-medium">{t('landing.bestValue')}</span>
               </div>
               <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">
-                €3.99 <span className="text-sm font-normal text-[#6b7a8a]">/ month</span>
+                €3.99 <span className="text-sm font-normal text-[#6b7a8a]">{t('landing.perMonth')}</span>
               </p>
             </div>
             <ul className="space-y-2 mb-6">
@@ -217,7 +224,7 @@ export default function LandingPage() {
               href="/calculator"
               className="block text-center py-3 bg-[#4a7c96] hover:bg-[#3a6a82] rounded-lg text-white text-sm font-semibold transition-colors"
             >
-              Start free, upgrade inside →
+              {t('landing.fullCta')}
             </Link>
           </div>
         </div>
@@ -226,10 +233,10 @@ export default function LandingPage() {
       {/* Markets */}
       <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
         <h2 className="text-lg sm:text-xl font-bold text-[#2a2520] text-center mb-2">
-          Available housing markets <span className="text-[#4a7c96]">({MARKETS_LIST.length})</span>
+          {t('landing.availableMarkets')} <span className="text-[#4a7c96]">({MARKETS_LIST.length})</span>
         </h2>
         <p className="text-xs sm:text-sm text-[#6b7a8a] text-center mb-5 sm:mb-6">
-          Stamp duty, deposit rules, and first-time buyer schemes are tuned per country. Use the arrows to browse.
+          {t('landing.marketsHint')}
         </p>
         <MarketsCarousel markets={MARKETS_LIST} />
       </section>

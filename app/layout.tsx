@@ -4,6 +4,7 @@ import Script from 'next/script';
 import './globals.css';
 import FeedbackButton from '@/components/shared/FeedbackButton';
 import MortgageChat from '@/components/shared/MortgageChat';
+import { I18nProvider } from '@/lib/i18n/I18nProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,9 +25,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${inter.className} bg-[#f5f3ef] text-[#2a2520] min-h-screen`}>
-        {children}
-        <FeedbackButton />
-        <MortgageChat />
+        <I18nProvider>
+          {children}
+          <FeedbackButton />
+          <MortgageChat />
+        </I18nProvider>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-5W0SH4M6KV"
           strategy="afterInteractive"

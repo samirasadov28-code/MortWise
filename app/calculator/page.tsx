@@ -19,6 +19,7 @@ import Step4RateStructure from '@/components/calculator/Step4RateStructure';
 import Step5Scenarios from '@/components/calculator/Step5Scenarios';
 import FreeResults from '@/components/calculator/FreeResults';
 import FullResults from '@/components/calculator/FullResults';
+import LanguagePicker from '@/components/shared/LanguagePicker';
 
 type Phase = 'wizard' | 'results';
 
@@ -138,6 +139,7 @@ export default function CalculatorPage() {
             <span className="text-base sm:text-lg font-bold text-[#2a2520]">MortWise</span>
           </Link>
           <div className="flex items-center gap-2 flex-wrap justify-end">
+            <LanguagePicker compact />
             {/* Global comparison currency — visible whenever the user is on
                 the results screen, regardless of paid/free. */}
             {phase === 'results' && (

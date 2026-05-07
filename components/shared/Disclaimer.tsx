@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import packageJson from '@/package.json';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 const buildVersion = packageJson.version;
 
@@ -16,6 +17,7 @@ function hardReload() {
 
 export default function Disclaimer() {
   const [latestVersion, setLatestVersion] = useState<string>(buildVersion);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let cancelled = false;
@@ -48,7 +50,7 @@ export default function Disclaimer() {
   return (
     <div className="border-t border-[#e8e3dc] bg-[#f9f7f4] px-4 py-3 mt-8">
       <p className="text-center text-xs text-[#6b7a8a]">
-        MortWise is a calculation tool, not financial advice. Always speak to a qualified mortgage advisor before making decisions.
+        {t('disclaimer.text')}
       </p>
       <p className="text-center text-[11px] text-[#6b7a8a]/70 mt-1.5 font-mono flex items-center justify-center gap-2 flex-wrap">
         <span>v{buildVersion}</span>
@@ -57,7 +59,7 @@ export default function Disclaimer() {
           onClick={hardReload}
           className={`underline hover:text-[#4a7c96] ${updatePending ? 'text-[#4a7c96] font-semibold' : ''}`}
         >
-          {updatePending ? `update available (v${latestVersion}) — reload` : '↻ force update'}
+          {updatePending ? `${t('disclaimer.updateAvailable')} (v${latestVersion}) — reload` : t('disclaimer.forceUpdate')}
         </button>
       </p>
     </div>

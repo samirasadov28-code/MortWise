@@ -174,7 +174,7 @@ export default function FeedbackButton() {
       {!isSuppressed && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-8 right-5 z-50 px-4 py-2.5 bg-[#4a7c96] hover:bg-[#3a6a82] text-white text-sm font-semibold rounded-full shadow-lg transition-colors"
+          className="fixed bottom-8 left-5 z-50 px-4 py-2.5 bg-[#4a7c96] hover:bg-[#3a6a82] text-white text-sm font-semibold rounded-full shadow-lg transition-colors"
           aria-label="Send feedback"
         >
           Feedback
