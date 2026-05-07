@@ -140,6 +140,13 @@ const pt: Dictionary = {
   'saved.colTerm': 'Term',
   'saved.delete': 'Delete',
   'saved.fxNote': 'Saved values are stored in each scenario’s local currency and re-rendered on the fly into the display currency selected at the top of the page. Saved locally to your browser only.',
+
+  // ─── Saved scenarios import/export — TODO translate ───────────────────
+  'saved.export': '↓ Export JSON',
+  'saved.import': '↑ Import JSON',
+  'saved.exportedToast': 'Exported {n} scenario(s) to JSON',
+  'saved.importedToast': 'Imported {added} scenario(s), skipped {skipped}',
+  'saved.importFailed': 'Couldn’t import that file',
 };
 
 export default pt;

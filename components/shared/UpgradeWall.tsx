@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { setUnlockState } from '@/lib/stripe';
+import { showToast } from '@/components/shared/Toaster';
+import { track } from '@/lib/analytics';
 
 interface UpgradeWallProps {
   onUnlocked?: () => void;
@@ -33,18 +35,22 @@ export default function UpgradeWall({ onUnlocked }: UpgradeWallProps) {
   async function handleUpgrade() {
     setLoading(true);
     setError(null);
+    track('unlock_clicked');
     try {
       const res = await fetch('/api/create-checkout', { method: 'POST' });
       if (!res.ok) throw new Error('Failed to create checkout session');
       const { url, error: apiError } = await res.json();
       if (apiError) throw new Error(apiError);
       if (url) {
+        track('checkout_started');
         window.location.href = url;
       } else {
         throw new Error('No checkout URL returned');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      const msg = err instanceof Error ? err.message : 'Something went wrong';
+      setError(msg);
+      showToast({ kind: 'error', message: msg, durationMs: 6000 });
       setLoading(false);
     }
   }

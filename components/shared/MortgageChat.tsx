@@ -8,6 +8,8 @@ import {
   getFloatingSuppressed,
   getFloatingSuppressedServer,
 } from '@/lib/floatingVisibility';
+import { showToast } from '@/components/shared/Toaster';
+import { track } from '@/lib/analytics';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -46,7 +48,12 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
     if (state) return;
     if (!open) return;
     try {
-      const saved = sessionStorage.getItem('mortwise_wizard');
+      // Wizard state moved from sessionStorage to localStorage in v1.21+; read
+      // both so the assistant still has context if the user is mid-session
+      // during the upgrade window.
+      const saved =
+        window.localStorage.getItem('mortwise_wizard') ??
+        window.sessionStorage.getItem('mortwise_wizard');
       if (saved) setStoredState(JSON.parse(saved) as WizardState);
     } catch {
       // ignore
@@ -102,6 +109,7 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
     setInput('');
     setLoading(true);
 
+    track('chat_question_sent');
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -110,15 +118,24 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data?.error ?? `Chat failed (HTTP ${res.status})`);
+        const msg = data?.error ?? `Chat failed (HTTP ${res.status})`;
+        setError(msg);
+        showToast({ kind: 'error', message: msg, durationMs: 5000 });
+        track('chat_request_failed', { status: res.status });
       } else if (data?.message?.content) {
         setMessages([...newMessages, data.message]);
         if (data.provider) setProvider(data.provider);
       } else {
-        setError('Empty response from the assistant.');
+        const msg = 'Empty response from the assistant.';
+        setError(msg);
+        showToast({ kind: 'error', message: msg, durationMs: 5000 });
+        track('chat_request_failed', { reason: 'empty' });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Chat request failed');
+      const msg = e instanceof Error ? e.message : 'Chat request failed';
+      setError(msg);
+      showToast({ kind: 'error', message: msg, durationMs: 5000 });
+      track('chat_request_failed', { reason: 'network' });
     } finally {
       setLoading(false);
     }

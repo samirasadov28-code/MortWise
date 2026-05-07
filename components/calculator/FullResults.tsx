@@ -18,6 +18,8 @@ import ForeignCurrencyPanel from '@/components/results/ForeignCurrencyPanel';
 import CalculationBreakdown from '@/components/results/CalculationBreakdown';
 import SavedScenariosPanel from '@/components/results/SavedScenariosPanel';
 import { buildPreparedScenarios } from '@/lib/wizard';
+import { showToast } from '@/components/shared/Toaster';
+import { track } from '@/lib/analytics';
 
 interface FullResultsProps {
   results: ScenarioResult[];
@@ -40,6 +42,7 @@ export default function FullResults({ results, state, displayMarket }: FullResul
   async function handleExportPDF() {
     if (typeof window === 'undefined' || exporting) return;
     setExporting(true);
+    track('pdf_exported', { scenarios: ranked.length });
     try {
       const { default: jsPDF } = await import('jspdf');
       const { default: html2canvas } = await import('html2canvas');
@@ -96,6 +99,9 @@ export default function FullResults({ results, state, displayMarket }: FullResul
       }
 
       pdf.save(`mortwise-analysis-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'PDF export failed';
+      showToast({ kind: 'error', message: msg, durationMs: 6000 });
     } finally {
       setExporting(false);
     }

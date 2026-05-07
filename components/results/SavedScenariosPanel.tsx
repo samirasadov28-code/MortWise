@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MarketCode, ScenarioResult, WizardState } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { runScenarios } from '@/lib/engine/scenarios';
@@ -9,10 +9,14 @@ import { formatCurrencyIn, formatPercent, formatMonths } from '@/lib/formatting'
 import {
   type SavedAnalysis,
   deleteAnalysis,
+  exportSavedAnalyses,
+  importSavedAnalyses,
   listSavedAnalyses,
   saveAnalysis,
 } from '@/lib/savedScenarios';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
+import { showToast } from '@/components/shared/Toaster';
+import { track } from '@/lib/analytics';
 
 interface SavedScenariosPanelProps {
   /** The wizard state currently displayed in Full Results — i.e. the
@@ -50,6 +54,7 @@ export default function SavedScenariosPanel({
   const [items, setItems] = useState<SavedAnalysis[]>([]);
   const [name, setName] = useState('');
   const [justSavedId, setJustSavedId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setItems(listSavedAnalyses());
@@ -66,11 +71,52 @@ export default function SavedScenariosPanel({
     setItems(listSavedAnalyses());
     setJustSavedId(entry.id);
     window.setTimeout(() => setJustSavedId(null), 2000);
+    track('scenario_saved', { market: currentState.market });
   }
 
   function handleDelete(id: string) {
     deleteAnalysis(id);
     setItems(listSavedAnalyses());
+  }
+
+  function handleExport() {
+    if (items.length === 0) {
+      showToast({ kind: 'error', message: t('saved.empty') });
+      return;
+    }
+    const blob = new Blob([exportSavedAnalyses()], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mortwise-scenarios-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast({ kind: 'success', message: t('saved.exportedToast', { n: items.length }) });
+    track('scenarios_exported', { count: items.length });
+  }
+
+  function handleImportFile(file: File) {
+    file.text()
+      .then((text) => {
+        const result = importSavedAnalyses(text);
+        setItems(listSavedAnalyses());
+        showToast({
+          kind: 'success',
+          message: t('saved.importedToast', { added: result.added, skipped: result.skipped }),
+        });
+        track('scenarios_imported', { added: result.added, skipped: result.skipped });
+      })
+      .catch((err: unknown) => {
+        showToast({
+          kind: 'error',
+          message:
+            err instanceof Error
+              ? `${t('saved.importFailed')}: ${err.message}`
+              : t('saved.importFailed'),
+        });
+      });
   }
 
   return (
@@ -80,12 +126,13 @@ export default function SavedScenariosPanel({
           <h4 className="text-sm font-semibold text-[#2a2520]">{t('saved.heading')}</h4>
           <p className="text-xs text-[#6b7a8a] mt-0.5">{t('saved.subheading')}</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t('saved.namePlaceholder')}
+            aria-label={t('saved.namePlaceholder')}
             className="px-3 py-2 text-sm border border-[#e8e3dc] rounded-lg bg-white text-[#2a2520] focus:outline-none focus:border-[#4a7c96] w-44"
           />
           <button
@@ -95,6 +142,31 @@ export default function SavedScenariosPanel({
           >
             {t('saved.saveCurrent')}
           </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            className="px-3 py-2 border border-[#e8e3dc] hover:border-[#4a7c96] text-[#6b7a8a] hover:text-[#4a7c96] text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+          >
+            {t('saved.export')}
+          </button>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="px-3 py-2 border border-[#e8e3dc] hover:border-[#4a7c96] text-[#6b7a8a] hover:text-[#4a7c96] text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+          >
+            {t('saved.import')}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleImportFile(f);
+              e.target.value = '';
+            }}
+          />
         </div>
       </div>
 

@@ -5,6 +5,8 @@ import type { WizardState, ScenarioInput } from '@/lib/types';
 import AIRateBanner from '@/components/shared/AIRateBanner';
 import Tooltip from '@/components/shared/Tooltip';
 import { AIBadge } from '@/components/shared/AIRateBanner';
+import { showToast } from '@/components/shared/Toaster';
+import { track } from '@/lib/analytics';
 
 interface Step5Props {
   state: WizardState;
@@ -76,8 +78,15 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
         model: data.model,
       });
       onChange({ scenarios: updated });
+      track('rate_generation_succeeded', {
+        market: state.market,
+        provider: data.provider,
+      });
     } catch (err) {
-      setAiError(err instanceof Error ? err.message : 'Failed to generate rates');
+      const msg = err instanceof Error ? err.message : 'Failed to generate rates';
+      setAiError(msg);
+      showToast({ kind: 'error', message: msg, durationMs: 6000 });
+      track('rate_generation_failed', { market: state.market, message: msg });
     } finally {
       setAiLoading(false);
     }

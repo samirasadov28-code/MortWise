@@ -82,3 +82,75 @@ export function renameAnalysis(id: string, name: string): void {
   );
   writeAll(next);
 }
+
+interface ExportEnvelope {
+  app: 'mortwise';
+  kind: 'saved-analyses';
+  version: 1;
+  exportedAt: string;
+  items: SavedAnalysis[];
+}
+
+/** Serialise the saved-analyses list into a portable JSON file. */
+export function exportSavedAnalyses(): string {
+  const envelope: ExportEnvelope = {
+    app: 'mortwise',
+    kind: 'saved-analyses',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    items: listSavedAnalyses(),
+  };
+  return JSON.stringify(envelope, null, 2);
+}
+
+export interface ImportResult {
+  added: number;
+  skipped: number;
+  total: number;
+}
+
+/**
+ * Merge a previously-exported JSON file into the current saved-analyses list.
+ * Skips entries whose `id` already exists so a re-import is a no-op rather
+ * than producing duplicates. Throws on malformed input so the caller can
+ * surface an error toast.
+ */
+export function importSavedAnalyses(json: string): ImportResult {
+  const parsed = JSON.parse(json) as Partial<ExportEnvelope>;
+  if (
+    !parsed ||
+    parsed.app !== 'mortwise' ||
+    parsed.kind !== 'saved-analyses' ||
+    !Array.isArray(parsed.items)
+  ) {
+    throw new Error('Not a MortWise saved-scenarios export');
+  }
+
+  const existing = listSavedAnalyses();
+  const existingIds = new Set(existing.map((a) => a.id));
+  let added = 0;
+  let skipped = 0;
+  const incoming: SavedAnalysis[] = [];
+  for (const item of parsed.items as SavedAnalysis[]) {
+    if (
+      !item ||
+      typeof item.id !== 'string' ||
+      typeof item.name !== 'string' ||
+      typeof item.savedAt !== 'number' ||
+      !item.state
+    ) {
+      skipped++;
+      continue;
+    }
+    if (existingIds.has(item.id)) {
+      skipped++;
+      continue;
+    }
+    incoming.push(item);
+    added++;
+  }
+
+  const next = [...incoming, ...existing].slice(0, MAX_SAVED);
+  writeAll(next);
+  return { added, skipped, total: parsed.items.length };
+}

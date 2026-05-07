@@ -267,6 +267,10 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
         Base scenario: {baseScenario.lenderName} · {(baseRate * 100).toFixed(2)}% · {baseTerm} yrs ·
         {' '}{fmt(result.baseMonthly)}/mo · {fmt(result.baseTotal)} total.
       </p>
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        Updated. Monthly {fmt(result.monthly)}. Total {fmt(result.total)}.
+        Difference vs base {result.delta >= 0 ? 'plus' : 'minus'} {fmt(Math.abs(result.delta))}.
+      </p>
     </div>
   );
 }

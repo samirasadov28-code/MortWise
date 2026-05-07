@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { MarketCode } from '@/lib/types';
 import { MARKETS, LAUNCH_MARKETS } from '@/lib/markets';
@@ -9,6 +9,7 @@ import { formatCurrency, formatPercent } from '@/lib/formatting';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 import Flag from '@/components/shared/Flag';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
+import { track } from '@/lib/analytics';
 
 const inputClass =
   'w-full px-3 py-2 border border-[#e8e3dc] rounded-lg bg-white text-[#2a2520] focus:outline-none focus:border-[#4a7c96] text-sm';
@@ -67,12 +68,27 @@ export default function AffordabilityCalculator({
       mortgageTerm: termYears,
     };
     try {
-      sessionStorage.setItem(PREFILL_KEY, JSON.stringify(prefill));
+      window.localStorage.setItem(PREFILL_KEY, JSON.stringify(prefill));
     } catch {
-      // sessionStorage unavailable — proceed anyway
+      // localStorage unavailable — proceed anyway
     }
+    track('affordability_handoff', { market, binding: result.binding });
     router.push('/calculator');
   }
+
+  // Fire one event per "the user has stopped typing" so we don't spam GA on
+  // every keystroke. 600ms after the result settles is a reasonable proxy.
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      if (result.maxPurchasePrice <= 0) return;
+      track('affordability_calculated', {
+        market,
+        binding: result.binding,
+        maxLoan: Math.round(result.maxLoan),
+      });
+    }, 600);
+    return () => window.clearTimeout(id);
+  }, [market, result.maxPurchasePrice, result.maxLoan, result.binding]);
 
   const bindingLabel: Record<typeof result.binding, string> = {
     income_multiple: t('aff.bindingIncome'),
@@ -216,7 +232,11 @@ export default function AffordabilityCalculator({
       </div>
 
       {/* Headline result */}
-      <div className="bg-[#eef4f7] border border-[#4a7c96]/20 rounded-xl p-5 mb-4">
+      <div
+        className="bg-[#eef4f7] border border-[#4a7c96]/20 rounded-xl p-5 mb-4"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         <div className="text-xs uppercase tracking-wide text-[#6b7a8a] mb-1">
           {t('aff.maxPrice')}
         </div>
