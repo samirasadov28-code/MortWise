@@ -6,6 +6,7 @@ import type { ComponentType, SVGProps } from 'react';
 import Disclaimer from '@/components/shared/Disclaimer';
 import MarketsCarousel, { type MarketsCarouselItem } from '@/components/shared/MarketsCarousel';
 import LanguagePicker from '@/components/shared/LanguagePicker';
+import AffordabilityCalculator from '@/components/shared/AffordabilityCalculator';
 import {
   HouseCoinsIcon,
   HouseChartIcon,
@@ -173,6 +174,17 @@ export default function LandingPage() {
             description={t('landing.valueProp3DescTpl', { count: MARKETS_LIST.length })}
           />
         </div>
+      </section>
+
+      {/* Affordability calculator — quick answer before users commit to the wizard */}
+      <section className="max-w-3xl mx-auto px-6 pb-12 sm:pb-16">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#2a2520] text-center mb-2">
+          {t('aff.sectionTitle')}
+        </h2>
+        <p className="text-xs sm:text-sm text-[#6b7a8a] text-center mb-5 sm:mb-6 max-w-2xl mx-auto">
+          {t('aff.sectionSubtitle')}
+        </p>
+        <AffordabilityCalculator />
       </section>
 
       {/* Free vs Paid */}

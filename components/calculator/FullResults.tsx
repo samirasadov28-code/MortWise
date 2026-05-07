@@ -16,6 +16,7 @@ import BuyToLetPanel from '@/components/results/BuyToLetPanel';
 import SensitivityPanel from '@/components/results/SensitivityPanel';
 import ForeignCurrencyPanel from '@/components/results/ForeignCurrencyPanel';
 import CalculationBreakdown from '@/components/results/CalculationBreakdown';
+import SavedScenariosPanel from '@/components/results/SavedScenariosPanel';
 import { buildPreparedScenarios } from '@/lib/wizard';
 
 interface FullResultsProps {
@@ -209,6 +210,13 @@ export default function FullResults({ results, state, displayMarket }: FullResul
             Cross-market comparison · same cash invested
           </h3>
           <MarketsComparison state={state} />
+        </section>
+
+        <section>
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
+            Saved scenarios · cross-analysis comparison
+          </h3>
+          <SavedScenariosPanel currentState={state} displayMarket={dm} />
         </section>
       </div>
     </div>
