@@ -11,24 +11,21 @@ import {
 import en from './dictionaries/en';
 import uk from './dictionaries/uk';
 import fr from './dictionaries/fr';
+import es from './dictionaries/es';
+import de from './dictionaries/de';
+import pt from './dictionaries/pt';
+import it from './dictionaries/it';
+import nl from './dictionaries/nl';
+import tr from './dictionaries/tr';
+import zh from './dictionaries/zh';
+import ar from './dictionaries/ar';
+import hi from './dictionaries/hi';
+import ru from './dictionaries/ru';
 import type { Dictionary, TranslationKey } from './dictionaries/en';
 import { LANGUAGES, type Language, type LanguageOption } from './types';
 
 const DICTIONARIES: Record<Language, Partial<Dictionary>> = {
-  en,
-  uk,
-  fr,
-  // Other batches: fall back to English until a dictionary is added.
-  es: {},
-  de: {},
-  pt: {},
-  it: {},
-  nl: {},
-  tr: {},
-  zh: {},
-  ar: {},
-  hi: {},
-  ru: {},
+  en, uk, fr, es, de, pt, it, nl, tr, zh, ar, hi, ru,
 };
 
 const STORAGE_KEY = 'mortwise_lang';

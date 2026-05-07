@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const de: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'Kostenlos starten →',
+  'header.unlocked': 'Vollständige Analyse freigeschaltet',
+  'header.viewFree': 'Kostenlose Ansicht',
+  'header.viewFull': 'Vollständige Ansicht',
+  'header.compareIn': 'Vergleichen in',
+  'header.localCurrency': 'lokal',
+
+  'disclaimer.text': 'MortWise ist ein Berechnungstool, keine Finanzberatung. Sprechen Sie vor einer Entscheidung immer mit einem qualifizierten Hypothekenberater.',
+  'disclaimer.forceUpdate': '↻ Aktualisierung erzwingen',
+  'disclaimer.updateAvailable': 'Aktualisierung verfügbar',
+
+  'landing.heroTitle': 'Verstehen Sie Ihre Hypothek —',
+  'landing.heroTitleAccent': 'nicht nur die monatliche Rate',
+  'landing.heroSubtitle': 'Vergleichen Sie Hypotheken mit festem, variablem und gemischtem Zinssatz nebeneinander. Stresstest gegen Zinssteigerungen. Sehen Sie, was Sie tatsächlich über 30 Jahre zahlen. Gemacht für Erstkäufer, die genug vom Fachjargon haben.',
+  'landing.heroCta': 'Kostenlos starten →',
+
+  'landing.valueProp1Title': 'Gesamtkosten der Immobilie',
+  'landing.valueProp1Desc': 'Schauen Sie nicht nur auf die monatliche Rate — sehen Sie die Gesamtzinsen, die Gesamtrückzahlung und die echten 30-Jahres-Kosten jeder Immobilie, die Sie kaufen könnten.',
+  'landing.valueProp2Title': 'Zinsanstiegs-Stresstest',
+  'landing.valueProp2Desc': 'Sehen Sie genau, wie Ihre monatliche Rate aussieht, wenn die Zinsen nach Ablauf Ihrer Zinsbindung um +1 %, +2 % oder +3 % steigen — bevor Sie unterschreiben.',
+  'landing.valueProp3Title': 'Lokale Immobilienregeln',
+  'landing.valueProp3DescTpl': 'Genaue Grunderwerbsteuer, Erstkäufer-Programme (KfW, Help to Buy, FHSA, First Home Scheme…) und Bankobergrenzen für {count} Wohnungsmärkte.',
+
+  'landing.freeVsFull': 'Kostenlos vs. Vollständig',
+  'landing.free': 'Kostenlos',
+  'landing.full': 'Vollständig',
+  'landing.bestValue': 'Bestes Angebot',
+  'landing.perMonth': '/ Monat',
+  'landing.fullCta': 'Kostenlos starten, später upgraden →',
+
+  'landing.availableMarkets': 'Verfügbare Wohnungsmärkte',
+  'landing.marketsHint': 'Grunderwerbsteuer, Eigenkapitalregeln und Erstkäufer-Programme sind pro Land angepasst. Nutzen Sie die Pfeile zum Durchblättern.',
+
+  'wizard.next': 'Weiter →',
+  'wizard.back': '← Zurück',
+  'wizard.calculate': 'Berechnen →',
+  'wizard.editInputs': '← Eingaben ändern',
+  'wizard.stepOf': 'Schritt {step} von {total}',
+
+  'step1.title': 'Markt auswählen',
+  'step1.subtitle': 'MortWise passt Grunderwerbsteuer, staatliche Programme, regulatorisches Umfeld und Bankenliste an den ausgewählten Markt an.',
+  'step1.govtSchemes': 'Staatliche Programme',
+  'step1.regulatoryNotes': 'Regulatorische Hinweise',
+  'step1.keyContext': 'wichtiger Kontext',
+
+  'step2.title': 'Immobiliendetails',
+  'step2.subtitle': 'Geben Sie den Kaufpreis und Ihr verfügbares Eigenkapital ein.',
+  'step2.enterValuesIn': 'Werte eingeben in',
+  'step2.propertyPrice': 'Kaufpreis',
+  'step2.deposit': 'Eigenkapital',
+  'step2.amount': 'Betrag',
+  'step2.percent': 'Prozent',
+  'step2.otherFees': 'Sonstige Kosten (Notar, Gutachter, Makler)',
+  'step2.rollFeesIntoMortgage': 'Diese Kosten in die Hypothek einrechnen',
+  'step2.propertyType': 'Immobilientyp',
+  'step2.secondaryMarket': 'Bestand',
+  'step2.secondaryMarketDesc': 'Bestehende Immobilie, Wiederverkauf',
+  'step2.newBuild': 'Neubau',
+  'step2.newBuildDesc': 'Erstverkauf vom Bauträger',
+  'step2.purchaseDate': 'Geplantes Kaufdatum',
+  'step2.estimatedStampDuty': 'Geschätzte Grunderwerbsteuer',
+
+  'step3.title': 'Käuferprofil',
+  'step3.subtitle': 'Ihr Profil beeinflusst Grunderwerbsteuer, maximale Kreditsumme und förderfähige Programme.',
+  'step3.buyerType': 'Käufertyp',
+  'step3.firstTime': 'Erstkäufer',
+  'step3.firstTimeDesc': 'Noch nie eine Immobilie besessen',
+  'step3.mover': 'Umzug',
+  'step3.moverDesc': 'Verkauf der bestehenden Immobilie zum Kauf einer anderen',
+  'step3.investor': 'Investor / Vermietung',
+  'step3.investorDesc': 'Kauf als Mietobjekt',
+  'step3.nonResident': 'Nicht-Resident',
+  'step3.nonResidentDesc': 'Kauf aus dem Ausland',
+  'step3.annualIncome': 'Brutto-Jahreseinkommen',
+  'step3.coBorrowerIncome': 'Einkommen des Mit­darlehens­nehmers (optional)',
+
+  'step4.title': 'Zinsstruktur',
+  'step4.subtitle': 'Wählen Sie die Art der Verzinsung für Ihre Hypothekenszenarien.',
+  'step4.mortgageTerm': 'Laufzeit',
+  'step4.paymentHoliday': 'Tilgungspause',
+  'step4.cashback': 'Cashback der Bank',
+
+  'step5.title': 'Bankszenarien',
+  'step5.subtitle': 'Konfigurieren Sie bis zu 4 Szenarien zum direkten Vergleich.',
+  'step5.generateRates': 'Marktzinsen generieren',
+  'step5.generating': 'Generiere…',
+
+  'results.fullAnalysis': 'Vollständige Analyse',
+  'results.scenariosCompared': '{n} Szenarien verglichen',
+  'results.exportPdf': '↓ PDF exportieren',
+  'results.buildingPdf': 'PDF wird erstellt…',
+
+  'feedback.button': 'Feedback',
+  'chat.button': 'MortWise fragen',
+};
+
+export default de;

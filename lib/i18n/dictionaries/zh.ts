@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const zh: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': '免费开始 →',
+  'header.unlocked': '完整分析已解锁',
+  'header.viewFree': '查看免费版',
+  'header.viewFull': '查看完整版',
+  'header.compareIn': '比较币种',
+  'header.localCurrency': '本地',
+
+  'disclaimer.text': 'MortWise 是一款计算工具，并非财务建议。在做出决策之前请始终咨询合格的房贷顾问。',
+  'disclaimer.forceUpdate': '↻ 强制更新',
+  'disclaimer.updateAvailable': '有新版本可用',
+
+  'landing.heroTitle': '看懂你的房贷 ——',
+  'landing.heroTitleAccent': '不只是月供',
+  'landing.heroSubtitle': '将固定、浮动与混合利率房贷并排比较。对加息进行压力测试。看清你在 30 年里实际要支付多少。专为厌倦专业术语的首次购房者打造。',
+  'landing.heroCta': '免费开始 →',
+
+  'landing.valueProp1Title': '房屋的总成本',
+  'landing.valueProp1Desc': '不要只看月供——查看每套你可能购买的房屋的总利息、总还款额以及真实的 30 年成本。',
+  'landing.valueProp2Title': '加息压力测试',
+  'landing.valueProp2Desc': '在签约之前，准确看到你的固定期结束后利率上涨 +1%、+2% 或 +3% 时月供会变成多少。',
+  'landing.valueProp3Title': '本地房产规则',
+  'landing.valueProp3DescTpl': '准确的契税与印花税、首次购房者计划（Help to Buy、First Home Scheme、FHSA、KfW……）以及 {count} 个房产市场的银行限额。',
+
+  'landing.freeVsFull': '免费版 vs 完整版',
+  'landing.free': '免费版',
+  'landing.full': '完整版',
+  'landing.bestValue': '最佳选择',
+  'landing.perMonth': '/ 月',
+  'landing.fullCta': '免费开始，进入后升级 →',
+
+  'landing.availableMarkets': '支持的房产市场',
+  'landing.marketsHint': '契税、首付规则与首次购房者计划均按国家定制。使用箭头浏览。',
+
+  'wizard.next': '下一步 →',
+  'wizard.back': '← 上一步',
+  'wizard.calculate': '计算 →',
+  'wizard.editInputs': '← 修改输入',
+  'wizard.stepOf': '第 {step} 步 / 共 {total} 步',
+
+  'step1.title': '选择市场',
+  'step1.subtitle': 'MortWise 会根据你选择的市场调整契税、政府计划、监管背景和银行清单。',
+  'step1.govtSchemes': '政府计划',
+  'step1.regulatoryNotes': '监管要点',
+  'step1.keyContext': '关键背景',
+
+  'step2.title': '房产详情',
+  'step2.subtitle': '输入房产价格以及你可用的首付金额。',
+  'step2.enterValuesIn': '输入币种',
+  'step2.propertyPrice': '房产价格',
+  'step2.deposit': '首付',
+  'step2.amount': '金额',
+  'step2.percent': '百分比',
+  'step2.otherFees': '其他费用（律师、评估、中介）',
+  'step2.rollFeesIntoMortgage': '将这些费用并入房贷',
+  'step2.propertyType': '房产类型',
+  'step2.secondaryMarket': '二手房',
+  'step2.secondaryMarketDesc': '现房，二次转售',
+  'step2.newBuild': '新房',
+  'step2.newBuildDesc': '开发商首次出售',
+  'step2.purchaseDate': '计划购买日期',
+  'step2.estimatedStampDuty': '预估契税',
+
+  'step3.title': '买家档案',
+  'step3.subtitle': '你的档案影响契税、最高贷款额以及可申请的政府计划。',
+  'step3.buyerType': '买家类型',
+  'step3.firstTime': '首次购房',
+  'step3.firstTimeDesc': '从未拥有过房产',
+  'step3.mover': '换房',
+  'step3.moverDesc': '出售现有房产以购买另一套',
+  'step3.investor': '投资者 / 出租',
+  'step3.investorDesc': '作为出租投资购买',
+  'step3.nonResident': '非居民',
+  'step3.nonResidentDesc': '从海外购买',
+  'step3.annualIncome': '年税前收入',
+  'step3.coBorrowerIncome': '共同借款人收入（可选）',
+
+  'step4.title': '利率结构',
+  'step4.subtitle': '为你的房贷方案选择利率类型。',
+  'step4.mortgageTerm': '贷款年限',
+  'step4.paymentHoliday': '还款假期',
+  'step4.cashback': '银行返现',
+
+  'step5.title': '银行方案',
+  'step5.subtitle': '配置最多 4 个方案进行并排比较。',
+  'step5.generateRates': '生成市场利率',
+  'step5.generating': '生成中…',
+
+  'results.fullAnalysis': '完整分析',
+  'results.scenariosCompared': '已比较 {n} 个方案',
+  'results.exportPdf': '↓ 导出 PDF',
+  'results.buildingPdf': '正在生成 PDF…',
+
+  'feedback.button': '反馈',
+  'chat.button': '问 MortWise',
+};
+
+export default zh;

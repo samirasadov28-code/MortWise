@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const tr: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'Ücretsiz başla →',
+  'header.unlocked': 'Tam analiz açıldı',
+  'header.viewFree': 'Ücretsiz görünüm',
+  'header.viewFull': 'Tam görünüm',
+  'header.compareIn': 'Karşılaştırma para birimi',
+  'header.localCurrency': 'yerel',
+
+  'disclaimer.text': 'MortWise bir hesaplama aracıdır, finansal danışmanlık değildir. Karar vermeden önce her zaman yetkili bir konut kredisi danışmanına başvurun.',
+  'disclaimer.forceUpdate': '↻ güncellemeyi zorla',
+  'disclaimer.updateAvailable': 'güncelleme mevcut',
+
+  'landing.heroTitle': 'Konut kredinizi anlayın —',
+  'landing.heroTitleAccent': 'sadece aylık taksiti değil',
+  'landing.heroSubtitle': 'Sabit, değişken ve karma faizli konut kredilerini yan yana karşılaştırın. Faiz artışlarına karşı stres testi yapın. 30 yılda gerçekte ne ödeyeceğinizi görün. Jargondan bıkmış ilk kez ev alacaklar için tasarlandı.',
+  'landing.heroCta': 'Ücretsiz başla →',
+
+  'landing.valueProp1Title': 'Konutun toplam maliyeti',
+  'landing.valueProp1Desc': 'Sadece aylık taksite bakmayın — toplam faizi, toplam geri ödemeyi ve düşündüğünüz her evin gerçek 30 yıllık maliyetini görün.',
+  'landing.valueProp2Title': 'Faiz artışı stres testi',
+  'landing.valueProp2Desc': 'Sabit dönem bittiğinde faizler +%1, +%2 veya +%3 artarsa aylık taksitiniz ne olur — tam olarak görün, imzalamadan önce.',
+  'landing.valueProp3Title': 'Yerel konut piyasası kuralları',
+  'landing.valueProp3DescTpl': 'Doğru tapu harcı, ilk ev alıcısı destek programları (Yarı Yarıya Konut, Help to Buy, KfW…) ve banka limitleri — {count} konut piyasası için.',
+
+  'landing.freeVsFull': 'Ücretsiz vs Tam',
+  'landing.free': 'Ücretsiz',
+  'landing.full': 'Tam',
+  'landing.bestValue': 'En iyi değer',
+  'landing.perMonth': '/ ay',
+  'landing.fullCta': 'Ücretsiz başla, içeride yükselt →',
+
+  'landing.availableMarkets': 'Desteklenen konut piyasaları',
+  'landing.marketsHint': 'Tapu harcı, peşinat kuralları ve ilk alıcı destekleri ülke bazında ayarlanmıştır. Gezinmek için okları kullanın.',
+
+  'wizard.next': 'İleri →',
+  'wizard.back': '← Geri',
+  'wizard.calculate': 'Hesapla →',
+  'wizard.editInputs': '← Girdileri düzenle',
+  'wizard.stepOf': 'Adım {step} / {total}',
+
+  'step1.title': 'Pazarınızı seçin',
+  'step1.subtitle': 'MortWise tapu harcını, devlet programlarını, mevzuat bağlamını ve banka listesini seçtiğiniz pazara göre uyarlar.',
+  'step1.govtSchemes': 'Devlet programları',
+  'step1.regulatoryNotes': 'Mevzuat notları',
+  'step1.keyContext': 'temel bağlam',
+
+  'step2.title': 'Konut bilgileri',
+  'step2.subtitle': 'Konutun fiyatını ve elinizdeki peşinatı girin.',
+  'step2.enterValuesIn': 'Değerleri şu para biriminde gir',
+  'step2.propertyPrice': 'Konut fiyatı',
+  'step2.deposit': 'Peşinat',
+  'step2.amount': 'Tutar',
+  'step2.percent': 'Yüzde',
+  'step2.otherFees': 'Diğer masraflar (avukat, ekspertiz, aracı)',
+  'step2.rollFeesIntoMortgage': 'Bu masrafları krediye dahil et',
+  'step2.propertyType': 'Konut tipi',
+  'step2.secondaryMarket': 'İkinci el',
+  'step2.secondaryMarketDesc': 'Mevcut konut, satılık',
+  'step2.newBuild': 'Sıfır',
+  'step2.newBuildDesc': 'Müteahhitten ilk satış',
+  'step2.purchaseDate': 'Planlanan satın alma tarihi',
+  'step2.estimatedStampDuty': 'Tahmini tapu harcı',
+
+  'step3.title': 'Alıcı profili',
+  'step3.subtitle': 'Profiliniz tapu harcını, azami kredi tutarını ve uygun olduğunuz devlet programlarını etkiler.',
+  'step3.buyerType': 'Alıcı tipi',
+  'step3.firstTime': 'İlk kez ev alıyor',
+  'step3.firstTimeDesc': 'Daha önce hiç ev sahibi olmadı',
+  'step3.mover': 'Ev değiştiriyor',
+  'step3.moverDesc': 'Mevcut evi satıp başka bir ev alma',
+  'step3.investor': 'Yatırımcı / kiraya verme',
+  'step3.investorDesc': 'Kiraya vermek için yatırım amaçlı alım',
+  'step3.nonResident': 'Mukim değil',
+  'step3.nonResidentDesc': 'Yurtdışından alım',
+  'step3.annualIncome': 'Yıllık brüt gelir',
+  'step3.coBorrowerIncome': 'Müşterek borçlu geliri (isteğe bağlı)',
+
+  'step4.title': 'Faiz yapısı',
+  'step4.subtitle': 'Konut kredisi senaryolarınız için faiz türünü seçin.',
+  'step4.mortgageTerm': 'Kredi vadesi',
+  'step4.paymentHoliday': 'Ödeme ertelemesi',
+  'step4.cashback': 'Banka cashback’i',
+
+  'step5.title': 'Banka senaryoları',
+  'step5.subtitle': 'Yan yana karşılaştırmak için en fazla 4 senaryo yapılandırın.',
+  'step5.generateRates': 'Piyasa faizlerini üret',
+  'step5.generating': 'Üretiliyor…',
+
+  'results.fullAnalysis': 'Tam analiz',
+  'results.scenariosCompared': '{n} senaryo karşılaştırıldı',
+  'results.exportPdf': '↓ PDF olarak dışa aktar',
+  'results.buildingPdf': 'PDF oluşturuluyor…',
+
+  'feedback.button': 'Geri bildirim',
+  'chat.button': 'MortWise’a sor',
+};
+
+export default tr;

@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const hi: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'मुफ्त शुरू करें →',
+  'header.unlocked': 'पूर्ण विश्लेषण अनलॉक हुआ',
+  'header.viewFree': 'मुफ्त दृश्य',
+  'header.viewFull': 'पूर्ण दृश्य',
+  'header.compareIn': 'इसमें तुलना करें',
+  'header.localCurrency': 'स्थानीय',
+
+  'disclaimer.text': 'MortWise एक गणना उपकरण है, वित्तीय सलाह नहीं। निर्णय लेने से पहले हमेशा किसी योग्य गृह-ऋण सलाहकार से परामर्श लें।',
+  'disclaimer.forceUpdate': '↻ अपडेट बाध्य करें',
+  'disclaimer.updateAvailable': 'अपडेट उपलब्ध है',
+
+  'landing.heroTitle': 'अपने होम लोन को समझें —',
+  'landing.heroTitleAccent': 'सिर्फ़ मासिक किस्त नहीं',
+  'landing.heroSubtitle': 'फिक्स्ड, फ्लोटिंग और मिश्रित ब्याज दर वाले होम लोन की साथ-साथ तुलना करें। दर बढ़ोतरी के लिए स्ट्रेस-टेस्ट करें। 30 साल में आप वास्तव में कितना चुकाएँगे, यह जानें। शब्दजाल से थक चुके पहली बार के खरीदारों के लिए बनाया गया।',
+  'landing.heroCta': 'मुफ्त शुरू करें →',
+
+  'landing.valueProp1Title': 'घर की कुल लागत',
+  'landing.valueProp1Desc': 'सिर्फ़ मासिक किस्त मत देखें — कुल ब्याज, कुल चुकौती और हर संभावित घर की वास्तविक 30-वर्षीय लागत देखें।',
+  'landing.valueProp2Title': 'दर बढ़ोतरी का स्ट्रेस-टेस्ट',
+  'landing.valueProp2Desc': 'फिक्स्ड अवधि समाप्त होने पर यदि दरें +1%, +2% या +3% बढ़ती हैं तो आपकी मासिक किस्त कितनी होगी — हस्ताक्षर करने से पहले देखें।',
+  'landing.valueProp3Title': 'स्थानीय रियल एस्टेट नियम',
+  'landing.valueProp3DescTpl': 'सटीक स्टांप ड्यूटी, पहली बार खरीदार योजनाएँ (Help to Buy, First Home Scheme, FHSA, KfW…) और {count} आवासीय बाज़ारों के लिए ऋणदाता सीमाएँ।',
+
+  'landing.freeVsFull': 'मुफ्त vs पूर्ण',
+  'landing.free': 'मुफ्त',
+  'landing.full': 'पूर्ण',
+  'landing.bestValue': 'सर्वोत्तम मूल्य',
+  'landing.perMonth': '/ माह',
+  'landing.fullCta': 'मुफ्त शुरू करें, अंदर अपग्रेड करें →',
+
+  'landing.availableMarkets': 'उपलब्ध आवासीय बाज़ार',
+  'landing.marketsHint': 'स्टांप ड्यूटी, डाउन-पेमेंट नियम और पहली बार खरीदार योजनाएँ हर देश के अनुसार समायोजित हैं। ब्राउज़ करने के लिए तीरों का उपयोग करें।',
+
+  'wizard.next': 'आगे →',
+  'wizard.back': '← पीछे',
+  'wizard.calculate': 'गणना करें →',
+  'wizard.editInputs': '← इनपुट संपादित करें',
+  'wizard.stepOf': 'चरण {step} / {total}',
+
+  'step1.title': 'अपना बाज़ार चुनें',
+  'step1.subtitle': 'MortWise आपके चुने हुए बाज़ार के अनुसार स्टांप ड्यूटी, सरकारी योजनाओं, नियामक संदर्भ और बैंक सूची को अनुकूलित करता है।',
+  'step1.govtSchemes': 'सरकारी योजनाएँ',
+  'step1.regulatoryNotes': 'नियामक टिप्पणियाँ',
+  'step1.keyContext': 'मुख्य संदर्भ',
+
+  'step2.title': 'संपत्ति का विवरण',
+  'step2.subtitle': 'संपत्ति का मूल्य और उपलब्ध डाउन-पेमेंट दर्ज करें।',
+  'step2.enterValuesIn': 'मानों को इस मुद्रा में दर्ज करें',
+  'step2.propertyPrice': 'संपत्ति का मूल्य',
+  'step2.deposit': 'डाउन-पेमेंट',
+  'step2.amount': 'राशि',
+  'step2.percent': 'प्रतिशत',
+  'step2.otherFees': 'अन्य शुल्क (कानूनी, मूल्यांकन, ब्रोकर)',
+  'step2.rollFeesIntoMortgage': 'इन शुल्कों को ऋण में जोड़ें',
+  'step2.propertyType': 'संपत्ति का प्रकार',
+  'step2.secondaryMarket': 'द्वितीयक बाज़ार',
+  'step2.secondaryMarketDesc': 'मौजूदा घर, पुनर्विक्रय',
+  'step2.newBuild': 'नई बिल्डिंग',
+  'step2.newBuildDesc': 'डेवलपर से पहली बिक्री',
+  'step2.purchaseDate': 'योजनाबद्ध खरीद तिथि',
+  'step2.estimatedStampDuty': 'अनुमानित स्टांप ड्यूटी',
+
+  'step3.title': 'खरीदार का प्रोफ़ाइल',
+  'step3.subtitle': 'आपका प्रोफ़ाइल स्टांप ड्यूटी, अधिकतम ऋण और पात्र सरकारी योजनाओं को प्रभावित करता है।',
+  'step3.buyerType': 'खरीदार का प्रकार',
+  'step3.firstTime': 'पहली बार खरीदार',
+  'step3.firstTimeDesc': 'पहले कभी संपत्ति नहीं रखी',
+  'step3.mover': 'घर बदल रहे हैं',
+  'step3.moverDesc': 'मौजूदा संपत्ति बेचकर दूसरी खरीदना',
+  'step3.investor': 'निवेशक / किराये पर',
+  'step3.investorDesc': 'किराये के निवेश के रूप में खरीद',
+  'step3.nonResident': 'अनिवासी',
+  'step3.nonResidentDesc': 'विदेश से खरीद',
+  'step3.annualIncome': 'वार्षिक सकल आय',
+  'step3.coBorrowerIncome': 'सह-उधारकर्ता की आय (वैकल्पिक)',
+
+  'step4.title': 'दर संरचना',
+  'step4.subtitle': 'अपने होम-लोन परिदृश्यों के लिए ब्याज दर का प्रकार चुनें।',
+  'step4.mortgageTerm': 'ऋण अवधि',
+  'step4.paymentHoliday': 'भुगतान अवकाश',
+  'step4.cashback': 'ऋणदाता कैशबैक',
+
+  'step5.title': 'ऋणदाता परिदृश्य',
+  'step5.subtitle': 'साथ-साथ तुलना के लिए अधिकतम 4 परिदृश्य कॉन्फ़िगर करें।',
+  'step5.generateRates': 'बाज़ार दरें उत्पन्न करें',
+  'step5.generating': 'उत्पन्न हो रहा है…',
+
+  'results.fullAnalysis': 'पूर्ण विश्लेषण',
+  'results.scenariosCompared': '{n} परिदृश्यों की तुलना',
+  'results.exportPdf': '↓ PDF निर्यात करें',
+  'results.buildingPdf': 'PDF बन रहा है…',
+
+  'feedback.button': 'प्रतिक्रिया',
+  'chat.button': 'MortWise से पूछें',
+};
+
+export default hi;

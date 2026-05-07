@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const ar: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'ابدأ مجانًا ←',
+  'header.unlocked': 'تم فتح التحليل الكامل',
+  'header.viewFree': 'العرض المجاني',
+  'header.viewFull': 'العرض الكامل',
+  'header.compareIn': 'قارن بـ',
+  'header.localCurrency': 'محلية',
+
+  'disclaimer.text': 'MortWise أداة حسابية وليست استشارة مالية. تحدّث دائمًا مع مستشار رهن عقاري مؤهَّل قبل اتخاذ أي قرار.',
+  'disclaimer.forceUpdate': '↻ فرض التحديث',
+  'disclaimer.updateAvailable': 'يوجد تحديث',
+
+  'landing.heroTitle': 'افهم قرضك العقاري —',
+  'landing.heroTitleAccent': 'وليس فقط القسط الشهري',
+  'landing.heroSubtitle': 'قارن القروض ذات الفائدة الثابتة والمتغيّرة والمختلطة جنبًا إلى جنب. اختبر الضغط في حال ارتفاع الفائدة. شاهد ما ستدفعه فعلًا خلال 30 عامًا. مصمَّم للمشترين لأول مرة الذين سئموا المصطلحات.',
+  'landing.heroCta': 'ابدأ مجانًا ←',
+
+  'landing.valueProp1Title': 'التكلفة الإجمالية للمنزل',
+  'landing.valueProp1Desc': 'لا تكتفِ بالقسط الشهري — اطّلع على إجمالي الفوائد، إجمالي المسدَّد، والتكلفة الحقيقية لمدة 30 عامًا لكل منزل تفكر في شرائه.',
+  'landing.valueProp2Title': 'اختبار ضغط ارتفاع الفائدة',
+  'landing.valueProp2Desc': 'شاهد كم سيصبح قسطك الشهري إذا ارتفعت الفائدة بنسبة +1٪ أو +2٪ أو +3٪ بعد انتهاء الفترة الثابتة — قبل أن توقّع.',
+  'landing.valueProp3Title': 'القواعد العقارية المحلية',
+  'landing.valueProp3DescTpl': 'رسوم تسجيل دقيقة، برامج المشتري لأول مرة (Help to Buy، First Home Scheme، FHSA، KfW…)، وحدود البنوك في {count} سوقًا عقارية.',
+
+  'landing.freeVsFull': 'مجاني مقابل الكامل',
+  'landing.free': 'مجاني',
+  'landing.full': 'كامل',
+  'landing.bestValue': 'أفضل قيمة',
+  'landing.perMonth': '/ شهر',
+  'landing.fullCta': 'ابدأ مجانًا، وحدِّث لاحقًا من الداخل ←',
+
+  'landing.availableMarkets': 'الأسواق العقارية المتاحة',
+  'landing.marketsHint': 'رسوم التسجيل وقواعد الدفعة الأولى وبرامج المشتري لأول مرة مضبوطة لكل دولة. استخدم الأسهم للتصفح.',
+
+  'wizard.next': 'التالي ←',
+  'wizard.back': '→ السابق',
+  'wizard.calculate': 'احسب ←',
+  'wizard.editInputs': '→ تعديل البيانات',
+  'wizard.stepOf': 'الخطوة {step} من {total}',
+
+  'step1.title': 'اختر سوقك',
+  'step1.subtitle': 'يضبط MortWise رسوم التسجيل والبرامج الحكومية والإطار التنظيمي وقائمة البنوك وفقًا للسوق التي تختارها.',
+  'step1.govtSchemes': 'البرامج الحكومية',
+  'step1.regulatoryNotes': 'ملاحظات تنظيمية',
+  'step1.keyContext': 'السياق الرئيسي',
+
+  'step2.title': 'تفاصيل العقار',
+  'step2.subtitle': 'أدخل سعر العقار ومبلغ الدفعة الأولى المتاح لديك.',
+  'step2.enterValuesIn': 'أدخل القيم بـ',
+  'step2.propertyPrice': 'سعر العقار',
+  'step2.deposit': 'الدفعة الأولى',
+  'step2.amount': 'المبلغ',
+  'step2.percent': 'النسبة المئوية',
+  'step2.otherFees': 'رسوم أخرى (محاماة، تقييم، وسيط)',
+  'step2.rollFeesIntoMortgage': 'تضمين هذه الرسوم في القرض',
+  'step2.propertyType': 'نوع العقار',
+  'step2.secondaryMarket': 'سوق ثانوي',
+  'step2.secondaryMarketDesc': 'منزل قائم، إعادة بيع',
+  'step2.newBuild': 'جديد',
+  'step2.newBuildDesc': 'أول بيع من المطور',
+  'step2.purchaseDate': 'تاريخ الشراء المخطَّط',
+  'step2.estimatedStampDuty': 'رسوم التسجيل المقدَّرة',
+
+  'step3.title': 'ملف المشتري',
+  'step3.subtitle': 'يؤثر ملفك على رسوم التسجيل والحد الأقصى للاقتراض وبرامج الحكومة المؤهَّل لها.',
+  'step3.buyerType': 'نوع المشتري',
+  'step3.firstTime': 'مشترٍ لأول مرة',
+  'step3.firstTimeDesc': 'لم يسبق له امتلاك عقار',
+  'step3.mover': 'انتقال إلى منزل آخر',
+  'step3.moverDesc': 'بيع العقار الحالي لشراء آخر',
+  'step3.investor': 'مستثمر / للإيجار',
+  'step3.investorDesc': 'شراء كاستثمار للإيجار',
+  'step3.nonResident': 'غير مقيم',
+  'step3.nonResidentDesc': 'شراء من الخارج',
+  'step3.annualIncome': 'الدخل السنوي الإجمالي',
+  'step3.coBorrowerIncome': 'دخل المقترض المشارك (اختياري)',
+
+  'step4.title': 'هيكل الفائدة',
+  'step4.subtitle': 'اختر نوع سعر الفائدة لسيناريوهات قرضك العقاري.',
+  'step4.mortgageTerm': 'مدة القرض',
+  'step4.paymentHoliday': 'تأجيل السداد',
+  'step4.cashback': 'استرداد نقدي من البنك',
+
+  'step5.title': 'سيناريوهات البنوك',
+  'step5.subtitle': 'أعدّ ما يصل إلى 4 سيناريوهات للمقارنة جنبًا إلى جنب.',
+  'step5.generateRates': 'توليد أسعار السوق',
+  'step5.generating': 'جارٍ التوليد…',
+
+  'results.fullAnalysis': 'التحليل الكامل',
+  'results.scenariosCompared': 'تمت مقارنة {n} سيناريوهات',
+  'results.exportPdf': '↓ تصدير PDF',
+  'results.buildingPdf': 'جارٍ إنشاء PDF…',
+
+  'feedback.button': 'ملاحظات',
+  'chat.button': 'اسأل MortWise',
+};
+
+export default ar;

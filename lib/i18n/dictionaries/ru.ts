@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const ru: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'Начать бесплатно →',
+  'header.unlocked': 'Полный анализ разблокирован',
+  'header.viewFree': 'Бесплатный вид',
+  'header.viewFull': 'Полный вид',
+  'header.compareIn': 'Сравнить в',
+  'header.localCurrency': 'местная',
+
+  'disclaimer.text': 'MortWise — это инструмент расчётов, а не финансовая консультация. Перед принятием решений всегда обращайтесь к квалифицированному ипотечному консультанту.',
+  'disclaimer.forceUpdate': '↻ принудительно обновить',
+  'disclaimer.updateAvailable': 'доступно обновление',
+
+  'landing.heroTitle': 'Поймите свою ипотеку —',
+  'landing.heroTitleAccent': 'не только ежемесячный платёж',
+  'landing.heroSubtitle': 'Сравнивайте ипотеку с фиксированной, плавающей и смешанной ставкой бок о бок. Проверяйте устойчивость к росту ставок. Узнайте, сколько вы реально заплатите за 30 лет. Создано для тех, кто покупает жильё впервые и устал от жаргона.',
+  'landing.heroCta': 'Начать бесплатно →',
+
+  'landing.valueProp1Title': 'Полная стоимость жилья',
+  'landing.valueProp1Desc': 'Не смотрите только на ежемесячный платёж — посмотрите общие проценты, общую сумму к выплате и реальную 30-летнюю стоимость каждого варианта жилья.',
+  'landing.valueProp2Title': 'Стресс-тест роста ставок',
+  'landing.valueProp2Desc': 'Узнайте, каким станет ваш платёж, если по окончании фиксированного периода ставки вырастут на +1 %, +2 % или +3 % — ещё до подписания договора.',
+  'landing.valueProp3Title': 'Местные правила недвижимости',
+  'landing.valueProp3DescTpl': 'Точные сборы и пошлины, программы для впервые покупающих (Help to Buy, First Home Scheme, FHSA, KfW…) и ограничения банков для {count} рынков жилья.',
+
+  'landing.freeVsFull': 'Бесплатно vs Полный',
+  'landing.free': 'Бесплатно',
+  'landing.full': 'Полный',
+  'landing.bestValue': 'Лучшая цена',
+  'landing.perMonth': '/ мес',
+  'landing.fullCta': 'Начать бесплатно, обновить внутри →',
+
+  'landing.availableMarkets': 'Доступные рынки жилья',
+  'landing.marketsHint': 'Сборы, правила первоначального взноса и программы для новых покупателей настроены под каждую страну. Используйте стрелки для просмотра.',
+
+  'wizard.next': 'Далее →',
+  'wizard.back': '← Назад',
+  'wizard.calculate': 'Рассчитать →',
+  'wizard.editInputs': '← Изменить данные',
+  'wizard.stepOf': 'Шаг {step} из {total}',
+
+  'step1.title': 'Выберите рынок',
+  'step1.subtitle': 'MortWise адаптирует сборы, государственные программы, регуляторный контекст и список банков под выбранный вами рынок.',
+  'step1.govtSchemes': 'Государственные программы',
+  'step1.regulatoryNotes': 'Регуляторные заметки',
+  'step1.keyContext': 'ключевой контекст',
+
+  'step2.title': 'Параметры жилья',
+  'step2.subtitle': 'Введите цену объекта и доступную сумму первоначального взноса.',
+  'step2.enterValuesIn': 'Вводить суммы в',
+  'step2.propertyPrice': 'Цена объекта',
+  'step2.deposit': 'Первоначальный взнос',
+  'step2.amount': 'Сумма',
+  'step2.percent': 'Процент',
+  'step2.otherFees': 'Прочие расходы (юрист, оценка, брокер)',
+  'step2.rollFeesIntoMortgage': 'Включить эти расходы в ипотеку',
+  'step2.propertyType': 'Тип жилья',
+  'step2.secondaryMarket': 'Вторичный рынок',
+  'step2.secondaryMarketDesc': 'Существующее жильё, перепродажа',
+  'step2.newBuild': 'Новостройка',
+  'step2.newBuildDesc': 'Первая продажа от застройщика',
+  'step2.purchaseDate': 'Планируемая дата покупки',
+  'step2.estimatedStampDuty': 'Ориентировочный сбор',
+
+  'step3.title': 'Профиль покупателя',
+  'step3.subtitle': 'Ваш профиль влияет на сборы, максимальную сумму кредита и доступные государственные программы.',
+  'step3.buyerType': 'Тип покупателя',
+  'step3.firstTime': 'Первая покупка',
+  'step3.firstTimeDesc': 'Никогда не владел недвижимостью',
+  'step3.mover': 'Смена жилья',
+  'step3.moverDesc': 'Продажа существующего жилья ради покупки другого',
+  'step3.investor': 'Инвестор / под аренду',
+  'step3.investorDesc': 'Покупка как инвестиция под аренду',
+  'step3.nonResident': 'Нерезидент',
+  'step3.nonResidentDesc': 'Покупка из-за рубежа',
+  'step3.annualIncome': 'Годовой валовый доход',
+  'step3.coBorrowerIncome': 'Доход созаёмщика (необязательно)',
+
+  'step4.title': 'Структура ставки',
+  'step4.subtitle': 'Выберите тип процентной ставки для ваших ипотечных сценариев.',
+  'step4.mortgageTerm': 'Срок ипотеки',
+  'step4.paymentHoliday': 'Кредитные каникулы',
+  'step4.cashback': 'Кэшбэк банка',
+
+  'step5.title': 'Сценарии банков',
+  'step5.subtitle': 'Настройте до 4 сценариев для сравнения бок о бок.',
+  'step5.generateRates': 'Сгенерировать рыночные ставки',
+  'step5.generating': 'Генерируем…',
+
+  'results.fullAnalysis': 'Полный анализ',
+  'results.scenariosCompared': 'Сравнено сценариев: {n}',
+  'results.exportPdf': '↓ Экспорт в PDF',
+  'results.buildingPdf': 'Создаём PDF…',
+
+  'feedback.button': 'Отзыв',
+  'chat.button': 'Спросить MortWise',
+};
+
+export default ru;

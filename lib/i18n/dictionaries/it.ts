@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const it: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'Inizia gratis →',
+  'header.unlocked': 'Analisi completa sbloccata',
+  'header.viewFree': 'Vista gratuita',
+  'header.viewFull': 'Vista completa',
+  'header.compareIn': 'Confronta in',
+  'header.localCurrency': 'locale',
+
+  'disclaimer.text': 'MortWise è uno strumento di calcolo, non consulenza finanziaria. Consulta sempre un consulente del credito qualificato prima di prendere decisioni.',
+  'disclaimer.forceUpdate': '↻ forza aggiornamento',
+  'disclaimer.updateAvailable': 'aggiornamento disponibile',
+
+  'landing.heroTitle': 'Comprendi il tuo mutuo —',
+  'landing.heroTitleAccent': 'non solo la rata mensile',
+  'landing.heroSubtitle': 'Confronta mutui a tasso fisso, variabile e misto fianco a fianco. Stress-test contro l’aumento dei tassi. Scopri quanto paghi davvero in 30 anni. Pensato per chi compra casa per la prima volta ed è stanco del gergo.',
+  'landing.heroCta': 'Inizia gratis →',
+
+  'landing.valueProp1Title': 'Costo totale dell’immobile',
+  'landing.valueProp1Desc': 'Non guardare solo la rata mensile: vedi gli interessi totali, il rimborso totale e il vero costo a 30 anni di ogni casa che potresti acquistare.',
+  'landing.valueProp2Title': 'Stress test sui tassi',
+  'landing.valueProp2Desc': 'Vedi esattamente quanto diventerà la tua rata se i tassi salgono di +1 %, +2 % o +3 % alla fine del periodo fisso — prima di firmare.',
+  'landing.valueProp3Title': 'Regole locali del mercato immobiliare',
+  'landing.valueProp3DescTpl': 'Imposta di registro, agevolazioni prima casa (Bonus Prima Casa, Fondo Garanzia, Help to Buy, KfW…) e limiti delle banche per {count} mercati immobiliari.',
+
+  'landing.freeVsFull': 'Gratis vs Completo',
+  'landing.free': 'Gratis',
+  'landing.full': 'Completo',
+  'landing.bestValue': 'Miglior rapporto',
+  'landing.perMonth': '/ mese',
+  'landing.fullCta': 'Inizia gratis, passa al completo dentro →',
+
+  'landing.availableMarkets': 'Mercati immobiliari disponibili',
+  'landing.marketsHint': 'Imposte, regole sull’anticipo e agevolazioni prima casa adattate a ogni paese. Usa le frecce per sfogliare.',
+
+  'wizard.next': 'Avanti →',
+  'wizard.back': '← Indietro',
+  'wizard.calculate': 'Calcola →',
+  'wizard.editInputs': '← Modifica dati',
+  'wizard.stepOf': 'Passo {step} di {total}',
+
+  'step1.title': 'Seleziona il tuo mercato',
+  'step1.subtitle': 'MortWise adatta imposta di registro, programmi pubblici, contesto normativo e lista delle banche al mercato che scegli.',
+  'step1.govtSchemes': 'Programmi pubblici',
+  'step1.regulatoryNotes': 'Note normative',
+  'step1.keyContext': 'contesto chiave',
+
+  'step2.title': 'Dettagli dell’immobile',
+  'step2.subtitle': 'Inserisci il prezzo dell’immobile e l’anticipo di cui disponi.',
+  'step2.enterValuesIn': 'Inserire valori in',
+  'step2.propertyPrice': 'Prezzo dell’immobile',
+  'step2.deposit': 'Anticipo',
+  'step2.amount': 'Importo',
+  'step2.percent': 'Percentuale',
+  'step2.otherFees': 'Altre spese (notaio, perizia, mediatore)',
+  'step2.rollFeesIntoMortgage': 'Includi queste spese nel mutuo',
+  'step2.propertyType': 'Tipo di immobile',
+  'step2.secondaryMarket': 'Mercato secondario',
+  'step2.secondaryMarketDesc': 'Immobile esistente, rivendita',
+  'step2.newBuild': 'Nuova costruzione',
+  'step2.newBuildDesc': 'Prima vendita dal costruttore',
+  'step2.purchaseDate': 'Data di acquisto prevista',
+  'step2.estimatedStampDuty': 'Imposta di registro stimata',
+
+  'step3.title': 'Profilo dell’acquirente',
+  'step3.subtitle': 'Il tuo profilo influisce su imposte, importo massimo finanziabile e agevolazioni a cui hai diritto.',
+  'step3.buyerType': 'Tipo di acquirente',
+  'step3.firstTime': 'Prima casa',
+  'step3.firstTimeDesc': 'Non hai mai posseduto un immobile',
+  'step3.mover': 'Cambio casa',
+  'step3.moverDesc': 'Vendere l’attuale per comprarne un’altra',
+  'step3.investor': 'Investitore / locazione',
+  'step3.investorDesc': 'Acquisto come investimento da affittare',
+  'step3.nonResident': 'Non residente',
+  'step3.nonResidentDesc': 'Acquisto dall’estero',
+  'step3.annualIncome': 'Reddito lordo annuo',
+  'step3.coBorrowerIncome': 'Reddito del co-mutuatario (opzionale)',
+
+  'step4.title': 'Struttura del tasso',
+  'step4.subtitle': 'Scegli il tipo di tasso d’interesse per i tuoi scenari di mutuo.',
+  'step4.mortgageTerm': 'Durata del mutuo',
+  'step4.paymentHoliday': 'Sospensione rate',
+  'step4.cashback': 'Cashback della banca',
+
+  'step5.title': 'Scenari banche',
+  'step5.subtitle': 'Configura fino a 4 scenari per confrontarli affiancati.',
+  'step5.generateRates': 'Genera tassi di mercato',
+  'step5.generating': 'Generazione…',
+
+  'results.fullAnalysis': 'Analisi completa',
+  'results.scenariosCompared': '{n} scenari confrontati',
+  'results.exportPdf': '↓ Esporta PDF',
+  'results.buildingPdf': 'Generazione PDF…',
+
+  'feedback.button': 'Feedback',
+  'chat.button': 'Chiedi a MortWise',
+};
+
+export default it;

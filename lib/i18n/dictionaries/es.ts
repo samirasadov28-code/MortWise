@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const es: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'Empezar gratis →',
+  'header.unlocked': 'Análisis completo desbloqueado',
+  'header.viewFree': 'Vista gratuita',
+  'header.viewFull': 'Vista completa',
+  'header.compareIn': 'Comparar en',
+  'header.localCurrency': 'local',
+
+  'disclaimer.text': 'MortWise es una herramienta de cálculo, no un asesoramiento financiero. Consulte siempre con un asesor hipotecario cualificado antes de tomar decisiones.',
+  'disclaimer.forceUpdate': '↻ forzar actualización',
+  'disclaimer.updateAvailable': 'actualización disponible',
+
+  'landing.heroTitle': 'Entiende tu hipoteca —',
+  'landing.heroTitleAccent': 'no solo la cuota mensual',
+  'landing.heroSubtitle': 'Compara hipotecas a tipo fijo, variable y mixto en paralelo. Pon a prueba la subida de tipos. Descubre lo que pagas realmente en 30 años. Pensado para quienes compran su primera vivienda y están cansados de la jerga.',
+  'landing.heroCta': 'Empezar gratis →',
+
+  'landing.valueProp1Title': 'Coste total de la vivienda',
+  'landing.valueProp1Desc': 'No mires solo la cuota mensual: ve los intereses totales, lo que devolverás y el coste real a 30 años de cada vivienda que estés considerando.',
+  'landing.valueProp2Title': 'Test de estrés ante subida de tipos',
+  'landing.valueProp2Desc': 'Mira exactamente cuánto será tu cuota si los tipos suben +1 %, +2 % o +3 % al terminar tu periodo fijo — antes de firmar.',
+  'landing.valueProp3Title': 'Normativa local de vivienda',
+  'landing.valueProp3DescTpl': 'Impuestos (ITP, AJD, IVA) precisos, ayudas para primer comprador (ICO, Plan Estatal de Vivienda, Help to Buy, KfW…) y límites de los bancos para {count} mercados inmobiliarios.',
+
+  'landing.freeVsFull': 'Gratis vs Completo',
+  'landing.free': 'Gratis',
+  'landing.full': 'Completo',
+  'landing.bestValue': 'Mejor relación calidad-precio',
+  'landing.perMonth': '/ mes',
+  'landing.fullCta': 'Empezar gratis, ampliar luego dentro →',
+
+  'landing.availableMarkets': 'Mercados inmobiliarios disponibles',
+  'landing.marketsHint': 'Los impuestos, las normas de entrada y las ayudas para primer comprador están adaptadas a cada país. Usa las flechas para navegar.',
+
+  'wizard.next': 'Siguiente →',
+  'wizard.back': '← Atrás',
+  'wizard.calculate': 'Calcular →',
+  'wizard.editInputs': '← Editar datos',
+  'wizard.stepOf': 'Paso {step} de {total}',
+
+  'step1.title': 'Selecciona tu mercado',
+  'step1.subtitle': 'MortWise adapta los impuestos, las ayudas públicas, el contexto regulatorio y la lista de bancos al mercado que selecciones.',
+  'step1.govtSchemes': 'Ayudas públicas',
+  'step1.regulatoryNotes': 'Notas regulatorias',
+  'step1.keyContext': 'contexto clave',
+
+  'step2.title': 'Detalles de la vivienda',
+  'step2.subtitle': 'Introduce el precio de la vivienda y la entrada de la que dispones.',
+  'step2.enterValuesIn': 'Introducir valores en',
+  'step2.propertyPrice': 'Precio de la vivienda',
+  'step2.deposit': 'Entrada',
+  'step2.amount': 'Importe',
+  'step2.percent': 'Porcentaje',
+  'step2.otherFees': 'Otros gastos (notario, tasación, broker)',
+  'step2.rollFeesIntoMortgage': 'Incluir estos gastos en la hipoteca',
+  'step2.propertyType': 'Tipo de vivienda',
+  'step2.secondaryMarket': 'Segunda mano',
+  'step2.secondaryMarketDesc': 'Vivienda existente, reventa',
+  'step2.newBuild': 'Obra nueva',
+  'step2.newBuildDesc': 'Primera venta del promotor',
+  'step2.purchaseDate': 'Fecha prevista de compra',
+  'step2.estimatedStampDuty': 'Impuestos estimados',
+
+  'step3.title': 'Perfil del comprador',
+  'step3.subtitle': 'Tu perfil afecta a los impuestos, al préstamo máximo y a las ayudas a las que puedes optar.',
+  'step3.buyerType': 'Tipo de comprador',
+  'step3.firstTime': 'Primer comprador',
+  'step3.firstTimeDesc': 'Nunca antes ha tenido una vivienda',
+  'step3.mover': 'Cambio de vivienda',
+  'step3.moverDesc': 'Vender la actual para comprar otra',
+  'step3.investor': 'Inversor / alquiler',
+  'step3.investorDesc': 'Compra como inversión para alquilar',
+  'step3.nonResident': 'No residente',
+  'step3.nonResidentDesc': 'Compra desde el extranjero',
+  'step3.annualIncome': 'Ingresos brutos anuales',
+  'step3.coBorrowerIncome': 'Ingresos del cosolicitante (opcional)',
+
+  'step4.title': 'Estructura del tipo de interés',
+  'step4.subtitle': 'Elige el tipo de tipo de interés para tus escenarios de hipoteca.',
+  'step4.mortgageTerm': 'Plazo de la hipoteca',
+  'step4.paymentHoliday': 'Carencia',
+  'step4.cashback': 'Cashback del banco',
+
+  'step5.title': 'Escenarios de bancos',
+  'step5.subtitle': 'Configura hasta 4 escenarios para compararlos en paralelo.',
+  'step5.generateRates': 'Generar tipos de mercado',
+  'step5.generating': 'Generando…',
+
+  'results.fullAnalysis': 'Análisis completo',
+  'results.scenariosCompared': '{n} escenarios comparados',
+  'results.exportPdf': '↓ Exportar PDF',
+  'results.buildingPdf': 'Generando PDF…',
+
+  'feedback.button': 'Comentarios',
+  'chat.button': 'Pregunta a MortWise',
+};
+
+export default es;

@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const pt: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'Começar grátis →',
+  'header.unlocked': 'Análise completa desbloqueada',
+  'header.viewFree': 'Ver versão grátis',
+  'header.viewFull': 'Ver versão completa',
+  'header.compareIn': 'Comparar em',
+  'header.localCurrency': 'local',
+
+  'disclaimer.text': 'A MortWise é uma ferramenta de cálculo, não aconselhamento financeiro. Consulte sempre um intermediário de crédito qualificado antes de tomar decisões.',
+  'disclaimer.forceUpdate': '↻ forçar atualização',
+  'disclaimer.updateAvailable': 'atualização disponível',
+
+  'landing.heroTitle': 'Compreenda o seu crédito habitação —',
+  'landing.heroTitleAccent': 'não apenas a prestação mensal',
+  'landing.heroSubtitle': 'Compare créditos com taxa fixa, variável e mista lado a lado. Teste a resistência a subidas de taxa. Veja quanto paga realmente em 30 anos. Pensado para quem compra casa pela primeira vez e está farto do jargão.',
+  'landing.heroCta': 'Começar grátis →',
+
+  'landing.valueProp1Title': 'Custo total da casa',
+  'landing.valueProp1Desc': 'Não olhe só para a prestação mensal — veja os juros totais, o valor total devolvido e o verdadeiro custo a 30 anos de cada casa que pondera comprar.',
+  'landing.valueProp2Title': 'Teste de stress à subida de taxas',
+  'landing.valueProp2Desc': 'Veja exatamente como fica a sua prestação se as taxas subirem +1 %, +2 % ou +3 % no fim do período fixo — antes de assinar.',
+  'landing.valueProp3Title': 'Regras locais do imobiliário',
+  'landing.valueProp3DescTpl': 'IMT, IS e ajudas a primeira habitação (Help to Buy, FHSA, KfW…) com precisão, e limites dos bancos para {count} mercados imobiliários.',
+
+  'landing.freeVsFull': 'Grátis vs Completo',
+  'landing.free': 'Grátis',
+  'landing.full': 'Completo',
+  'landing.bestValue': 'Melhor relação',
+  'landing.perMonth': '/ mês',
+  'landing.fullCta': 'Começar grátis, atualizar dentro →',
+
+  'landing.availableMarkets': 'Mercados imobiliários disponíveis',
+  'landing.marketsHint': 'IMT, regras de entrada e ajudas à primeira habitação afinadas por país. Use as setas para navegar.',
+
+  'wizard.next': 'Seguinte →',
+  'wizard.back': '← Voltar',
+  'wizard.calculate': 'Calcular →',
+  'wizard.editInputs': '← Editar dados',
+  'wizard.stepOf': 'Passo {step} de {total}',
+
+  'step1.title': 'Selecione o seu mercado',
+  'step1.subtitle': 'A MortWise adapta IMT, programas públicos, contexto regulatório e lista de bancos ao mercado que escolher.',
+  'step1.govtSchemes': 'Programas públicos',
+  'step1.regulatoryNotes': 'Notas regulatórias',
+  'step1.keyContext': 'contexto-chave',
+
+  'step2.title': 'Detalhes do imóvel',
+  'step2.subtitle': 'Indique o preço do imóvel e a entrada de que dispõe.',
+  'step2.enterValuesIn': 'Introduzir valores em',
+  'step2.propertyPrice': 'Preço do imóvel',
+  'step2.deposit': 'Entrada',
+  'step2.amount': 'Montante',
+  'step2.percent': 'Percentagem',
+  'step2.otherFees': 'Outras despesas (notário, avaliação, intermediário)',
+  'step2.rollFeesIntoMortgage': 'Incluir estas despesas no crédito',
+  'step2.propertyType': 'Tipo de imóvel',
+  'step2.secondaryMarket': 'Mercado secundário',
+  'step2.secondaryMarketDesc': 'Imóvel existente, revenda',
+  'step2.newBuild': 'Novo',
+  'step2.newBuildDesc': 'Primeira venda do promotor',
+  'step2.purchaseDate': 'Data prevista de compra',
+  'step2.estimatedStampDuty': 'IMT estimado',
+
+  'step3.title': 'Perfil do comprador',
+  'step3.subtitle': 'O seu perfil afeta o IMT, o limite de financiamento e os apoios a que pode aceder.',
+  'step3.buyerType': 'Tipo de comprador',
+  'step3.firstTime': 'Primeira habitação',
+  'step3.firstTimeDesc': 'Nunca foi proprietário',
+  'step3.mover': 'Mudança de casa',
+  'step3.moverDesc': 'Vender a casa atual para comprar outra',
+  'step3.investor': 'Investidor / arrendamento',
+  'step3.investorDesc': 'Compra como investimento de arrendamento',
+  'step3.nonResident': 'Não residente',
+  'step3.nonResidentDesc': 'Compra a partir do estrangeiro',
+  'step3.annualIncome': 'Rendimento bruto anual',
+  'step3.coBorrowerIncome': 'Rendimento do co-titular (opcional)',
+
+  'step4.title': 'Estrutura da taxa',
+  'step4.subtitle': 'Escolha o tipo de taxa de juro para os seus cenários de crédito.',
+  'step4.mortgageTerm': 'Prazo do crédito',
+  'step4.paymentHoliday': 'Pausa nos pagamentos',
+  'step4.cashback': 'Cashback do banco',
+
+  'step5.title': 'Cenários de bancos',
+  'step5.subtitle': 'Configure até 4 cenários para comparar lado a lado.',
+  'step5.generateRates': 'Gerar taxas de mercado',
+  'step5.generating': 'A gerar…',
+
+  'results.fullAnalysis': 'Análise completa',
+  'results.scenariosCompared': '{n} cenários comparados',
+  'results.exportPdf': '↓ Exportar PDF',
+  'results.buildingPdf': 'A construir PDF…',
+
+  'feedback.button': 'Comentários',
+  'chat.button': 'Pergunte à MortWise',
+};
+
+export default pt;

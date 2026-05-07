@@ -1,0 +1,101 @@
+import type { Dictionary } from './en';
+
+const nl: Dictionary = {
+  'brand.name': 'MortWise',
+  'nav.startFree': 'Gratis starten →',
+  'header.unlocked': 'Volledige analyse ontgrendeld',
+  'header.viewFree': 'Gratis weergave',
+  'header.viewFull': 'Volledige weergave',
+  'header.compareIn': 'Vergelijk in',
+  'header.localCurrency': 'lokaal',
+
+  'disclaimer.text': 'MortWise is een rekentool, geen financieel advies. Raadpleeg altijd een gekwalificeerde hypotheekadviseur voordat u beslissingen neemt.',
+  'disclaimer.forceUpdate': '↻ update forceren',
+  'disclaimer.updateAvailable': 'update beschikbaar',
+
+  'landing.heroTitle': 'Begrijp je hypotheek —',
+  'landing.heroTitleAccent': 'niet alleen het maandbedrag',
+  'landing.heroSubtitle': 'Vergelijk hypotheken met vaste, variabele en gemengde rente naast elkaar. Stresstest tegen rentestijgingen. Zie wat je werkelijk over 30 jaar betaalt. Gemaakt voor starters die jargon zat zijn.',
+  'landing.heroCta': 'Gratis starten →',
+
+  'landing.valueProp1Title': 'Totale woonkosten',
+  'landing.valueProp1Desc': 'Kijk niet alleen naar het maandbedrag — bekijk de totale rente, het totaal afgelost en de echte 30-jaarse kosten van elke woning die je overweegt.',
+  'landing.valueProp2Title': 'Rente-stresstest',
+  'landing.valueProp2Desc': 'Bekijk precies hoe je maandlasten worden als de rente met +1 %, +2 % of +3 % stijgt na afloop van je rentevaste periode — voor je tekent.',
+  'landing.valueProp3Title': 'Lokale woningmarkt­regels',
+  'landing.valueProp3DescTpl': 'Nauwkeurige overdrachtsbelasting, starterregelingen (NHG, Startersschenking, Help to Buy, KfW…) en bankgrenzen voor {count} woningmarkten.',
+
+  'landing.freeVsFull': 'Gratis vs Volledig',
+  'landing.free': 'Gratis',
+  'landing.full': 'Volledig',
+  'landing.bestValue': 'Beste waarde',
+  'landing.perMonth': '/ maand',
+  'landing.fullCta': 'Gratis starten, later upgraden →',
+
+  'landing.availableMarkets': 'Beschikbare woningmarkten',
+  'landing.marketsHint': 'Overdrachtsbelasting, eigen-geldregels en starterregelingen zijn per land afgestemd. Gebruik de pijlen om te bladeren.',
+
+  'wizard.next': 'Volgende →',
+  'wizard.back': '← Terug',
+  'wizard.calculate': 'Berekenen →',
+  'wizard.editInputs': '← Gegevens aanpassen',
+  'wizard.stepOf': 'Stap {step} van {total}',
+
+  'step1.title': 'Selecteer je markt',
+  'step1.subtitle': 'MortWise past overdrachtsbelasting, overheidsregelingen, regelgeving en bankenlijst aan op de markt die je kiest.',
+  'step1.govtSchemes': 'Overheidsregelingen',
+  'step1.regulatoryNotes': 'Regelgevende aandachtspunten',
+  'step1.keyContext': 'belangrijkste context',
+
+  'step2.title': 'Woninggegevens',
+  'step2.subtitle': 'Voer de woningprijs en de eigen inbreng in.',
+  'step2.enterValuesIn': 'Bedragen invoeren in',
+  'step2.propertyPrice': 'Woningprijs',
+  'step2.deposit': 'Eigen inbreng',
+  'step2.amount': 'Bedrag',
+  'step2.percent': 'Percentage',
+  'step2.otherFees': 'Overige kosten (notaris, taxatie, advies)',
+  'step2.rollFeesIntoMortgage': 'Deze kosten meefinancieren',
+  'step2.propertyType': 'Type woning',
+  'step2.secondaryMarket': 'Bestaande bouw',
+  'step2.secondaryMarketDesc': 'Bestaande woning, doorverkoop',
+  'step2.newBuild': 'Nieuwbouw',
+  'step2.newBuildDesc': 'Eerste verkoop door projectontwikkelaar',
+  'step2.purchaseDate': 'Geplande aankoopdatum',
+  'step2.estimatedStampDuty': 'Geschatte overdrachtsbelasting',
+
+  'step3.title': 'Koperprofiel',
+  'step3.subtitle': 'Je profiel beïnvloedt de overdrachtsbelasting, de maximale lening en de regelingen waarvoor je in aanmerking komt.',
+  'step3.buyerType': 'Type koper',
+  'step3.firstTime': 'Starter',
+  'step3.firstTimeDesc': 'Nog nooit een woning bezeten',
+  'step3.mover': 'Doorstromer',
+  'step3.moverDesc': 'Huidige woning verkopen om een andere te kopen',
+  'step3.investor': 'Belegger / verhuur',
+  'step3.investorDesc': 'Aankoop voor verhuur',
+  'step3.nonResident': 'Niet-ingezetene',
+  'step3.nonResidentDesc': 'Aankoop vanuit het buitenland',
+  'step3.annualIncome': 'Bruto jaarinkomen',
+  'step3.coBorrowerIncome': 'Inkomen mede­aanvrager (optioneel)',
+
+  'step4.title': 'Rentestructuur',
+  'step4.subtitle': 'Kies het type rente voor je hypotheekscenario’s.',
+  'step4.mortgageTerm': 'Looptijd hypotheek',
+  'step4.paymentHoliday': 'Betaalpauze',
+  'step4.cashback': 'Cashback van de bank',
+
+  'step5.title': 'Bankscenario’s',
+  'step5.subtitle': 'Configureer maximaal 4 scenario’s om naast elkaar te vergelijken.',
+  'step5.generateRates': 'Marktrentes genereren',
+  'step5.generating': 'Bezig…',
+
+  'results.fullAnalysis': 'Volledige analyse',
+  'results.scenariosCompared': '{n} scenario’s vergeleken',
+  'results.exportPdf': '↓ PDF exporteren',
+  'results.buildingPdf': 'PDF maken…',
+
+  'feedback.button': 'Feedback',
+  'chat.button': 'Vraag MortWise',
+};
+
+export default nl;
