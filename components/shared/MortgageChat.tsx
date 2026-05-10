@@ -1,13 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ScenarioResult, WizardState } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
-import {
-  subscribeFloating,
-  getFloatingSuppressed,
-  getFloatingSuppressedServer,
-} from '@/lib/floatingVisibility';
 import { showToast } from '@/components/shared/Toaster';
 import { track } from '@/lib/analytics';
 
@@ -38,7 +33,6 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
   const [storedState, setStoredState] = useState<WizardState | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const hidden = useSyncExternalStore(subscribeFloating, getFloatingSuppressed, getFloatingSuppressedServer);
 
   // Pick up the wizard's persisted state from sessionStorage so the chat has
   // context even when mounted globally (where it can't be passed `state` as a
@@ -156,20 +150,18 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
 
   return (
     <>
-      {/* Floating launcher — bottom-RIGHT corner. Feedback sits bottom-left;
-          they no longer stack. Hidden inside wizard sheets via the shared
-          floatingVisibility store so they don't fight the sticky Back/Next bar. */}
-      {!hidden && (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-label="Ask the mortgage assistant"
-          className="fixed bottom-8 right-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
-        >
-          <span aria-hidden>💬</span>
-          Ask MortWise
-        </button>
-      )}
+      {/* Floating launcher — visible on every screen including the wizard,
+          so users can ask questions while configuring inputs. Sits in the
+          bottom-right; the inline Feedback button sits in the bottom-left. */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Ask the mortgage assistant"
+        className="fixed bottom-8 right-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
+      >
+        <span aria-hidden>💬</span>
+        Ask MortWise
+      </button>
 
       {/* Slide-out panel */}
       {open && (
