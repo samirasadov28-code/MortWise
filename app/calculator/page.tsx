@@ -37,7 +37,12 @@ export default function CalculatorPage() {
         window.sessionStorage.getItem('mortwise_wizard');
       if (saved) {
         try {
-          return { ...DEFAULT_WIZARD_STATE, ...JSON.parse(saved) };
+          // Keep the user's typed-in field values across refreshes, but always
+          // (re-)enter the wizard at Step 1 — landing-page "Start free" CTAs
+          // shouldn't drop the visitor into a half-finished previous run, and
+          // a previously-completed `step: 5` would otherwise immediately call
+          // Calculate again on next visit.
+          return { ...DEFAULT_WIZARD_STATE, ...JSON.parse(saved), step: 1 };
         } catch {
           // ignore
         }

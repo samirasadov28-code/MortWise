@@ -5,20 +5,23 @@ import { MARKETS } from '@/lib/markets';
 import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
+import type { TranslationKey } from '@/lib/i18n/dictionaries/en';
 
 interface Step3Props {
   state: WizardState;
   onChange: (updates: Partial<WizardState>) => void;
 }
 
-const BUYER_TYPES: Array<{ value: BuyerType; label: string; description: string }> = [
-  { value: 'first_time', label: 'First-time buyer', description: 'Never owned a property before' },
-  { value: 'mover', label: 'Moving home', description: 'Selling existing property to buy another' },
-  { value: 'investor', label: 'Investor / BTL', description: 'Buying as a rental investment' },
-  { value: 'non_resident', label: 'Non-resident', description: 'Buying from abroad' },
+const BUYER_TYPES: Array<{ value: BuyerType; labelKey: TranslationKey; descKey: TranslationKey }> = [
+  { value: 'first_time',  labelKey: 'step3.firstTime',    descKey: 'step3.firstTimeDesc' },
+  { value: 'mover',       labelKey: 'step3.mover',        descKey: 'step3.moverDesc' },
+  { value: 'investor',    labelKey: 'step3.investor',     descKey: 'step3.investorDesc' },
+  { value: 'non_resident',labelKey: 'step3.nonResident',  descKey: 'step3.nonResidentDesc' },
 ];
 
 export default function Step3Profile({ state, onChange }: Step3Props) {
+  const { t } = useTranslation();
   const market = MARKETS[state.market];
   const sym = market.currencySymbol;
   const totalIncome = state.annualIncome + state.coBorrowerIncome;
@@ -26,15 +29,15 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-[#2a2520] mb-1">Buyer profile</h2>
+      <h2 className="text-xl font-bold text-[#2a2520] mb-1">{t('step3.title')}</h2>
       <p className="text-[#6b7a8a] text-sm mb-6">
-        Your profile affects stamp duty, maximum borrowing, and eligible government schemes.
+        {t('step3.subtitle')}
       </p>
 
       <div className="space-y-5">
         {/* Buyer type */}
         <div>
-          <label className="block text-sm font-medium text-[#2a2520] mb-2">Buyer type</label>
+          <label className="block text-sm font-medium text-[#2a2520] mb-2">{t('step3.buyerType')}</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {BUYER_TYPES.map((bt) => (
               <button
@@ -47,8 +50,8 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                     : 'border-[#e8e3dc] bg-[#eef4f7]/60 hover:border-[#4a7c96]/50'
                 }`}
               >
-                <div className="text-sm font-medium text-[#2a2520]">{bt.label}</div>
-                <div className="text-xs text-[#6b7a8a] mt-0.5">{bt.description}</div>
+                <div className="text-sm font-medium text-[#2a2520]">{t(bt.labelKey)}</div>
+                <div className="text-xs text-[#6b7a8a] mt-0.5">{t(bt.descKey)}</div>
               </button>
             ))}
           </div>
@@ -58,8 +61,8 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-              Annual gross income
-              <Tooltip content="Your total pre-tax income from all sources. Used to check against the lender income multiple cap (e.g. 3.5× in Ireland)." />
+              {t('step3.annualIncome')}
+              <Tooltip content={t('step3.annualIncomeTooltip')} />
             </label>
             <div className="relative">
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
@@ -75,7 +78,7 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
 
           <div>
             <label className="block text-sm font-medium text-[#2a2520] mb-1.5">
-              Co-borrower income (optional)
+              {t('step3.coBorrowerIncome')}
             </label>
             <div className="relative">
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
@@ -99,18 +102,18 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
           }`}>
             <p className="text-sm">
               <span className="font-medium text-[#2a2520]">
-                {market.name} lending limit: {formatCurrency(maxBorrow, state.market)}
+                {t('step3.lendingLimit', { market: market.name, limit: formatCurrency(maxBorrow, state.market) })}
               </span>
               <span className="text-[#6b7a8a] ml-1">
-                ({market.maxIncomeMultiple}× income of {formatCurrency(totalIncome, state.market)})
+                ({market.maxIncomeMultiple}× {t('step3.incomeOf')} {formatCurrency(totalIncome, state.market)})
               </span>
             </p>
             <p className={`text-xs mt-0.5 ${
               (state.housePrice - state.deposit) <= maxBorrow ? 'text-green-700' : 'text-red-600'
             }`}>
               {(state.housePrice - state.deposit) <= maxBorrow
-                ? `Your required loan (${formatCurrency(state.housePrice - state.deposit, state.market)}) is within limits.`
-                : `Your required loan (${formatCurrency(state.housePrice - state.deposit, state.market)}) exceeds the typical lending cap.`}
+                ? t('step3.loanWithinLimits', { loan: formatCurrency(state.housePrice - state.deposit, state.market) })
+                : t('step3.loanExceedsLimits', { loan: formatCurrency(state.housePrice - state.deposit, state.market) })}
             </p>
           </div>
         )}
@@ -119,10 +122,10 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
         {market.govtSchemes.length > 0 && state.buyerType === 'first_time' && (
           <div>
             <label className="block text-sm font-medium text-[#2a2520] mb-2">
-              Government scheme support
+              {t('step3.govtSchemeSupport')}
             </label>
             <p className="text-xs text-[#6b7a8a] mb-3">
-              Select one scheme to apply to your calculation. Schemes can&apos;t typically be combined to their maximums — pick the one that fits your situation.
+              {t('step3.govtSchemeHelp')}
             </p>
             <div className="space-y-2">
               {/* "None" option */}
@@ -141,8 +144,8 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="text-sm font-medium text-[#2a2520]">No scheme</p>
-                    <p className="text-xs text-[#6b7a8a] mt-0.5">Calculate without government support</p>
+                    <p className="text-sm font-medium text-[#2a2520]">{t('step3.noScheme')}</p>
+                    <p className="text-xs text-[#6b7a8a] mt-0.5">{t('step3.noSchemeDesc')}</p>
                   </div>
                   <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
                     !state.govtSchemeEnabled ? 'border-[#4a7c96] bg-[#4a7c96]' : 'border-[#e8e3dc]'
@@ -177,12 +180,12 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                         <p className="text-sm font-medium text-[#2a2520]">{scheme.name}</p>
                         <p className="text-xs text-[#6b7a8a] mt-0.5">{scheme.description}</p>
                         <p className="text-xs text-[#6b7a8a] mt-0.5">
-                          Eligibility: {scheme.eligibility}
+                          {t('step3.eligibility')}: {scheme.eligibility}
                         </p>
                       </div>
                       <div className="text-right flex-shrink-0 flex flex-col items-end gap-2">
                         <p className="text-sm font-bold text-[#4a7c96]">
-                          up to {formatCurrency(maxAmt, state.market)}
+                          {t('step3.upTo')} {formatCurrency(maxAmt, state.market)}
                         </p>
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                           isSelected ? 'border-[#4a7c96] bg-[#4a7c96]' : 'border-[#e8e3dc]'
@@ -199,7 +202,7 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
             {state.govtSchemeEnabled && (
               <div className="mt-3">
                 <label className="block text-xs text-[#6b7a8a] mb-1.5">
-                  Adjust amount (defaults to maximum for {state.selectedGovtSchemeName ?? 'selected scheme'})
+                  {t('step3.adjustAmount', { name: state.selectedGovtSchemeName ?? t('step3.selectedScheme') })}
                 </label>
                 <div className="relative">
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>

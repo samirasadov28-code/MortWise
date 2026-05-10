@@ -7,13 +7,23 @@ import { formatCurrency } from '@/lib/formatting';
 import { convertCurrency, COMPARISON_CURRENCIES } from '@/lib/fx';
 import Tooltip from '@/components/shared/Tooltip';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
+import type { TranslationKey } from '@/lib/i18n/dictionaries/en';
 
 interface Step2Props {
   state: WizardState;
   onChange: (updates: Partial<WizardState>) => void;
 }
 
+const BUYER_TYPE_KEY: Record<string, TranslationKey> = {
+  first_time: 'step3.firstTime',
+  mover: 'step3.mover',
+  investor: 'step3.investor',
+  non_resident: 'step3.nonResident',
+};
+
 export default function Step2Property({ state, onChange }: Step2Props) {
+  const { t, language } = useTranslation();
   const [depositMode, setDepositMode] = useState<'amount' | 'percent'>('amount');
   const market = MARKETS[state.market];
 
@@ -61,9 +71,9 @@ export default function Step2Property({ state, onChange }: Step2Props) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-[#2a2520] mb-1">Property details</h2>
+      <h2 className="text-xl font-bold text-[#2a2520] mb-1">{t('step2.title')}</h2>
       <p className="text-[#6b7a8a] text-sm mb-6">
-        Enter the property price and how much deposit you have available.
+        {t('step2.subtitle')}
       </p>
 
       <div className="space-y-5">
@@ -71,8 +81,8 @@ export default function Step2Property({ state, onChange }: Step2Props) {
         <div className="flex items-end gap-3">
           <div className="flex-1">
             <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-              Enter values in
-              <Tooltip content={`Default is ${market.currency} (the local currency of ${market.name}). Pick a different currency to enter the price in your home / preferred currency — values are converted on the fly using approximate FX rates.`} />
+              {t('step2.enterValuesIn')}
+              <Tooltip content={t('step2.currencyTooltip', { currency: market.currency, market: market.name })} />
             </label>
             <select
               value={displayMarket}
@@ -80,7 +90,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
               className="w-full px-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
             >
               <option value={state.market}>
-                {market.currency} — local ({market.name})
+                {market.currency} — {t('step2.localOption', { market: market.name })}
               </option>
               {COMPARISON_CURRENCIES
                 .filter((c) => c.market !== state.market)
@@ -101,7 +111,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
         {/* Property price */}
         <div>
           <label className="block text-sm font-medium text-[#2a2520] mb-1.5">
-            Property price
+            {t('step2.propertyPrice')}
           </label>
           <div className="relative">
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
@@ -115,7 +125,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           </div>
           {!isLocal && state.housePrice > 0 && (
             <p className="text-xs text-[#6b7a8a] mt-1.5">
-              ≈ {formatCurrency(state.housePrice, state.market)} in local currency
+              ≈ {formatCurrency(state.housePrice, state.market)} {t('step2.inLocalCurrency')}
             </p>
           )}
         </div>
@@ -124,8 +134,8 @@ export default function Step2Property({ state, onChange }: Step2Props) {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-sm font-medium text-[#2a2520] flex items-center gap-1">
-              Deposit
-              <Tooltip content="Your deposit is the amount you pay upfront. The rest is borrowed as a mortgage. A larger deposit = lower LTV = better rates." />
+              {t('step2.deposit')}
+              <Tooltip content={t('step2.depositTooltip')} />
             </label>
             <div className="flex text-xs bg-[#f9f7f4] rounded-lg overflow-hidden border border-[#e8e3dc]">
               <button
@@ -133,14 +143,14 @@ export default function Step2Property({ state, onChange }: Step2Props) {
                 onClick={() => setDepositMode('amount')}
                 className={`px-3 py-1 transition-colors ${depositMode === 'amount' ? 'bg-[#4a7c96] text-white' : 'text-[#6b7a8a] hover:text-[#4a7c96]'}`}
               >
-                {sym} Amount
+                {sym} {t('step2.amount')}
               </button>
               <button
                 type="button"
                 onClick={() => setDepositMode('percent')}
                 className={`px-3 py-1 transition-colors ${depositMode === 'percent' ? 'bg-[#4a7c96] text-white' : 'text-[#6b7a8a] hover:text-[#4a7c96]'}`}
               >
-                % Percent
+                % {t('step2.percent')}
               </button>
             </div>
           </div>
@@ -176,7 +186,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
           {/* LTV indicator */}
           <div className="mt-2 flex items-center justify-between">
             <span className="text-xs text-[#6b7a8a]">
-              Loan: {formatCurrency(loanAmount, state.market)} at <span className="font-semibold text-[#2a2520]">{(ltv * 100).toFixed(1)}% LTV</span>
+              {t('step2.loan')}: {formatCurrency(loanAmount, state.market)} {t('step2.at')} <span className="font-semibold text-[#2a2520]">{(ltv * 100).toFixed(1)}% LTV</span>
             </span>
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               ltv <= 0.6 ? 'bg-green-50 text-green-700' :
@@ -192,8 +202,8 @@ export default function Step2Property({ state, onChange }: Step2Props) {
         {/* Other fees */}
         <div>
           <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-            Other fees (legal, surveyor, broker)
-            <Tooltip content="These are the upfront costs beyond the deposit: solicitor fees (~€2–3k in Ireland), surveyor/valuation (~€500), broker fees (if applicable). Some lenders let you roll these into the mortgage." />
+            {t('step2.otherFees')}
+            <Tooltip content={t('step2.otherFeesTooltip')} />
           </label>
           <div className="relative">
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
@@ -212,15 +222,15 @@ export default function Step2Property({ state, onChange }: Step2Props) {
               onChange={(e) => onChange({ otherFeesCoveredByDebt: e.target.checked })}
               className="rounded border-[#e8e3dc] bg-[#f9f7f4] accent-[#4a7c96]"
             />
-            <span className="text-xs text-[#6b7a8a]">Roll these fees into the mortgage</span>
+            <span className="text-xs text-[#6b7a8a]">{t('step2.rollFeesIntoMortgage')}</span>
           </label>
         </div>
 
         {/* Property type — new build vs secondary affects stamp duty / VAT in many countries */}
         <div>
           <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-            Property type
-            <Tooltip content="In Spain, France, Italy, Belgium and the Netherlands, new builds and existing (secondary) homes are taxed differently — sometimes by 5–10% of price. Pick whichever applies to your purchase." />
+            {t('step2.propertyType')}
+            <Tooltip content={t('step2.propertyTypeTooltip')} />
           </label>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -232,8 +242,8 @@ export default function Step2Property({ state, onChange }: Step2Props) {
                   : 'border-[#e8e3dc] bg-white hover:border-[#4a7c96]/50'
               }`}
             >
-              <p className="text-sm font-medium text-[#2a2520]">Secondary market</p>
-              <p className="text-xs text-[#6b7a8a] mt-0.5">Existing home, resale</p>
+              <p className="text-sm font-medium text-[#2a2520]">{t('step2.secondaryMarket')}</p>
+              <p className="text-xs text-[#6b7a8a] mt-0.5">{t('step2.secondaryMarketDesc')}</p>
             </button>
             <button
               type="button"
@@ -244,8 +254,8 @@ export default function Step2Property({ state, onChange }: Step2Props) {
                   : 'border-[#e8e3dc] bg-white hover:border-[#4a7c96]/50'
               }`}
             >
-              <p className="text-sm font-medium text-[#2a2520]">New build</p>
-              <p className="text-xs text-[#6b7a8a] mt-0.5">First sale from developer</p>
+              <p className="text-sm font-medium text-[#2a2520]">{t('step2.newBuild')}</p>
+              <p className="text-xs text-[#6b7a8a] mt-0.5">{t('step2.newBuildDesc')}</p>
             </button>
           </div>
         </div>
@@ -254,19 +264,21 @@ export default function Step2Property({ state, onChange }: Step2Props) {
             in one click instead of paging through a native month picker. */}
         <div>
           <label className="block text-sm font-medium text-[#2a2520] mb-1.5">
-            Planned purchase date
+            {t('step2.purchaseDate')}
           </label>
           {(() => {
             const [yearStr, monthStr] = (state.purchaseDate || '').split('-');
             const yearNum = Number(yearStr) || new Date().getFullYear();
             const monthNum = Number(monthStr) || (new Date().getMonth() + 1);
-            const months = [
-              'January','February','March','April','May','June',
-              'July','August','September','October','November','December',
-            ];
+            // Use the active language's locale to format month names so e.g.
+            // French shows "Janvier", German "Januar", etc. without us having
+            // to maintain 12 keys × 12 langs by hand.
+            const locale = language === 'en' ? 'en-IE' : language;
+            const monthFmt = new Intl.DateTimeFormat(locale, { month: 'long' });
+            const months = Array.from({ length: 12 }, (_, i) =>
+              monthFmt.format(new Date(2024, i, 1)),
+            );
             const currentYear = new Date().getFullYear();
-            // Cover ±10 yrs from now → 21-year picker, plus include the
-            // selected year if it sits outside that range.
             const yearStart = currentYear - 10;
             const years = Array.from({ length: 21 }, (_, i) => yearStart + i);
             if (!years.includes(yearNum)) years.push(yearNum);
@@ -283,7 +295,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
                   value={monthNum}
                   onChange={(e) => update(yearNum, Number(e.target.value))}
                   className="w-full px-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
-                  aria-label="Purchase month"
+                  aria-label={t('step2.purchaseMonth')}
                 >
                   {months.map((label, i) => (
                     <option key={label} value={i + 1}>{label}</option>
@@ -293,7 +305,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
                   value={yearNum}
                   onChange={(e) => update(Number(e.target.value), monthNum)}
                   className="w-full px-4 py-3 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
-                  aria-label="Purchase year"
+                  aria-label={t('step2.purchaseYear')}
                 >
                   {years.map((y) => (
                     <option key={y} value={y}>{y}</option>
@@ -307,7 +319,7 @@ export default function Step2Property({ state, onChange }: Step2Props) {
         {/* Stamp duty preview */}
         <div className="bg-[#eef4f7]/80 border border-[#e8e3dc] rounded-lg p-4">
           <p className="text-xs font-semibold text-[#6b7a8a] uppercase tracking-wide mb-1">
-            Estimated stamp duty
+            {t('step2.estimatedStampDuty')}
           </p>
           <p className="text-lg font-bold text-[#2a2520]">
             {formatCurrency(
@@ -319,7 +331,11 @@ export default function Step2Property({ state, onChange }: Step2Props) {
             )}
           </p>
           <p className="text-xs text-[#6b7a8a] mt-0.5">
-            Based on {market.name} rates for {state.buyerType.replace('_', ' ')} buyers on a {state.propertyType === 'new_build' ? 'new build' : 'secondary-market'} property — paid separately
+            {t('step2.stampDutyFootnote', {
+              market: market.name,
+              buyer: t(BUYER_TYPE_KEY[state.buyerType] ?? 'step3.firstTime').toLowerCase(),
+              property: state.propertyType === 'new_build' ? t('step2.newBuild').toLowerCase() : t('step2.secondaryMarket').toLowerCase(),
+            })}
           </p>
         </div>
       </div>

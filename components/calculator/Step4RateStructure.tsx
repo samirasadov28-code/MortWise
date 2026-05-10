@@ -6,6 +6,8 @@ import { convertCurrency } from '@/lib/fx';
 import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
+import type { TranslationKey } from '@/lib/i18n/dictionaries/en';
 
 interface Step4Props {
   state: WizardState;
@@ -14,49 +16,26 @@ interface Step4Props {
 
 const RATE_STRUCTURES: Array<{
   value: RateStructure;
-  label: string;
-  tagline: string;
-  description: string;
+  labelKey: TranslationKey;
+  taglineKey: TranslationKey;
+  descKey: TranslationKey;
   icon: string;
 }> = [
-  {
-    value: 'fixed',
-    label: 'Fixed rate',
-    tagline: 'Certainty and predictability',
-    description: 'Pay the same rate for a set period, then revert to your lender\'s variable rate. Ideal if you want to know exactly what you\'ll pay each month and want protection against rate rises.',
-    icon: '🔒',
-  },
-  {
-    value: 'variable',
-    label: 'Variable / tracker',
-    tagline: 'Moves with the market',
-    description: 'Your rate tracks the central bank base rate plus a fixed margin. You benefit when rates fall, but payments rise when rates increase. Often starts lower than fixed rates.',
-    icon: '📈',
-  },
-  {
-    value: 'split',
-    label: 'Split rate',
-    tagline: 'Blend stability with flexibility',
-    description: 'Part of your mortgage is fixed, part tracks the market. You balance rate certainty on one portion with potential savings on the other. Popular in Ireland with ECB tracker mortgages.',
-    icon: '⚖️',
-  },
-  {
-    value: 'tracker',
-    label: 'Pure tracker',
-    tagline: 'ECB / BoE rate + margin',
-    description: 'Tracks a central bank rate (e.g. ECB or Bank of England base rate) plus a fixed margin for the full term. Transparent and directly linked to monetary policy decisions.',
-    icon: '🎯',
-  },
+  { value: 'fixed',    labelKey: 'step4.fixed.label',    taglineKey: 'step4.fixed.tagline',    descKey: 'step4.fixed.desc',    icon: '🔒' },
+  { value: 'variable', labelKey: 'step4.variable.label', taglineKey: 'step4.variable.tagline', descKey: 'step4.variable.desc', icon: '📈' },
+  { value: 'split',    labelKey: 'step4.split.label',    taglineKey: 'step4.split.tagline',    descKey: 'step4.split.desc',    icon: '⚖️' },
+  { value: 'tracker',  labelKey: 'step4.tracker.label',  taglineKey: 'step4.tracker.tagline',  descKey: 'step4.tracker.desc',  icon: '🎯' },
 ];
 
 export default function Step4RateStructure({ state, onChange }: Step4Props) {
+  const { t } = useTranslation();
   const selected = state.rateStructure;
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-[#2a2520] mb-1">Rate structure</h2>
+      <h2 className="text-xl font-bold text-[#2a2520] mb-1">{t('step4.title')}</h2>
       <p className="text-[#6b7a8a] text-sm mb-6">
-        Choose the type of interest rate arrangement for your mortgage scenarios.
+        {t('step4.subtitle')}
       </p>
 
       <div className="space-y-3 mb-6">
@@ -75,11 +54,11 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
               <span className="text-2xl">{rs.icon}</span>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-[#2a2520]">{rs.label}</span>
-                  <span className="text-xs text-[#6b7a8a]">— {rs.tagline}</span>
+                  <span className="font-semibold text-[#2a2520]">{t(rs.labelKey)}</span>
+                  <span className="text-xs text-[#6b7a8a]">— {t(rs.taglineKey)}</span>
                 </div>
                 {selected === rs.value && (
-                  <p className="text-sm text-[#6b7a8a] mt-1">{rs.description}</p>
+                  <p className="text-sm text-[#6b7a8a] mt-1">{t(rs.descKey)}</p>
                 )}
               </div>
               <div className="ml-auto">
@@ -98,8 +77,8 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
       {selected === 'split' && (
         <div className="bg-[#eef4f7]/80 border border-[#e8e3dc] rounded-xl p-4">
           <label className="block text-sm font-medium text-[#2a2520] mb-3 flex items-center gap-1">
-            Fixed / Tracker split
-            <Tooltip content="The proportion of your mortgage at a fixed rate vs a tracker rate. E.g. 70% fixed means 70% of the loan amount pays the fixed rate, while 30% tracks the ECB rate + margin." />
+            {t('step4.splitSlider')}
+            <Tooltip content={t('step4.splitSliderTooltip')} />
           </label>
           <div className="space-y-2">
             <input
@@ -113,10 +92,10 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
             />
             <div className="flex justify-between text-sm">
               <span className="text-[#2a2520] font-medium">
-                {Math.round(state.splitFixedProportion * 100)}% Fixed
+                {Math.round(state.splitFixedProportion * 100)}% {t('step4.fixedShort')}
               </span>
               <span className="text-[#6b7a8a]">
-                {100 - Math.round(state.splitFixedProportion * 100)}% Tracker
+                {100 - Math.round(state.splitFixedProportion * 100)}% {t('step4.trackerShort')}
               </span>
             </div>
           </div>
@@ -126,8 +105,8 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
       {/* Mortgage term */}
       <div className="mt-5">
         <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-          Mortgage term
-          <Tooltip content="The total number of years you take to repay the mortgage. Longer terms = lower monthly payments but much more interest paid overall." />
+          {t('step4.mortgageTerm')}
+          <Tooltip content={t('step4.mortgageTermTooltip')} />
         </label>
         <div className="flex items-center gap-3">
           <input
@@ -149,7 +128,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                 min={5}
                 max={40}
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">yr</span>
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">{t('step4.yearAbbr')}</span>
             </div>
           </div>
         </div>
@@ -168,12 +147,12 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
         return (
           <div className="mt-5">
             <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-              Lender cashback
-              <Tooltip content="A one-off amount the lender pays you at drawdown — typical in Ireland (~1–3% of the loan) and rare elsewhere. Netted against your total loan payments. Most lenders claw it back if you switch within the clawback window." />
+              {t('step4.cashback')}
+              <Tooltip content={t('step4.cashbackTooltip')} />
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <p className="text-xs text-[#6b7a8a] mb-1">Cashback amount</p>
+                <p className="text-xs text-[#6b7a8a] mb-1">{t('step4.cashbackAmount')}</p>
                 <div className="relative">
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
                   <FormattedNumberInput
@@ -186,17 +165,17 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                 </div>
                 {!isLocal && state.wizardCashbackAmount > 0 && (
                   <p className="text-[11px] text-[#6b7a8a] mt-1">
-                    ≈ {formatCurrency(state.wizardCashbackAmount, state.market)} in local currency
+                    ≈ {formatCurrency(state.wizardCashbackAmount, state.market)} {t('step2.inLocalCurrency')}
                   </p>
                 )}
                 {state.wizardCashbackAmount > 0 && requestedLoan > 0 && (
                   <p className="text-[11px] text-[#6b7a8a] mt-1">
-                    {(impliedPct * 100).toFixed(2)}% of the loan amount
+                    {(impliedPct * 100).toFixed(2)}% {t('step4.ofLoanAmount')}
                   </p>
                 )}
               </div>
               <div>
-                <p className="text-xs text-[#6b7a8a] mb-1">Clawback period (years)</p>
+                <p className="text-xs text-[#6b7a8a] mb-1">{t('step4.clawbackYears')}</p>
                 <input
                   type="number"
                   min={0}
@@ -207,7 +186,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                   className="w-full px-4 py-2.5 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-[#2a2520] focus:outline-none focus:border-[#4a7c96] transition-colors"
                 />
                 <p className="text-[11px] text-[#6b7a8a] mt-1">
-                  Years the lender can claw back the cashback if you switch.
+                  {t('step4.clawbackHint')}
                 </p>
               </div>
             </div>
@@ -218,8 +197,8 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
       {/* Payment holiday */}
       <div className="mt-5">
         <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-          Payment holiday
-          <Tooltip content="Months at the start of the loan with zero payments. Interest still accrues and is capitalised onto the balance — useful for self-build or job-transition periods." />
+          {t('step4.paymentHoliday')}
+          <Tooltip content={t('step4.paymentHolidayTooltip')} />
         </label>
         <div className="flex items-center gap-3">
           <input
@@ -241,14 +220,13 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                 min={0}
                 max={24}
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">mo</span>
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">{t('step4.monthAbbr')}</span>
             </div>
           </div>
         </div>
         {state.paymentHolidayMonths > 0 && (
           <p className="text-xs text-amber-700 mt-2">
-            Interest accrues during the holiday and is added to the loan balance — your monthly
-            payment after the holiday will be higher to compensate.
+            {t('step4.paymentHolidayWarning')}
           </p>
         )}
       </div>
