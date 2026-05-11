@@ -13,26 +13,26 @@ const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://mortwise.netlify.ap
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'MortWise — Understand Your Mortgage',
+  title: 'MortWise — AI-Powered Mortgage Assistant',
   description:
-    'Compare fixed, variable, and split-rate mortgages. Stress-test against rate rises. See what you actually pay over 30 years.',
-  keywords: 'mortgage calculator, mortgage comparison, first time buyer, Ireland, UK, UAE',
+    'AI-powered mortgage comparison and stress-testing. Compare fixed, variable and split-rate scenarios, get AI-generated market rates, and ask the built-in AI assistant anything about your mortgage across 50+ markets.',
+  keywords: 'AI mortgage calculator, AI mortgage assistant, mortgage comparison, first time buyer, Ireland, UK, UAE',
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     url: SITE_URL,
-    title: 'MortWise — Understand Your Mortgage',
+    title: 'MortWise — AI-Powered Mortgage Assistant',
     description:
-      'Compare fixed, variable, and split-rate mortgages across 50+ markets. Stress-test against rate rises. See what you actually pay over 30 years.',
-    images: [{ url: '/Logo_512.png', width: 512, height: 512, alt: 'MortWise' }],
+      'AI-powered mortgage comparison and stress-testing across 50+ housing markets. AI-generated rate cards, built-in mortgage chat assistant, full cost-of-ownership analysis.',
+    images: [{ url: '/Logo_512.png', width: 512, height: 512, alt: 'MortWise — AI mortgage assistant' }],
   },
   twitter: {
     card: 'summary',
-    title: 'MortWise — Understand Your Mortgage',
+    title: 'MortWise — AI-Powered Mortgage Assistant',
     description:
-      'Compare fixed, variable, and split-rate mortgages across 50+ markets.',
+      'AI-powered mortgage comparison across 50+ markets, with built-in AI chat.',
     images: ['/Logo_512.png'],
   },
   icons: {
@@ -52,7 +52,13 @@ const JSON_LD = {
   applicationCategory: 'FinanceApplication',
   operatingSystem: 'Web',
   description:
-    'Mortgage comparison and stress-testing for first-time buyers across 50+ housing markets.',
+    'AI-powered mortgage comparison and stress-testing for first-time buyers across 50+ housing markets, with AI-generated rate cards and a built-in AI mortgage chat assistant.',
+  featureList: [
+    'AI-generated market rate cards per lender',
+    'AI mortgage chat assistant',
+    'Stress-testing against rate rises',
+    'Side-by-side comparison across markets',
+  ],
   offers: [
     { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'EUR' },
     { '@type': 'Offer', name: 'Full', price: '3.99', priceCurrency: 'EUR' },
