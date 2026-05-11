@@ -7,6 +7,7 @@ import { getLenders } from '@/lib/lenders';
 import { runAmortisation } from '@/lib/engine/amortisation';
 import { formatCurrency, formatPercent } from '@/lib/formatting';
 import { convertCurrency, COMPARISON_CURRENCIES } from '@/lib/fx';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface ForeignCurrencyPanelProps {
   state: WizardState;
@@ -20,6 +21,7 @@ interface ForeignCurrencyPanelProps {
  * sensitivity levels.
  */
 export default function ForeignCurrencyPanel({ state }: ForeignCurrencyPanelProps) {
+  const { t } = useTranslation();
   const home = MARKETS[state.market];
   const baseScenario = state.scenarios[0];
 
@@ -113,7 +115,7 @@ export default function ForeignCurrencyPanel({ state }: ForeignCurrencyPanelProp
     return (
       <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
         <p className="text-sm text-[#6b7a8a]">
-          Add a base lender scenario to compare a foreign-currency mortgage.
+          {t('fx.noBase')}
         </p>
       </div>
     );
@@ -124,10 +126,7 @@ export default function ForeignCurrencyPanel({ state }: ForeignCurrencyPanelProp
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5 space-y-4">
       <p className="text-sm text-[#6b7a8a]">
-        Compare borrowing in {home.name}&rsquo;s currency ({home.currency}) versus borrowing
-        in another currency for the same property. Foreign-currency mortgages can lower the
-        rate substantially in high-rate markets, but expose the borrower to FX risk on every
-        future payment.
+        {t('fx.intro', { market: home.name, currency: home.currency })}
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

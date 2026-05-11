@@ -6,6 +6,7 @@ import { analyseCashback } from '@/lib/engine/cashback';
 import { formatCurrencyIn } from '@/lib/formatting';
 import { MARKETS } from '@/lib/markets';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface CashbackPanelProps {
   results: ScenarioResult[];
@@ -27,6 +28,7 @@ interface CashbackPanelProps {
  * worth on this loan if I sold in year 3?" without going back to the wizard.
  */
 export default function CashbackPanel({ results, inputs, market, displayMarket }: CashbackPanelProps) {
+  const { t } = useTranslation();
   const dm = displayMarket ?? market;
   const fmt = (v: number) => formatCurrencyIn(v, market, dm);
   const sym = MARKETS[market].currencySymbol;
@@ -73,16 +75,13 @@ export default function CashbackPanel({ results, inputs, market, displayMarket }
       {cashbackScenarios.length === 0 ? (
         <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
           <p className="text-sm text-[#6b7a8a]">
-            None of your scenarios currently include lender cashback. Use the
-            simulator below to see what cashback would be worth on this loan,
-            or add a cashback amount in <strong>Step 4 · Rate type</strong> /
-            <strong> Step 5 · Lender scenarios</strong> to feed it into the rest of the analysis.
+            {t('cashback.noneIntro')}
           </p>
         </div>
       ) : (
         <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
           <h4 className="text-sm font-semibold text-[#2a2520] mb-4">
-            Cashback in your scenarios
+            {t('cashback.inScenarios')}
           </h4>
           {cashbackScenarios.map((r) => {
             const input = inputs.find((i) => i.id === r.id);
@@ -129,12 +128,10 @@ export default function CashbackPanel({ results, inputs, market, displayMarket }
       {/* Interactive simulator — always available */}
       <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
         <h4 className="text-sm font-semibold text-[#2a2520] mb-1">
-          Cashback simulator
+          {t('cashback.simulatorTitle')}
         </h4>
         <p className="text-xs text-[#6b7a8a] mb-4">
-          Test any cashback offer against your loan. Adjust the inputs to see
-          the gross amount, clawback if you switch early, and the break-even
-          point against any rate premium.
+          {t('cashback.simulatorIntro')}
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
