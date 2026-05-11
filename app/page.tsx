@@ -135,6 +135,12 @@ export default function LandingPage() {
         <div className="flex justify-center mb-5 sm:mb-6">
           <Image src="/Logo_512.png" alt="MortWise" width={80} height={80} className="rounded-2xl shadow-md sm:w-24 sm:h-24" />
         </div>
+        <div className="flex justify-center mb-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] text-xs sm:text-sm font-semibold">
+            <span aria-hidden>✨</span>
+            {t('landing.aiBadge')}
+          </span>
+        </div>
         <h1 className="text-2xl sm:text-5xl font-bold text-[#2a2520] mb-4 sm:mb-5 leading-tight">
           {t('landing.heroTitle')}{' '}
           <span className="text-[#4a7c96]">{t('landing.heroTitleAccent')}</span>

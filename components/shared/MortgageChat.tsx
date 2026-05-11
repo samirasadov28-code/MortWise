@@ -5,6 +5,8 @@ import type { ScenarioResult, WizardState } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { showToast } from '@/components/shared/Toaster';
 import { track } from '@/lib/analytics';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
+import type { TranslationKey } from '@/lib/i18n/dictionaries/en';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -16,14 +18,15 @@ interface MortgageChatProps {
   results?: ScenarioResult[];
 }
 
-const SUGGESTED_PROMPTS = [
-  'Why is my monthly payment what it is?',
-  'How does stamp duty work in this market?',
-  'Should I take cashback or a lower rate?',
-  'What happens if rates go up by 2%?',
+const SUGGESTED_PROMPT_KEYS: TranslationKey[] = [
+  'chat.prompt1',
+  'chat.prompt2',
+  'chat.prompt3',
+  'chat.prompt4',
 ];
 
 export default function MortgageChat({ state, results }: MortgageChatProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -156,11 +159,11 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Ask the mortgage assistant"
+        aria-label={t('chat.askAriaLabel')}
         className="fixed bottom-8 right-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
       >
         <span aria-hidden>💬</span>
-        Ask MortWise
+        {t('chat.button')}
       </button>
 
       {/* Slide-out panel */}
@@ -174,14 +177,14 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
           <div
             className="w-full sm:w-[420px] h-full bg-white border-l border-[#e8e3dc] flex flex-col shadow-2xl"
             role="dialog"
-            aria-label="Mortgage assistant chat"
+            aria-label={t('chat.dialogAriaLabel')}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-[#e8e3dc] flex-shrink-0">
               <div>
-                <h2 className="text-base font-bold text-[#2a2520]">Ask MortWise</h2>
+                <h2 className="text-base font-bold text-[#2a2520]">{t('chat.button')}</h2>
                 <p className="text-[11px] text-[#6b7a8a]">
-                  Mortgage assistant
+                  {t('chat.subtitle')}
                   {provider && <> · {provider === 'groq' ? 'Groq' : provider === 'gemini' ? 'Gemini' : 'Grok'}</>}
                 </p>
               </div>
@@ -192,13 +195,13 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
                     onClick={reset}
                     className="text-xs px-2.5 py-1 border border-[#e8e3dc] hover:border-[#4a7c96] text-[#6b7a8a] hover:text-[#4a7c96] rounded-lg transition-colors"
                   >
-                    New chat
+                    {t('chat.newChat')}
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  aria-label="Close chat"
+                  aria-label={t('chat.closeAriaLabel')}
                   className="text-[#6b7a8a] hover:text-[#4a7c96] text-2xl leading-none px-2"
                 >
                   ×
@@ -211,28 +214,29 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
               {messages.length === 0 && (
                 <div className="space-y-3">
                   <p className="text-sm text-[#2a2520]">
-                    Ask anything about your mortgage scenario, country-specific rules,
-                    schemes, or the math behind the numbers.
+                    {t('chat.intro')}
                   </p>
                   <div className="space-y-1.5">
                     <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b7a8a]">
-                      Try
+                      {t('chat.try')}
                     </p>
-                    {SUGGESTED_PROMPTS.map((p) => (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => sendMessage(p)}
-                        disabled={loading}
-                        className="w-full text-left px-3 py-2 text-sm bg-[#f9f7f4] hover:bg-[#eef4f7] border border-[#e8e3dc] hover:border-[#4a7c96] text-[#2a2520] rounded-lg transition-colors disabled:opacity-50"
-                      >
-                        {p}
-                      </button>
-                    ))}
+                    {SUGGESTED_PROMPT_KEYS.map((k) => {
+                      const prompt = t(k);
+                      return (
+                        <button
+                          key={k}
+                          type="button"
+                          onClick={() => sendMessage(prompt)}
+                          disabled={loading}
+                          className="w-full text-left px-3 py-2 text-sm bg-[#f9f7f4] hover:bg-[#eef4f7] border border-[#e8e3dc] hover:border-[#4a7c96] text-[#2a2520] rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          {prompt}
+                        </button>
+                      );
+                    })}
                   </div>
                   <p className="text-[11px] text-[#6b7a8a]/70 leading-relaxed pt-2">
-                    Answers are AI-generated and may be inaccurate. Not financial advice —
-                    confirm anything material with a regulated mortgage advisor in your country.
+                    {t('chat.disclaimer')}
                   </p>
                 </div>
               )}
@@ -268,7 +272,7 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
 
               {error && (
                 <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="font-semibold mb-0.5">Couldn&rsquo;t reach the assistant</p>
+                  <p className="font-semibold mb-0.5">{t('chat.errorTitle')}</p>
                   <p>
                     {error.split(/(\bhttps?:\/\/\S+)/g).map((part, i) =>
                       /^https?:\/\//.test(part) ? (
@@ -298,7 +302,7 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask about your mortgage…"
+                  placeholder={t('chat.inputPlaceholder')}
                   rows={2}
                   disabled={loading}
                   className="flex-1 resize-none px-3 py-2 text-sm bg-[#f9f7f4] border border-[#e8e3dc] focus:border-[#4a7c96] rounded-lg outline-none transition-colors disabled:opacity-60"
@@ -309,11 +313,11 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
                   disabled={!input.trim() || loading}
                   className="px-4 py-2 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
                 >
-                  Send
+                  {t('chat.send')}
                 </button>
               </div>
               <p className="text-[10px] text-[#6b7a8a]/70 mt-1.5">
-                Enter to send · Shift+Enter for newline
+                {t('chat.sendHint')}
               </p>
             </div>
           </div>
