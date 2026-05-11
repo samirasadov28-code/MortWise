@@ -4,28 +4,15 @@ import { useMemo, useState } from 'react';
 import type { ScenarioInput, WizardState, MarketCode } from '@/lib/types';
 import { runAmortisation } from '@/lib/engine/amortisation';
 import { formatCurrencyIn } from '@/lib/formatting';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface SensitivityPanelProps {
   state: WizardState;
   displayMarket?: MarketCode;
 }
 
-/**
- * Interactive multi-axis sensitivity playground. Adjust any combination of
- * sliders below to see the joint impact on monthly payment and total amount
- * paid. The base scenario is the cheapest one in the wizard.
- *
- * Supports:
- *  - Rate shock: −3pp to +5pp on the contract rate (handles falling AND rising)
- *  - Forward rate change: a one-off rate shift in N years (models a remortgage
- *    or fixed-rate roll-off — applied via the variableRate so it kicks in
- *    after the fixed period).
- *  - Term ±10 years
- *  - Deposit ±15pp
- *  - Cashback 0–5%
- *  - Payment holiday 0–18 months
- */
 export default function SensitivityPanel({ state, displayMarket }: SensitivityPanelProps) {
+  const { t } = useTranslation();
   const baseScenario = state.scenarios[0];
   const dm: MarketCode = displayMarket ?? state.market;
   const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
@@ -33,11 +20,11 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
   const baseTerm = state.mortgageTerm;
   const baseDepositPct = state.housePrice > 0 ? state.deposit / state.housePrice : 0.2;
 
-  const [rateShockBp, setRateShockBp] = useState(0);          // basis points, -300..+500
-  const [futureShockBp, setFutureShockBp] = useState(0);      // applied after fixed period rolls off
+  const [rateShockBp, setRateShockBp] = useState(0);
+  const [futureShockBp, setFutureShockBp] = useState(0);
   const [futureShockYear, setFutureShockYear] = useState(5);
-  const [termDelta, setTermDelta] = useState(0);              // years, -10..+10
-  const [depositDeltaPp, setDepositDeltaPp] = useState(0);    // pp, -15..+15
+  const [termDelta, setTermDelta] = useState(0);
+  const [depositDeltaPp, setDepositDeltaPp] = useState(0);
   const [cashbackPct, setCashbackPct] = useState(((baseScenario?.cashbackPercent ?? 0) * 100));
   const [holidayMonths, setHolidayMonths] = useState(0);
 
@@ -51,12 +38,6 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
     const newDepositPct = Math.min(0.95, Math.max(0.0, baseDepositPct + depositDeltaPp / 100));
     const newLTV = 1 - newDepositPct;
 
-    // Build a "what-if" scenario.
-    // Rate shock applies during the fixed period; future shock applies once the
-    // loan rolls onto the variable rate (after fixedPeriodYears) — by adding it
-    // to the variableRate we model a remortgage / curve forecast.
-    // If the user explicitly chose a forward year shorter than fixedPeriodYears,
-    // shorten the fixed period to that year so the future shock takes effect.
     let fixedPeriod = baseScenario.fixedPeriodYears ?? 0;
     if (futureShockBp !== 0 && futureMonth / 12 < fixedPeriod) {
       fixedPeriod = futureMonth / 12;
@@ -121,9 +102,7 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
   if (!baseScenario || !result) {
     return (
       <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-        <p className="text-sm text-[#6b7a8a]">
-          No base scenario available. Add at least one lender scenario to run sensitivity analysis.
-        </p>
+        <p className="text-sm text-[#6b7a8a]">{t('sensitivity.noBase')}</p>
       </div>
     );
   }
@@ -137,35 +116,28 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5 space-y-5">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm text-[#6b7a8a]">
-          Drag the sliders to combine multiple shocks at once. The result panel
-          updates live and shows the combined impact on monthly payment and
-          total amount paid versus your base scenario.
-        </p>
+        <p className="text-sm text-[#6b7a8a]">{t('sensitivity.intro')}</p>
         <button
           type="button"
           onClick={reset}
           disabled={isBase}
           className="text-xs px-3 py-1.5 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
-          Reset
+          {t('sensitivity.reset')}
         </button>
       </div>
 
       {/* Live result panel */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#eef4f7]/60 border border-[#4a7c96]/20 rounded-lg p-4">
-        <Stat label="New monthly" value={fmt(result.monthly)} />
-        <Stat label="New total paid" value={fmt(result.total)} />
+        <Stat label={t('sensitivity.newMonthly')} value={fmt(result.monthly)} />
+        <Stat label={t('sensitivity.newTotalPaid')} value={fmt(result.total)} />
         <Stat
-          label="Δ vs base"
-          value={
-            isBase ? '—'
-              : `${positive ? '+' : ''}${fmt(result.delta)}`
-          }
+          label={t('sensitivity.deltaVsBase')}
+          value={isBase ? '—' : `${positive ? '+' : ''}${fmt(result.delta)}`}
           tone={isBase ? 'neutral' : positive ? 'bad' : 'good'}
         />
         <Stat
-          label="Δ %"
+          label={t('sensitivity.deltaPct')}
           value={isBase ? '—' : `${(result.deltaPct * 100).toFixed(2)}%`}
           tone={isBase ? 'neutral' : positive ? 'bad' : 'good'}
         />
@@ -174,8 +146,8 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
         <Slider
-          label="Rate shock now"
-          help="Shift the contract rate up (rises) or down (cuts) by basis points."
+          label={t('sensitivity.rateShockLabel')}
+          help={t('sensitivity.rateShockHelp')}
           unit="pp"
           value={rateShockBp / 100}
           onChange={(pp) => setRateShockBp(Math.round(pp * 100))}
@@ -186,8 +158,8 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
         />
 
         <Slider
-          label="Future rate move"
-          help="One-off rate shift applied at the year below — models a remortgage / forward curve."
+          label={t('sensitivity.futureRateLabel')}
+          help={t('sensitivity.futureRateHelp')}
           unit="pp"
           value={futureShockBp / 100}
           onChange={(pp) => setFutureShockBp(Math.round(pp * 100))}
@@ -196,39 +168,47 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
           step={0.25}
           fmt={(v) =>
             v === 0
-              ? 'No future change'
-              : `${v >= 0 ? '+' : ''}${v.toFixed(2)} pp from year ${futureShockYear}`
+              ? t('sensitivity.noFutureChange')
+              : t('sensitivity.futureFromYear', {
+                  delta: `${v >= 0 ? '+' : ''}${v.toFixed(2)}`,
+                  year: futureShockYear,
+                })
           }
         />
 
         <Slider
-          label="Future change starts at year"
-          help="The year the rate move above kicks in."
+          label={t('sensitivity.futureStartLabel')}
+          help={t('sensitivity.futureStartHelp')}
           unit="y"
           value={futureShockYear}
           onChange={setFutureShockYear}
           min={1}
           max={Math.min(30, baseTerm)}
           step={1}
-          fmt={(v) => `Year ${v}`}
+          fmt={(v) => t('sensitivity.yearN', { n: v })}
           disabled={futureShockBp === 0}
         />
 
         <Slider
-          label="Term"
-          help="Lengthen or shorten the loan in years."
+          label={t('sensitivity.termLabel')}
+          help={t('sensitivity.termHelp')}
           unit="y"
           value={termDelta}
           onChange={setTermDelta}
           min={-10}
           max={10}
           step={1}
-          fmt={(v) => `${v >= 0 ? '+' : ''}${v} yr → ${result.newTerm} yrs total`}
+          fmt={(v) =>
+            t('sensitivity.termChangeFmt', {
+              delta: `${v >= 0 ? '+' : ''}${v}`,
+              total: result.newTerm,
+            })
+          }
         />
 
         <Slider
-          label="Deposit %"
-          help="Bigger deposit shrinks the loan; smaller deposit grows it."
+          label={t('sensitivity.depositLabel')}
+          help={t('sensitivity.depositHelp')}
           unit="pp"
           value={depositDeltaPp}
           onChange={setDepositDeltaPp}
@@ -239,49 +219,45 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
         />
 
         <Slider
-          label="Cashback %"
-          help="Lender cashback at drawdown, netted off total cost."
+          label={t('sensitivity.cashbackLabel')}
+          help={t('sensitivity.cashbackHelp')}
           unit="%"
           value={cashbackPct}
           onChange={setCashbackPct}
           min={0}
           max={5}
           step={0.25}
-          fmt={(v) => (v === 0 ? 'None' : `${v.toFixed(2)}%`)}
+          fmt={(v) => (v === 0 ? t('sensitivity.none') : `${v.toFixed(2)}%`)}
         />
 
         <Slider
-          label="Payment holiday"
-          help="Months of zero payments at the start. Interest still accrues and capitalises."
+          label={t('sensitivity.holidayLabel')}
+          help={t('sensitivity.holidayHelp')}
           unit="mo"
           value={holidayMonths}
           onChange={setHolidayMonths}
           min={0}
           max={18}
           step={1}
-          fmt={(v) => (v === 0 ? 'None' : `${v} months`)}
+          fmt={(v) => (v === 0 ? t('sensitivity.none') : t('sensitivity.holidayMonths', { n: v }))}
         />
       </div>
 
       <p className="text-[11px] text-[#6b7a8a]/70">
-        Base scenario: {baseScenario.lenderName} · {(baseRate * 100).toFixed(2)}% · {baseTerm} yrs ·
-        {' '}{fmt(result.baseMonthly)}/mo · {fmt(result.baseTotal)} total.
+        {t('sensitivity.baseSummary', {
+          lender: baseScenario.lenderName,
+          rate: (baseRate * 100).toFixed(2),
+          term: String(baseTerm),
+          monthly: `${fmt(result.baseMonthly)}/mo`,
+          total: fmt(result.baseTotal),
+        })}
       </p>
     </div>
   );
 }
 
 function Slider({
-  label,
-  help,
-  value,
-  onChange,
-  min,
-  max,
-  step,
-  fmt,
-  disabled,
-  unit,
+  label, help, value, onChange, min, max, step, fmt, disabled, unit,
 }: {
   label: string;
   help: string;
@@ -317,9 +293,7 @@ function Slider({
 }
 
 function Stat({
-  label,
-  value,
-  tone = 'neutral',
+  label, value, tone = 'neutral',
 }: {
   label: string;
   value: string;

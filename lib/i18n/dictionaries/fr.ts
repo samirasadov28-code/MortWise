@@ -1,7 +1,6 @@
 import type { Dictionary } from './en';
 
 const fr: Dictionary = {
-  // ─── Brand / nav ──────────────────────────────────────────────────────
   'brand.name': 'MortWise',
   'nav.startFree': 'Commencer gratuitement →',
   'header.unlocked': 'Analyse complète débloquée',
@@ -10,18 +9,15 @@ const fr: Dictionary = {
   'header.compareIn': 'Comparer en',
   'header.localCurrency': 'locale',
 
-  // ─── Disclaimer / version ─────────────────────────────────────────────
   'disclaimer.text': 'MortWise est un outil de calcul, pas un conseil financier. Consultez toujours un courtier hypothécaire qualifié avant de prendre une décision.',
   'disclaimer.forceUpdate': '↻ forcer la mise à jour',
   'disclaimer.updateAvailable': 'mise à jour disponible',
 
-  // ─── Landing — hero ───────────────────────────────────────────────────
   'landing.heroTitle': 'Comprenez votre prêt immobilier —',
   'landing.heroTitleAccent': 'pas seulement la mensualité',
   'landing.heroSubtitle': 'Comparez les prêts à taux fixe, variable et mixte côte à côte. Testez la résistance aux hausses de taux. Voyez ce que vous payez réellement sur 30 ans. Conçu pour les primo-accédants fatigués du jargon.',
   'landing.heroCta': 'Commencer gratuitement →',
 
-  // ─── Landing — value props ────────────────────────────────────────────
   'landing.valueProp1Title': 'Coût total du logement',
   'landing.valueProp1Desc': 'Ne regardez pas que la mensualité — voyez les intérêts totaux, le montant total remboursé, et le vrai coût sur 30 ans de chaque bien que vous pourriez acheter.',
   'landing.valueProp2Title': 'Stress test de hausse des taux',
@@ -29,7 +25,6 @@ const fr: Dictionary = {
   'landing.valueProp3Title': 'Règles immobilières locales',
   'landing.valueProp3DescTpl': 'Frais de notaire précis, dispositifs primo-accédants (PTZ, Action Logement, Help to Buy, FHSA, KfW…) et plafonds des prêteurs pour {count} marchés immobiliers.',
 
-  // ─── Landing — Free vs Full ───────────────────────────────────────────
   'landing.freeVsFull': 'Gratuit vs Complet',
   'landing.free': 'Gratuit',
   'landing.full': 'Complet',
@@ -37,25 +32,21 @@ const fr: Dictionary = {
   'landing.perMonth': '/ mois',
   'landing.fullCta': 'Commencer gratuit, passer au complet plus tard →',
 
-  // ─── Landing — markets section ────────────────────────────────────────
   'landing.availableMarkets': 'Marchés immobiliers disponibles',
   'landing.marketsHint': 'Frais de notaire, règles d’apport et dispositifs primo-accédants ajustés par pays. Utilisez les flèches pour parcourir.',
 
-  // ─── Wizard — common ──────────────────────────────────────────────────
   'wizard.next': 'Suivant →',
   'wizard.back': '← Retour',
   'wizard.calculate': 'Calculer →',
   'wizard.editInputs': '← Modifier les données',
   'wizard.stepOf': 'Étape {step} sur {total}',
 
-  // ─── Wizard — Step 1: Market ──────────────────────────────────────────
   'step1.title': 'Choisissez votre marché',
   'step1.subtitle': 'MortWise adapte les frais de notaire, les dispositifs publics, le contexte réglementaire et la liste des banques au marché choisi.',
   'step1.govtSchemes': 'Dispositifs publics',
   'step1.regulatoryNotes': 'Notes réglementaires',
   'step1.keyContext': 'contexte clé',
 
-  // ─── Wizard — Step 2: Property ────────────────────────────────────────
   'step2.title': 'Détails du bien',
   'step2.subtitle': 'Saisissez le prix du bien et le montant de votre apport.',
   'step2.enterValuesIn': 'Saisir les valeurs en',
@@ -73,7 +64,6 @@ const fr: Dictionary = {
   'step2.purchaseDate': 'Date d’achat prévue',
   'step2.estimatedStampDuty': 'Frais de notaire estimés',
 
-  // ─── Wizard — Step 3: Profile ─────────────────────────────────────────
   'step3.title': 'Profil acheteur',
   'step3.subtitle': 'Votre profil influe sur les frais de notaire, le montant maximum empruntable et les dispositifs publics auxquels vous êtes éligible.',
   'step3.buyerType': 'Type d’acheteur',
@@ -88,28 +78,177 @@ const fr: Dictionary = {
   'step3.annualIncome': 'Revenu annuel brut',
   'step3.coBorrowerIncome': 'Revenu du co-emprunteur (optionnel)',
 
-  // ─── Wizard — Step 4: Rate structure ──────────────────────────────────
   'step4.title': 'Structure de taux',
   'step4.subtitle': 'Choisissez le type de taux d’intérêt pour vos scénarios de prêt.',
   'step4.mortgageTerm': 'Durée du prêt',
   'step4.paymentHoliday': 'Pause de paiement',
   'step4.cashback': 'Cashback du prêteur',
 
-  // ─── Wizard — Step 5: Lender scenarios ────────────────────────────────
   'step5.title': 'Scénarios de prêteurs',
   'step5.subtitle': 'Configurez jusqu’à 4 scénarios à comparer côte à côte.',
   'step5.generateRates': 'Générer les taux du marché',
   'step5.generating': 'Génération…',
 
-  // ─── Results — common ─────────────────────────────────────────────────
   'results.fullAnalysis': 'Analyse complète',
   'results.scenariosCompared': '{n} scénarios comparés',
   'results.exportPdf': '↓ Exporter en PDF',
   'results.buildingPdf': 'Création du PDF…',
 
-  // ─── Floating widgets ─────────────────────────────────────────────────
   'feedback.button': 'Avis',
   'chat.button': 'Demander à MortWise',
+
+  // ─── Sensitivity panel ────────────────────────────────────────────────
+  'sensitivity.noBase': 'Aucun scénario de base disponible. Ajoutez au moins un scénario de prêteur pour lancer l’analyse de sensibilité.',
+  'sensitivity.intro': 'Faites glisser les curseurs pour combiner plusieurs chocs simultanément. Le panneau de résultats se met à jour en temps réel et montre l’impact combiné sur la mensualité et le montant total payé par rapport à votre scénario de base.',
+  'sensitivity.reset': 'Réinitialiser',
+  'sensitivity.newMonthly': 'Nouvelle mensualité',
+  'sensitivity.newTotalPaid': 'Nouveau total payé',
+  'sensitivity.deltaVsBase': 'Δ vs base',
+  'sensitivity.deltaPct': 'Δ %',
+  'sensitivity.rateShockLabel': 'Choc de taux immédiat',
+  'sensitivity.rateShockHelp': 'Décaler le taux contractuel à la hausse (remontée) ou à la baisse (baisse) en points de base.',
+  'sensitivity.futureRateLabel': 'Mouvement de taux futur',
+  'sensitivity.futureRateHelp': 'Décalage unique de taux appliqué à l’année ci-dessous — modélise un remboursement anticipé / courbe forward.',
+  'sensitivity.futureStartLabel': 'Changement futur à partir de l’année',
+  'sensitivity.futureStartHelp': 'L’année à laquelle le mouvement de taux ci-dessus prend effet.',
+  'sensitivity.termLabel': 'Durée',
+  'sensitivity.termHelp': 'Allonger ou raccourcir la durée du prêt en années.',
+  'sensitivity.depositLabel': 'Apport %',
+  'sensitivity.depositHelp': 'Un apport plus élevé réduit le prêt ; un apport plus faible l’augmente.',
+  'sensitivity.cashbackLabel': 'Cashback %',
+  'sensitivity.cashbackHelp': 'Cashback du prêteur au déblocage, déduit du coût total.',
+  'sensitivity.holidayLabel': 'Pause de paiement',
+  'sensitivity.holidayHelp': 'Mois sans paiement au début. Les intérêts continuent de courir et sont capitalisés.',
+  'sensitivity.baseSummary': 'Scénario de base : {lender} · {rate} % · {term} ans · {monthly} · {total} total.',
+  'sensitivity.noFutureChange': 'Aucun changement futur',
+  'sensitivity.futureFromYear': '{delta} pp à partir de l’année {year}',
+  'sensitivity.yearN': 'Année {n}',
+  'sensitivity.termChangeFmt': '{delta} an → {total} ans total',
+  'sensitivity.none': 'Aucun',
+  'sensitivity.holidayMonths': '{n} mois',
+
+  // ─── Stress-test panel ────────────────────────────────────────────────
+  'stressTest.title': 'Stress test de hausse des taux',
+  'stressTest.fixedPeriodNote': 'Votre période fixe expire dans {years} ans. Si les taux ont bougé d’ici là, voici ce que devient votre mensualité.',
+  'stressTest.rateIncrease': 'Scénario de hausse de taux',
+  'stressTest.newPayment': 'Nouvelle mensualité',
+  'stressTest.increase': 'Hausse',
+  'stressTest.extraInterest': 'Intérêts supplémentaires : {amount} au total',
+
+  // ─── Holiday panel ────────────────────────────────────────────────────
+  'holiday.title': 'Report de mensualités / pause de paiement',
+  'holiday.intro': 'Suspendez vos remboursements hypothécaires pendant plusieurs mois. Les intérêts continuent de courir pendant la pause et sont ajoutés au capital restant dû, si bien que la mensualité est recalculée à la hausse à la reprise.',
+  'holiday.pauseStartsLabel': 'Début de la pause (mois)',
+  'holiday.pauseStartsHelp': 'Ex. 24 = la pause débute au mois 24 (an 2). Max {max}.',
+  'holiday.durationLabel': 'Durée (mois)',
+  'holiday.durationHelp': 'Nombre de mois sans paiement. La plupart des prêteurs limitent à 6–12.',
+  'holiday.run': 'Lancer la simulation',
+  'holiday.reset': 'Réinitialiser',
+  'holiday.planStatus': 'Plan : pause de {duration} mois à partir du mois {start}',
+  'holiday.enterParams': 'Saisir un mois de début et une durée > 0 pour lancer.',
+  'holiday.extraInterest': 'Intérêts supplémentaires',
+  'holiday.balanceAtEnd': 'Capital à la fin de la pause',
+  'holiday.newMonthly': 'Nouvelle mensualité',
+  'holiday.totalExtra': 'Surcoût total',
+  'holiday.balanceChartTitle': 'Capital restant dû au fil du temps',
+  'holiday.balanceChartNote': 'Le capital augmente pendant la pause car les intérêts sont capitalisés.',
+  'holiday.noPause': 'Sans pause',
+  'holiday.withPause': 'Avec pause',
+  'holiday.paymentChartTitle': 'Mensualité au fil du temps',
+  'holiday.paymentChartNote': 'Tombe à 0 pendant la pause, puis reprend plus haut pour amortir le nouveau capital.',
+
+  // ─── Overpayment panel ────────────────────────────────────────────────
+  'overpayment.title': 'Simulateur de remboursement anticipé',
+  'overpayment.intro': 'Planifiez un remboursement anticipé récurrent et voyez combien d’intérêts vous économisez et comment le profil du prêt évolue.',
+  'overpayment.lumpSum': 'Montant forfaitaire',
+  'overpayment.startYear': 'Année de début',
+  'overpayment.everyNYears': 'Tous les N ans',
+  'overpayment.reduces': 'Réduit',
+  'overpayment.reduceTerm': 'Durée (prêt plus court, même mensualité)',
+  'overpayment.reducePayment': 'Mensualité (même durée, mensualité réduite)',
+  'overpayment.run': 'Lancer la simulation',
+  'overpayment.reset': 'Réinitialiser',
+  'overpayment.planStatusSingle': 'Plan : {amount} chaque année à partir de l’année {start}',
+  'overpayment.planStatusMultiple': 'Plan : {amount} tous les {n} ans à partir de l’année {start}',
+  'overpayment.enterLumpSum': 'Saisir un montant supérieur à 0 pour lancer.',
+  'overpayment.monthsSaved': 'Mois économisés',
+  'overpayment.interestSaved': 'Intérêts économisés',
+  'overpayment.totalSaved': 'Total économisé',
+  'overpayment.balanceChartTitle': 'Capital restant dû au fil du temps',
+  'overpayment.paymentChartTitle': 'Mensualité au fil du temps',
+  'overpayment.termNote': 'Réduit la durée : mensualité constante, prêt se termine plus tôt.',
+  'overpayment.paymentNote': 'Réduit la mensualité : la mensualité baisse après chaque remboursement anticipé.',
+  'overpayment.noOverpayment': 'Sans remboursement anticipé',
+  'overpayment.withOverpayment': 'Avec remboursement anticipé',
+
+  // ─── Cashback panel ───────────────────────────────────────────────────
+  'cashback.noScenarios': 'Aucun de vos scénarios ne comprend actuellement de cashback prêteur. Utilisez le simulateur ci-dessous pour voir la valeur d’un cashback sur ce prêt, ou ajoutez un montant de cashback à l’étape 4 · Structure de taux / étape 5 · Scénarios de prêteurs.',
+  'cashback.scenariosTitle': 'Cashback dans vos scénarios',
+  'cashback.alreadyCheaper': 'Ce prêteur avec cashback est déjà moins cher — le cashback est un avantage pur.',
+  'cashback.breakEvenNote': 'Seuil de rentabilité : le cashback dépasse la prime de taux après {months} mois ({years} ans).',
+  'cashback.simTitle': 'Simulateur de cashback',
+  'cashback.simIntro': 'Testez n’importe quelle offre de cashback sur votre prêt. Ajustez les paramètres pour voir le montant brut, la récupération en cas de sortie anticipée et le point de rentabilité.',
+  'cashback.loanAmount': 'Montant du prêt',
+  'cashback.cashbackPct': 'Cashback %',
+  'cashback.clawbackPeriod': 'Période de récupération (ans)',
+  'cashback.exitYear': 'Année de sortie',
+  'cashback.ratePremium': 'Prime de taux cashback (points de base)',
+  'cashback.ratePremiumHelp': 'Ex. 25 signifie que le prêteur cashback facture 0,25 % de plus que votre référence. Le simulateur utilise la mensualité de votre scénario le moins cher ({payment}) comme référence.',
+  'cashback.grossCashback': 'Cashback brut',
+  'cashback.netAtYear': 'Net à l’année {year}',
+  'cashback.breakEvenStat': 'Seuil de rentabilité',
+  'cashback.alreadyCheaperStat': 'Déjà moins cher',
+  'cashback.clawbackScheduleTitle': 'Calendrier de récupération — cashback net si sortie à l’année N',
+  'cashback.yearCol': 'Année',
+  'cashback.clawbackOwed': 'Récupération due',
+  'cashback.netCashback': 'Cashback net',
+  'cashback.yearN': 'Année {n}',
+  'cashback.noneOwed': 'Aucune',
+  'cashback.footnote': 'La récupération est le montant que le prêteur reprend si vous changez pendant la période de récupération — généralement proportionnelle aux années restantes. Le seuil de rentabilité est le nombre de mois jusqu’à ce que le cashback dépasse la prime cumulative payée pour un taux plus élevé (pertinent uniquement si la prime > 0).',
+
+  // ─── Buy-to-let panel ─────────────────────────────────────────────────
+  'btl.intro': 'Traitez ce bien comme un investissement locatif. Ajustez les hypothèses ci-dessous pour voir si le loyer couvre le remboursement, quel rendement vous obtenez sur le capital investi et quand l’investissement est amorti.',
+  'btl.monthlyRent': 'Loyer mensuel',
+  'btl.opex': 'Charges %',
+  'btl.occupancy': 'Taux d’occupation %',
+  'btl.holdYears': 'Durée de détention (ans)',
+  'btl.rentInflation': 'Inflation loyer %/an',
+  'btl.appreciation': 'Valorisation bien %/an',
+  'btl.grossYield': 'Rendement brut',
+  'btl.netYield': 'Rendement net',
+  'btl.cashYield': 'Rendement cash',
+  'btl.irr': 'TRI ({years} ans)',
+  'btl.cashInvested': 'Capital investi (apport + droits + frais)',
+  'btl.stampDuty': 'Droits de mutation (investisseur)',
+  'btl.yr1GrossRent': 'Loyer brut année 1',
+  'btl.yr1NetRent': 'Loyer net année 1 (après charges)',
+  'btl.yr1Mortgage': 'Remboursements hypothécaires année 1',
+  'btl.yr1CashFlow': 'Cash-flow année 1',
+  'btl.payback': 'Remboursement (cash-flow cumulé ≥ apport + frais)',
+  'btl.paybackNotWithin': 'Pas dans les {years} ans avec ces hypothèses',
+  'btl.paybackYear': 'Année {n}',
+  'btl.breakEvenOccupancy': 'Taux d’occupation seuil (an 1)',
+  'btl.breakEvenOver100': '> 100 % (le loyer ne couvre jamais l’hypothèque)',
+  'btl.rulesTitle': 'Comment les règles, taux et conditions peuvent évoluer à {market}',
+  'btl.footnote': 'Le TRI utilise votre durée de détention (10 ans par défaut) et inclut la valeur de sortie : valeur du bien × (1+valorisation)^N moins le capital restant dû. Exclut l’impôt sur les revenus locatifs — variable selon le pays et votre situation fiscale.',
+
+  // ─── Foreign-currency panel ───────────────────────────────────────────
+  'fx.noBase': 'Ajoutez un scénario de prêteur de base pour comparer un prêt en devise étrangère.',
+  'fx.intro': 'Comparez un emprunt dans la devise de {market} ({currency}) avec un emprunt dans une autre devise pour le même bien. Les prêts en devise étrangère peuvent réduire considérablement le taux dans les marchés à taux élevés, mais exposent l’emprunteur au risque de change sur chaque paiement futur.',
+  'fx.borrowIn': 'Emprunter en',
+  'fx.fxStressLabel': 'Risque de change (devise du prêt vs locale, % / an)',
+  'fx.fxStressHelp': 'Positif = la devise du prêt se renforce face à {currency} (paiements augmentent). Négatif = la devise du prêt s’affaiblit (paiements diminuent).',
+  'fx.localMortgageTitle': 'Prêt en devise locale ({currency})',
+  'fx.foreignMortgageTitle': 'Prêt en devise étrangère ({currency})',
+  'fx.rate': 'Taux',
+  'fx.loanAmount': 'Montant du prêt',
+  'fx.firstMonthly': 'Première mensualité',
+  'fx.totalPaid': 'Total payé',
+  'fx.totalPaidFxAdjusted': 'Total payé (en {currency}, ajusté change)',
+  'fx.foreignCheaper': 'Le prêt en devise étrangère semble moins cher',
+  'fx.localCheaper': 'Le prêt en devise locale semble moins cher',
+  'fx.savingsSuffix': 'différence de {amount} sur la durée du prêt avec l’hypothèse de change ci-dessus.',
+  'fx.footnote': 'Le risque de change est réel : une appréciation de 5 %/an de la devise du prêt sur une hypothèque de 25 ans correspond à environ 3,4× le taux de change initial. De nombreux régulateurs (ex. NBU en Ukraine, KNF en Pologne) limitent ou interdisent les prêts en devise étrangère pour les résidents.',
 };
 
 export default fr;
