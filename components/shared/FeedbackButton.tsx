@@ -7,6 +7,7 @@ import {
   getFloatingSuppressedServer,
   setFloatingSuppressed,
 } from '@/lib/floatingVisibility';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -25,6 +26,7 @@ export function useSuppressFloatingFeedback() {
 // ─── Shared modal ─────────────────────────────────────────────────────────────
 
 function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation();
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
 
   function handleClose() {
@@ -67,11 +69,11 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
     >
       <div className="w-full max-w-md bg-white border border-[#e8e3dc] rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-[#2a2520]">Send feedback</h2>
+          <h2 className="text-lg font-bold text-[#2a2520]">{t('feedback.modalTitle')}</h2>
           <button
             onClick={handleClose}
             className="text-[#6b7a8a] hover:text-[#4a7c96] text-xl leading-none"
-            aria-label="Close"
+            aria-label={t('feedback.closeAriaLabel')}
           >
             ×
           </button>
@@ -80,13 +82,13 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
         {submitState === 'success' ? (
           <div className="text-center py-6">
             <div className="text-4xl mb-3">✓</div>
-            <p className="text-[#2a2520] font-semibold mb-1">Thanks for the feedback!</p>
-            <p className="text-sm text-[#6b7a8a]">We read every message.</p>
+            <p className="text-[#2a2520] font-semibold mb-1">{t('feedback.thanks')}</p>
+            <p className="text-sm text-[#6b7a8a]">{t('feedback.readEvery')}</p>
             <button
               onClick={handleClose}
               className="mt-5 px-5 py-2 bg-[#4a7c96] hover:bg-[#3a6a82] text-white text-sm font-semibold rounded-lg transition-colors"
             >
-              Close
+              {t('feedback.close')}
             </button>
           </div>
         ) : (
@@ -102,7 +104,7 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
 
             <div className="mb-4">
               <label className="block text-sm text-[#6b7a8a] mb-1.5" htmlFor="feedback-email">
-                Email <span className="text-[#6b7a8a]/60">(optional)</span>
+                {t('feedback.email')} <span className="text-[#6b7a8a]/60">{t('feedback.optional')}</span>
               </label>
               <input
                 id="feedback-email"
@@ -115,7 +117,7 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
 
             <div className="mb-4">
               <label className="block text-sm text-[#6b7a8a] mb-1.5" htmlFor="feedback-type">
-                Type
+                {t('feedback.type')}
               </label>
               <select
                 id="feedback-type"
@@ -123,30 +125,30 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
                 required
                 className="w-full px-3 py-2.5 bg-[#f9f7f4] border border-[#e8e3dc] focus:border-[#4a7c96] rounded-lg text-[#2a2520] text-sm outline-none transition-colors"
               >
-                <option value="">Select…</option>
-                <option value="bug">Bug report</option>
-                <option value="feature">Feature request</option>
-                <option value="question">Question</option>
-                <option value="other">Other</option>
+                <option value="">{t('feedback.selectPlaceholder')}</option>
+                <option value="bug">{t('feedback.typeBug')}</option>
+                <option value="feature">{t('feedback.typeFeature')}</option>
+                <option value="question">{t('feedback.typeQuestion')}</option>
+                <option value="other">{t('feedback.typeOther')}</option>
               </select>
             </div>
 
             <div className="mb-5">
               <label className="block text-sm text-[#6b7a8a] mb-1.5" htmlFor="feedback-message">
-                Message
+                {t('feedback.message')}
               </label>
               <textarea
                 id="feedback-message"
                 name="message"
                 rows={4}
                 required
-                placeholder="Tell us what's on your mind…"
+                placeholder={t('feedback.messagePlaceholder')}
                 className="w-full px-3 py-2.5 bg-[#f9f7f4] border border-[#e8e3dc] focus:border-[#4a7c96] rounded-lg text-[#2a2520] text-sm placeholder-[#9aa5b0]/50 outline-none transition-colors resize-none"
               />
             </div>
 
             {submitState === 'error' && (
-              <p className="text-red-600 text-sm mb-3">Something went wrong. Please try again.</p>
+              <p className="text-red-600 text-sm mb-3">{t('feedback.errorRetry')}</p>
             )}
 
             <button
@@ -154,7 +156,7 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
               disabled={submitState === 'submitting'}
               className="w-full py-3 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
             >
-              {submitState === 'submitting' ? 'Sending…' : 'Send feedback'}
+              {submitState === 'submitting' ? t('feedback.sending') : t('feedback.send')}
             </button>
           </form>
         )}
@@ -166,6 +168,7 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
 // ─── Floating (default) ───────────────────────────────────────────────────────
 
 export default function FeedbackButton() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const isSuppressed = useSyncExternalStore(subscribeFloating, getFloatingSuppressed, getFloatingSuppressedServer);
 
@@ -175,9 +178,9 @@ export default function FeedbackButton() {
         <button
           onClick={() => setOpen(true)}
           className="fixed bottom-8 left-5 z-50 px-4 py-2.5 bg-[#4a7c96] hover:bg-[#3a6a82] text-white text-sm font-semibold rounded-full shadow-lg transition-colors"
-          aria-label="Send feedback"
+          aria-label={t('feedback.send')}
         >
-          Feedback
+          {t('feedback.button')}
         </button>
       )}
       <FeedbackModal open={open} onClose={() => setOpen(false)} />
@@ -188,6 +191,7 @@ export default function FeedbackButton() {
 // ─── Inline (in-flow) ─────────────────────────────────────────────────────────
 
 export function FeedbackInline() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -196,7 +200,7 @@ export function FeedbackInline() {
         onClick={() => setOpen(true)}
         className="text-sm px-4 py-2 border border-[#e8e3dc] hover:border-[#4a7c96] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] transition-colors bg-white"
       >
-        Send feedback
+        {t('feedback.send')}
       </button>
       <FeedbackModal open={open} onClose={() => setOpen(false)} />
     </>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 export type ToastKind = 'info' | 'success' | 'error';
 
@@ -76,23 +77,24 @@ const KIND_CLASS: Record<ToastKind, string> = {
  * store above.
  */
 export default function Toaster() {
+  const { t } = useTranslation();
   const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   return (
     <div
       role="region"
-      aria-label="Notifications"
+      aria-label={t('toast.regionAriaLabel')}
       aria-live="polite"
       className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 max-w-sm pointer-events-none"
     >
-      {items.map((t) => (
-        <ToastItem key={t.id} toast={t} />
+      {items.map((toast) => (
+        <ToastItem key={toast.id} toast={toast} dismissLabel={t('toast.dismissAriaLabel')} />
       ))}
     </div>
   );
 }
 
-function ToastItem({ toast }: { toast: Toast }) {
+function ToastItem({ toast, dismissLabel }: { toast: Toast; dismissLabel: string }) {
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
@@ -116,7 +118,7 @@ function ToastItem({ toast }: { toast: Toast }) {
         <button
           type="button"
           onClick={() => dismissToast(toast.id)}
-          aria-label="Dismiss"
+          aria-label={dismissLabel}
           className="text-base leading-none opacity-70 hover:opacity-100"
         >
           ×

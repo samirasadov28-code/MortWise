@@ -6,6 +6,7 @@ import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import UpgradeWall from '@/components/shared/UpgradeWall';
 import Tooltip from '@/components/shared/Tooltip';
 import CalculationBreakdown from '@/components/results/CalculationBreakdown';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface FreeResultsProps {
   results: ScenarioResult[];
@@ -22,6 +23,7 @@ function clamp01(v: number) {
 }
 
 export default function FreeResults({ results, state, onUnlocked, hideUpgradeWall, displayMarket }: FreeResultsProps) {
+  const { t } = useTranslation();
   const dm: MarketCode = displayMarket ?? state.market;
   const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
   if (results.length === 0) return null;
@@ -58,42 +60,42 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
       <div className="bg-white border border-[#4a7c96]/30 rounded-xl p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div>
-            <p className="text-[#6b7a8a] text-sm mb-1">Best scenario — {best.lenderName}</p>
+            <p className="text-[#6b7a8a] text-sm mb-1">{t('free.bestScenario')} — {best.lenderName}</p>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-bold text-[#2a2520]">
                 {fmt(best.firstMonthlyPayment)}
               </span>
-              <span className="text-[#6b7a8a] text-sm sm:text-base">/ month</span>
+              <span className="text-[#6b7a8a] text-sm sm:text-base">/ {t('free.perMonth')}</span>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs text-[#6b7a8a] mb-1">Rate structure</p>
+            <p className="text-xs text-[#6b7a8a] mb-1">{t('free.rateStructure')}</p>
             <p className="text-sm font-semibold text-[#2a2520] capitalize">{state.rateStructure.replace('_', ' ')}</p>
-            <p className="text-xs text-[#6b7a8a] mt-0.5">{state.mortgageTerm} year term</p>
+            <p className="text-xs text-[#6b7a8a] mt-0.5">{t('free.yearTerm', { years: state.mortgageTerm })}</p>
           </div>
         </div>
 
         <p className="text-xs sm:text-sm text-[#6b7a8a]">
-          LTV: {formatPercent(state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0)} — Loan: {fmt(best.loanAmount)}
+          LTV: {formatPercent(state.housePrice > 0 ? (state.housePrice - state.deposit) / state.housePrice : 0)} — {t('free.loan')}: {fmt(best.loanAmount)}
         </p>
       </div>
 
       {/* Cost summary - 3 stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <StatCard
-          label="Annual cost (year 1)"
+          label={t('free.annualCost')}
           value={fmt(year1Cost)}
-          tooltip="What you'll pay in mortgage repayments during the first 12 months."
+          tooltip={t('free.annualCostTooltip')}
         />
         <StatCard
-          label="Total interest"
+          label={t('free.totalInterest')}
           value={fmt(best.totalInterestPaid)}
-          tooltip="The total interest you'll pay over the entire life of the loan, assuming no overpayments."
+          tooltip={t('free.totalInterestTooltip')}
         />
         <StatCard
-          label="Total loan payments"
+          label={t('free.totalPayments')}
           value={fmt(totalCost)}
-          tooltip="Loan amount + total interest. The full amount you'll repay over the term."
+          tooltip={t('free.totalPaymentsTooltip')}
         />
       </div>
 
@@ -105,19 +107,19 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
             : 'bg-red-50 border-red-200'
         }`}>
           <h3 className="text-sm font-semibold text-[#2a2520] mb-2 flex items-center gap-1">
-            Affordability check — {market.name}
-            <Tooltip content="Most lenders apply a cap on how much you can borrow as a multiple of your gross annual income. This shows whether your requested loan fits within that cap." />
+            {t('free.affordabilityCheck')} — {market.name}
+            <Tooltip content={t('free.affordabilityCheckTooltip')} />
           </h3>
           <p className="text-sm text-[#2a2520]">
             <span className={`font-semibold ${withinLimit ? 'text-green-700' : 'text-red-600'}`}>
-              {withinLimit ? '✓ Within typical limits' : '⚠ Exceeds typical limit'}
+              {withinLimit ? `✓ ${t('free.withinLimits')}` : `⚠ ${t('free.exceedsLimit')}`}
             </span>
             <span className="text-[#6b7a8a] ml-2">
-              ({market.maxIncomeMultiple}× income of {fmt(totalIncome)} = {fmt(maxBorrow)})
+              ({market.maxIncomeMultiple}× {t('step3.incomeOf')} {fmt(totalIncome)} = {fmt(maxBorrow)})
             </span>
           </p>
           <p className="text-xs text-[#6b7a8a] mt-1">
-            Your requested loan: {fmt(requestedLoan)}
+            {t('free.requestedLoan')}: {fmt(requestedLoan)}
           </p>
         </div>
       )}
@@ -125,45 +127,45 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
       {/* Interest vs Principal bar */}
       <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
         <h3 className="text-sm font-semibold text-[#2a2520] mb-3 flex items-center gap-1">
-          Payment composition
-          <Tooltip content="Of every euro you pay over the life of the mortgage, this shows how much goes to interest (the cost of borrowing) vs principal (reducing what you owe)." />
+          {t('free.paymentComposition')}
+          <Tooltip content={t('free.paymentCompositionTooltip')} />
         </h3>
         <div className="h-8 rounded-lg overflow-hidden flex">
           <div
             className="bg-[#4a7c96] flex items-center justify-center text-xs text-white font-medium transition-all"
             style={{ width: `${principalPct * 100}%` }}
           >
-            {principalPct > 0.15 && `${(principalPct * 100).toFixed(0)}% principal`}
+            {principalPct > 0.15 && `${(principalPct * 100).toFixed(0)}% ${t('repayment.principal').toLowerCase()}`}
           </div>
           <div
             className="bg-[#c9956a] flex items-center justify-center text-xs text-white font-medium transition-all"
             style={{ width: `${interestPct * 100}%` }}
           >
-            {interestPct > 0.15 && `${(interestPct * 100).toFixed(0)}% interest`}
+            {interestPct > 0.15 && `${(interestPct * 100).toFixed(0)}% ${t('repayment.interest').toLowerCase()}`}
           </div>
         </div>
         <div className="flex justify-between mt-2 text-xs text-[#6b7a8a]">
-          <span>Principal: {fmt(best.loanAmount)}</span>
-          <span>Interest: {fmt(best.totalInterestPaid)}</span>
+          <span>{t('repayment.principal')}: {fmt(best.loanAmount)}</span>
+          <span>{t('repayment.interest')}: {fmt(best.totalInterestPaid)}</span>
         </div>
       </div>
 
       {/* Stamp duty */}
       <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
         <h3 className="text-sm font-semibold text-[#2a2520] mb-3 flex items-center gap-1">
-          Stamp duty — {market.name}
-          <Tooltip content="Stamp duty (or land transfer tax) is a one-off tax paid to the government when you buy a property. It varies by country, price, and buyer type." />
+          {t('free.stampDuty')} — {market.name}
+          <Tooltip content={t('free.stampDutyTooltip')} />
         </h3>
         <p className="text-2xl font-bold text-[#2a2520]">{fmt(stampDuty)}</p>
         <p className="text-xs text-[#6b7a8a] mt-1">
-          Based on {fmt(state.housePrice)} property — paid separately, not in mortgage
+          {t('free.stampDutyFootnote', { price: fmt(state.housePrice) })}
         </p>
       </div>
 
       {/* Government schemes */}
       {eligibleSchemes.length > 0 && (
         <div className="bg-white border border-green-200 rounded-xl p-5">
-          <h3 className="text-sm font-semibold text-[#2a2520] mb-3">Government scheme eligibility</h3>
+          <h3 className="text-sm font-semibold text-[#2a2520] mb-3">{t('free.govtSchemeEligibility')}</h3>
           <div className="space-y-3">
             {eligibleSchemes.map((scheme) => {
               const maxAmt = typeof scheme.maxAmount === 'function'
@@ -179,7 +181,7 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
                     </div>
                   </div>
                   <span className="text-sm font-bold text-green-700 flex-shrink-0">
-                    up to {fmt(maxAmt)}
+                    {t('step3.upTo')} {fmt(maxAmt)}
                   </span>
                 </div>
               );

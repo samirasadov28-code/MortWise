@@ -267,6 +267,105 @@ const en = {
   'chat.prompt3': 'Should I take cashback or a lower rate?',
   'chat.prompt4': 'What happens if rates go up by 2%?',
 
+  // ─── Feedback widget + Toaster ARIA ───────────────────────────────────
+  'feedback.modalTitle': 'Send feedback',
+  'feedback.closeAriaLabel': 'Close',
+  'feedback.close': 'Close',
+  'feedback.thanks': 'Thanks for the feedback!',
+  'feedback.readEvery': 'We read every message.',
+  'feedback.email': 'Email',
+  'feedback.optional': '(optional)',
+  'feedback.type': 'Type',
+  'feedback.selectPlaceholder': 'Select…',
+  'feedback.typeBug': 'Bug report',
+  'feedback.typeFeature': 'Feature request',
+  'feedback.typeQuestion': 'Question',
+  'feedback.typeOther': 'Other',
+  'feedback.message': 'Message',
+  'feedback.messagePlaceholder': "Tell us what's on your mind…",
+  'feedback.errorRetry': 'Something went wrong. Please try again.',
+  'feedback.send': 'Send feedback',
+  'feedback.sending': 'Sending…',
+  'toast.regionAriaLabel': 'Notifications',
+  'toast.dismissAriaLabel': 'Dismiss',
+
+  // ─── Free results view ────────────────────────────────────────────────
+  'free.bestScenario': 'Best scenario',
+  'free.perMonth': 'month',
+  'free.rateStructure': 'Rate structure',
+  'free.yearTerm': '{years} year term',
+  'free.loan': 'Loan',
+  'free.annualCost': 'Annual cost (year 1)',
+  'free.annualCostTooltip': "What you'll pay in mortgage repayments during the first 12 months.",
+  'free.totalInterest': 'Total interest',
+  'free.totalInterestTooltip': "The total interest you'll pay over the entire life of the loan, assuming no overpayments.",
+  'free.totalPayments': 'Total loan payments',
+  'free.totalPaymentsTooltip': "Loan amount + total interest. The full amount you'll repay over the term.",
+  'free.affordabilityCheck': 'Affordability check',
+  'free.affordabilityCheckTooltip': 'Most lenders apply a cap on how much you can borrow as a multiple of your gross annual income. This shows whether your requested loan fits within that cap.',
+  'free.withinLimits': 'Within typical limits',
+  'free.exceedsLimit': 'Exceeds typical limit',
+  'free.requestedLoan': 'Your requested loan',
+  'free.paymentComposition': 'Payment composition',
+  'free.paymentCompositionTooltip': 'Of every euro you pay over the life of the mortgage, this shows how much goes to interest (the cost of borrowing) vs principal (reducing what you owe).',
+  'free.stampDuty': 'Stamp duty',
+  'free.stampDutyTooltip': 'Stamp duty (or land transfer tax) is a one-off tax paid to the government when you buy a property. It varies by country, price, and buyer type.',
+  'free.stampDutyFootnote': 'Based on {price} property — paid separately, not in mortgage',
+  'free.govtSchemeEligibility': 'Government scheme eligibility',
+
+  // ─── Full results section headers ─────────────────────────────────────
+  'full.sectionCalc': 'Calculation breakdown',
+  'full.sectionCompare': 'Side-by-side comparison',
+  'full.sectionCharts': 'Charts',
+  'full.sectionStress': 'Rate-rise stress test',
+  'full.sectionOverpayment': 'Overpayment simulator',
+  'full.sectionCashback': 'Cashback analysis',
+  'full.sectionHoliday': 'Interest holiday',
+  'full.sectionSensitivity': 'Sensitivity analysis · all key inputs',
+  'full.sectionBtl': 'Buy-to-let · rental cash flow',
+  'full.sectionFx': 'Foreign-currency mortgage',
+  'full.sectionCrossMarket': 'Cross-market comparison · same cash invested',
+  'full.sectionSaved': 'Saved scenarios · cross-analysis comparison',
+
+  // ─── Holiday panel ────────────────────────────────────────────────────
+  'holiday.title': 'Interest holiday / payment pause',
+  'holiday.intro': 'Pause your mortgage payments for a number of months. Interest still accrues during the pause and is added to the loan balance, so the monthly payment is recalculated higher when payments resume.',
+  'holiday.startMonth': 'Pause starts (month)',
+  'holiday.startMonthHint': 'E.g. 24 = pause begins on month 24 (year 2). Max {max}.',
+  'holiday.duration': 'Duration (months)',
+  'holiday.durationHint': 'How many months of zero payments. Most lenders cap at 6–12.',
+  'holiday.runSim': 'Run simulation',
+  'holiday.plan': 'Plan: {duration}-month pause starting at month {start}',
+  'holiday.invalidInputs': 'Enter a start month and duration > 0 to run.',
+  'holiday.extraInterest': 'Extra interest',
+  'holiday.balanceAtEnd': 'Balance at pause end',
+  'holiday.newMonthly': 'New monthly payment',
+  'holiday.totalExtra': 'Total extra cost',
+  'holiday.balanceOverTime': 'Outstanding balance over time',
+  'holiday.balanceOverTimeNote': '· Balance jumps up during the pause as interest capitalises.',
+
+  // ─── Overpayment panel ────────────────────────────────────────────────
+  'overpay.title': 'Overpayment simulator',
+  'overpay.intro': 'Schedule a recurring lump-sum overpayment and see how much interest you save and how the loan profile changes.',
+
+  // ─── Cashback panel ───────────────────────────────────────────────────
+  'cashback.noneIntro': 'None of your scenarios currently include lender cashback. Use the simulator below to see what cashback would be worth on this loan, or add a cashback amount in Step 4 (Rate type) or Step 5 (Lender scenarios) to feed it into the rest of the analysis.',
+  'cashback.inScenarios': 'Cashback in your scenarios',
+  'cashback.simulatorTitle': 'Cashback simulator',
+  'cashback.simulatorIntro': 'Test any cashback offer against your loan. Adjust the inputs to see the gross amount, clawback if you switch early, and the break-even point against any rate premium.',
+
+  // ─── Buy-to-let panel ─────────────────────────────────────────────────
+  'btl.intro': 'Treat this property as a buy-to-let. Adjust the assumptions below to see whether the rent covers the mortgage, what return you earn on cash invested, and when the deal pays itself back.',
+
+  // ─── Foreign-currency panel ───────────────────────────────────────────
+  'fx.noBase': 'Add a base lender scenario to compare a foreign-currency mortgage.',
+  'fx.intro': 'Compare borrowing in {market}’s currency ({currency}) versus borrowing in another currency for the same property. Foreign-currency mortgages can lower the rate substantially in high-rate markets, but expose the borrower to FX risk on every future payment.',
+
+  // ─── Cross-market comparison panel ────────────────────────────────────
+  'cross.intro': 'Same property price across countries — entered in your chosen currency, converted to each market’s local currency, then modelled with that market’s max LTV, average lender rate, and investor stamp duty.',
+  'cross.footnote': 'Loan term {term} years. Local-currency figures shown alongside the ranking column in {label}.',
+  'cross.empty': 'Select at least one market and enter a property price to compare.',
+
   // ─── AI rate banner ───────────────────────────────────────────────────
   'aiBanner.badge': 'AI est.',
   'aiBanner.title': 'Rates are AI-estimated, not live market data',
