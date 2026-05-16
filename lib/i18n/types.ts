@@ -17,7 +17,10 @@ export type Language =
   | 'zh'
   | 'ar'
   | 'hi'
-  | 'ru';
+  | 'ru'
+  | 'bn'
+  | 'ja'
+  | 'id';
 
 export interface LanguageOption {
   code: Language;
@@ -45,5 +48,8 @@ export const LANGUAGES: LanguageOption[] = [
   { code: 'zh', flag: '🇨🇳', nativeName: '中文',         englishName: 'Chinese (Simplified)',   available: true },
   { code: 'ar', flag: '🇸🇦', nativeName: 'العربية',      englishName: 'Arabic',                 rtl: true, available: true },
   { code: 'hi', flag: '🇮🇳', nativeName: 'हिन्दी',         englishName: 'Hindi',                  available: true },
-  { code: 'ru', flag: 'RU',  isText: true, nativeName: 'Русский', englishName: 'Russian',     available: true },
+  { code: 'ru', flag: 'RU',  isText: true, nativeName: 'Русский',   englishName: 'Russian',              available: true },
+  { code: 'bn', flag: '🇧🇩', nativeName: 'বাংলা',     englishName: 'Bengali',              available: true },
+  { code: 'ja', flag: '🇯🇵', nativeName: '日本語',     englishName: 'Japanese',             available: true },
+  { code: 'id', flag: '🇮🇩', nativeName: 'Indonesia', englishName: 'Indonesian',           available: true },
 ];

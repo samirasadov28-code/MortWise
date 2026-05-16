@@ -21,11 +21,14 @@ import zh from './dictionaries/zh';
 import ar from './dictionaries/ar';
 import hi from './dictionaries/hi';
 import ru from './dictionaries/ru';
+import bn from './dictionaries/bn';
+import ja from './dictionaries/ja';
+import id from './dictionaries/id';
 import type { Dictionary, TranslationKey } from './dictionaries/en';
 import { LANGUAGES, type Language, type LanguageOption } from './types';
 
 const DICTIONARIES: Record<Language, Partial<Dictionary>> = {
-  en, uk, fr, es, de, pt, it, nl, tr, zh, ar, hi, ru,
+  en, uk, fr, es, de, pt, it, nl, tr, zh, ar, hi, ru, bn, ja, id,
 };
 
 const STORAGE_KEY = 'mortwise_lang';
