@@ -6,58 +6,58 @@ import { convertCurrency } from '@/lib/fx';
 import { formatCurrency } from '@/lib/formatting';
 import Tooltip from '@/components/shared/Tooltip';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface Step4Props {
   state: WizardState;
   onChange: (updates: Partial<WizardState>) => void;
 }
 
-const RATE_STRUCTURES: Array<{
-  value: RateStructure;
-  label: string;
-  tagline: string;
-  description: string;
-  icon: string;
-}> = [
-  {
-    value: 'fixed',
-    label: 'Fixed rate',
-    tagline: 'Certainty and predictability',
-    description: 'Pay the same rate for a set period, then revert to your lender\'s variable rate. Ideal if you want to know exactly what you\'ll pay each month and want protection against rate rises.',
-    icon: '🔒',
-  },
-  {
-    value: 'variable',
-    label: 'Variable / tracker',
-    tagline: 'Moves with the market',
-    description: 'Your rate tracks the central bank base rate plus a fixed margin. You benefit when rates fall, but payments rise when rates increase. Often starts lower than fixed rates.',
-    icon: '📈',
-  },
-  {
-    value: 'split',
-    label: 'Split rate',
-    tagline: 'Blend stability with flexibility',
-    description: 'Part of your mortgage is fixed, part tracks the market. You balance rate certainty on one portion with potential savings on the other. Popular in Ireland with ECB tracker mortgages.',
-    icon: '⚖️',
-  },
-  {
-    value: 'tracker',
-    label: 'Pure tracker',
-    tagline: 'ECB / BoE rate + margin',
-    description: 'Tracks a central bank rate (e.g. ECB or Bank of England base rate) plus a fixed margin for the full term. Transparent and directly linked to monetary policy decisions.',
-    icon: '🎯',
-  },
-];
-
 export default function Step4RateStructure({ state, onChange }: Step4Props) {
+  const { t } = useTranslation();
   const selected = state.rateStructure;
+
+  const RATE_STRUCTURES: Array<{
+    value: RateStructure;
+    label: string;
+    tagline: string;
+    description: string;
+    icon: string;
+  }> = [
+    {
+      value: 'fixed',
+      label: t('step4.rateFixed'),
+      tagline: t('step4.rateFixedTagline'),
+      description: "Pay the same rate for a set period, then revert to your lender's variable rate. Ideal if you want to know exactly what you'll pay each month and want protection against rate rises.",
+      icon: '🔒',
+    },
+    {
+      value: 'variable',
+      label: t('step4.rateVariable'),
+      tagline: t('step4.rateVariableTagline'),
+      description: 'Your rate tracks the central bank base rate plus a fixed margin. You benefit when rates fall, but payments rise when rates increase. Often starts lower than fixed rates.',
+      icon: '📈',
+    },
+    {
+      value: 'split',
+      label: t('step4.rateSplit'),
+      tagline: t('step4.rateSplitTagline'),
+      description: 'Part of your mortgage is fixed, part tracks the market. You balance rate certainty on one portion with potential savings on the other. Popular in Ireland with ECB tracker mortgages.',
+      icon: '⚖️',
+    },
+    {
+      value: 'tracker',
+      label: t('step4.rateTracker'),
+      tagline: t('step4.rateTrackerTagline'),
+      description: 'Tracks a central bank rate (e.g. ECB or Bank of England base rate) plus a fixed margin for the full term. Transparent and directly linked to monetary policy decisions.',
+      icon: '🎯',
+    },
+  ];
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-[#2a2520] mb-1">Rate structure</h2>
-      <p className="text-[#6b7a8a] text-sm mb-6">
-        Choose the type of interest rate arrangement for your mortgage scenarios.
-      </p>
+      <h2 className="text-xl font-bold text-[#2a2520] mb-1">{t('step4.title')}</h2>
+      <p className="text-[#6b7a8a] text-sm mb-6">{t('step4.subtitle')}</p>
 
       <div className="space-y-3 mb-6">
         {RATE_STRUCTURES.map((rs) => (
@@ -98,7 +98,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
       {selected === 'split' && (
         <div className="bg-[#eef4f7]/80 border border-[#e8e3dc] rounded-xl p-4">
           <label className="block text-sm font-medium text-[#2a2520] mb-3 flex items-center gap-1">
-            Fixed / Tracker split
+            {t('step4.splitRatioLabel')}
             <Tooltip content="The proportion of your mortgage at a fixed rate vs a tracker rate. E.g. 70% fixed means 70% of the loan amount pays the fixed rate, while 30% tracks the ECB rate + margin." />
           </label>
           <div className="space-y-2">
@@ -113,10 +113,10 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
             />
             <div className="flex justify-between text-sm">
               <span className="text-[#2a2520] font-medium">
-                {Math.round(state.splitFixedProportion * 100)}% Fixed
+                {t('step4.splitPctFixed', { n: String(Math.round(state.splitFixedProportion * 100)) })}
               </span>
               <span className="text-[#6b7a8a]">
-                {100 - Math.round(state.splitFixedProportion * 100)}% Tracker
+                {t('step4.splitPctTracker', { n: String(100 - Math.round(state.splitFixedProportion * 100)) })}
               </span>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
       {/* Mortgage term */}
       <div className="mt-5">
         <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-          Mortgage term
+          {t('step4.mortgageTerm')}
           <Tooltip content="The total number of years you take to repay the mortgage. Longer terms = lower monthly payments but much more interest paid overall." />
         </label>
         <div className="flex items-center gap-3">
@@ -149,7 +149,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                 min={5}
                 max={40}
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">yr</span>
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">{t('step4.yr')}</span>
             </div>
           </div>
         </div>
@@ -168,12 +168,12 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
         return (
           <div className="mt-5">
             <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-              Lender cashback
+              {t('step4.cashback')}
               <Tooltip content="A one-off amount the lender pays you at drawdown — typical in Ireland (~1–3% of the loan) and rare elsewhere. Netted against your total loan payments. Most lenders claw it back if you switch within the clawback window." />
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <p className="text-xs text-[#6b7a8a] mb-1">Cashback amount</p>
+                <p className="text-xs text-[#6b7a8a] mb-1">{t('step4.cashbackAmount')}</p>
                 <div className="relative">
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6b7a8a] text-sm">{sym}</span>
                   <FormattedNumberInput
@@ -196,7 +196,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                 )}
               </div>
               <div>
-                <p className="text-xs text-[#6b7a8a] mb-1">Clawback period (years)</p>
+                <p className="text-xs text-[#6b7a8a] mb-1">{t('step4.clawbackYears')}</p>
                 <input
                   type="number"
                   min={0}
@@ -218,7 +218,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
       {/* Payment holiday */}
       <div className="mt-5">
         <label className="block text-sm font-medium text-[#2a2520] mb-1.5 flex items-center gap-1">
-          Payment holiday
+          {t('step4.paymentHoliday')}
           <Tooltip content="Months at the start of the loan with zero payments. Interest still accrues and is capitalised onto the balance — useful for self-build or job-transition periods." />
         </label>
         <div className="flex items-center gap-3">
@@ -241,7 +241,7 @@ export default function Step4RateStructure({ state, onChange }: Step4Props) {
                 min={0}
                 max={24}
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">mo</span>
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#6b7a8a]">{t('step4.mo')}</span>
             </div>
           </div>
         </div>

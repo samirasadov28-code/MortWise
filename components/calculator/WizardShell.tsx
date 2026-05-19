@@ -2,6 +2,7 @@
 
 import type { WizardState } from '@/lib/types';
 import { FeedbackInline, useSuppressFloatingFeedback } from '@/components/shared/FeedbackButton';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface WizardShellProps {
   state: WizardState;
@@ -12,14 +13,6 @@ interface WizardShellProps {
   nextLabel?: string;
 }
 
-const STEPS = [
-  { label: 'Market' },
-  { label: 'Property' },
-  { label: 'Profile' },
-  { label: 'Rate Type' },
-  { label: 'Scenarios' },
-];
-
 export default function WizardShell({
   state,
   children,
@@ -28,11 +21,18 @@ export default function WizardShell({
   canNext = true,
   nextLabel,
 }: WizardShellProps) {
+  const { t } = useTranslation();
   const step = state.step;
   const isLast = step === 5;
 
-  // Hide the global floating Feedback button while the wizard's sticky
-  // Back/Next bar is on screen — we render an in-flow Feedback below instead.
+  const STEPS = [
+    { label: t('wizard.stepMarket') },
+    { label: t('wizard.stepProperty') },
+    { label: t('wizard.stepProfile') },
+    { label: t('wizard.stepRateType') },
+    { label: t('wizard.stepScenarios') },
+  ];
+
   useSuppressFloatingFeedback();
 
   return (
@@ -81,8 +81,7 @@ export default function WizardShell({
         {children}
       </div>
 
-      {/* Navigation — sticky at bottom of viewport during scroll, settles in flow above the
-          disclaimer when the user reaches the end of the page so it never overlaps it */}
+      {/* Navigation */}
       <div
         className="sticky bottom-0 z-30 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 border-t border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm"
         style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
@@ -94,10 +93,10 @@ export default function WizardShell({
             disabled={step === 1}
             className="px-5 py-3 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm bg-white"
           >
-            ← Back
+            {t('wizard.back')}
           </button>
           <div className="text-xs text-[#6b7a8a] hidden sm:block">
-            Step {step} of {STEPS.length}
+            {t('wizard.stepOf', { step: String(step), total: String(STEPS.length) })}
           </div>
           <button
             type="button"
@@ -105,12 +104,11 @@ export default function WizardShell({
             disabled={!canNext}
             className="px-6 sm:px-8 py-3 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm shadow-md flex-1 sm:flex-initial"
           >
-            {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
+            {nextLabel ?? (isLast ? t('wizard.calculate') : t('wizard.next'))}
           </button>
         </div>
       </div>
 
-      {/* In-flow Feedback button — replaces the floating one while wizard is up */}
       <div className="flex justify-center mt-6">
         <FeedbackInline />
       </div>

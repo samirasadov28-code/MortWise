@@ -5,6 +5,7 @@ import type { WizardState, ScenarioInput } from '@/lib/types';
 import AIRateBanner from '@/components/shared/AIRateBanner';
 import Tooltip from '@/components/shared/Tooltip';
 import { AIBadge } from '@/components/shared/AIRateBanner';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface Step5Props {
   state: WizardState;
@@ -20,6 +21,7 @@ interface AIRateResponse {
 }
 
 export default function Step5Scenarios({ state, onChange }: Step5Props) {
+  const { t } = useTranslation();
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [aiMeta, setAiMeta] = useState<{ generatedAt: string; disclaimer: string; provider?: string; model?: string } | null>(null);
@@ -85,21 +87,19 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-[#2a2520] mb-1">Lender scenarios</h2>
-          <p className="text-[#6b7a8a] text-sm">
-            Configure up to 4 scenarios to compare side by side.
-          </p>
+          <h2 className="text-xl font-bold text-[#2a2520] mb-1">{t('step5.title')}</h2>
+          <p className="text-[#6b7a8a] text-sm">{t('step5.subtitle')}</p>
         </div>
         <button
           type="button"
           onClick={generateAIRates}
           disabled={aiLoading}
-          className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-amber-100 border border-amber-300 hover:bg-amber-100 rounded-lg text-amber-700 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="self-start flex items-center gap-2 px-4 py-2 bg-amber-100 border border-amber-300 hover:bg-amber-100 rounded-lg text-amber-700 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>✨</span>
-          {aiLoading ? 'Generating…' : 'Generate market rates'}
+          {aiLoading ? t('step5.generating') : t('step5.generateRates')}
         </button>
       </div>
 
