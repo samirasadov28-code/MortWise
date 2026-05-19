@@ -1,6 +1,6 @@
 {
   "name": "mortwise",
-  "version": "1.20.0",
+  "version": "1.23.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

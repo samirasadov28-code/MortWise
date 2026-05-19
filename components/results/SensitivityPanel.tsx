@@ -1,10 +1,12 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ScenarioInput, WizardState, MarketCode } from '@/lib/types';
 import { runAmortisation } from '@/lib/engine/amortisation';
 import { formatCurrencyIn } from '@/lib/formatting';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
+import OnboardingTip from '@/components/shared/OnboardingTip';
+import { useOnboardingFlag } from '@/lib/useOnboardingFlag';
 
 interface SensitivityPanelProps {
   state: WizardState;
@@ -27,6 +29,15 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
   const [depositDeltaPp, setDepositDeltaPp] = useState(0);
   const [cashbackPct, setCashbackPct] = useState(((baseScenario?.cashbackPercent ?? 0) * 100));
   const [holidayMonths, setHolidayMonths] = useState(0);
+  const [showSliderTip, dismissSliderTip] = useOnboardingFlag('mortwise_seen_sensitivity_tip');
+
+  // Auto-dismiss the tip as soon as the user moves any slider.
+  useEffect(() => {
+    if (!showSliderTip) return;
+    const moved = rateShockBp !== 0 || futureShockBp !== 0 || termDelta !== 0 ||
+      depositDeltaPp !== 0 || holidayMonths !== 0;
+    if (moved) dismissSliderTip();
+  }, [rateShockBp, futureShockBp, termDelta, depositDeltaPp, holidayMonths, showSliderTip, dismissSliderTip]);
 
   const result = useMemo(() => {
     if (!baseScenario || state.housePrice <= 0) return null;
@@ -115,6 +126,15 @@ export default function SensitivityPanel({ state, displayMarket }: SensitivityPa
 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5 space-y-5">
+      {showSliderTip && (
+        <OnboardingTip onDismiss={dismissSliderTip}>
+          <p className="text-sm text-[#2a2520]">
+            <span className="font-semibold">Try dragging a slider</span> — the monthly payment and total cost update live.
+            Start with <strong>Rate shock now</strong> to see the impact of a +1% rate rise on your scenario.
+          </p>
+        </OnboardingTip>
+      )}
+
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm text-[#6b7a8a]">{t('sensitivity.intro')}</p>
         <button

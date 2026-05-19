@@ -7,6 +7,8 @@ import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import { newtonRaphsonIRR } from '@/lib/engine/irr';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
+import OnboardingTip from '@/components/shared/OnboardingTip';
+import { useOnboardingFlag } from '@/lib/useOnboardingFlag';
 
 interface BuyToLetPanelProps {
   state: WizardState;
@@ -18,6 +20,7 @@ const DEFAULT_OPERATING_COST_RATIO = 0.25;
 
 export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLetPanelProps) {
   const { t } = useTranslation();
+  const [showBtlTip, dismissBtlTip] = useOnboardingFlag('mortwise_seen_btl_tip');
   const market = MARKETS[state.market];
   const dm: MarketCode = displayMarket ?? state.market;
   const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
@@ -93,7 +96,14 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-      <p className="text-sm text-[#6b7a8a] mb-4">{t('btl.intro')}</p>
+      {showBtlTip && (
+        <OnboardingTip onDismiss={dismissBtlTip}>
+          <p className="text-sm text-[#2a2520]">
+            <span className="font-semibold">Evaluating buy-to-rent vs buying to live in?</span> Set the monthly rent to match your local market, then check whether the <strong>net yield</strong> and <strong>cash yield</strong> exceed your mortgage rate — if not, you may be better off buying as a primary residence.
+          </p>
+        </OnboardingTip>
+      )}
+      <p className={`text-sm text-[#6b7a8a] mb-4${showBtlTip ? ' mt-4' : ''}`}>{t('btl.intro')}</p>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
         <CurrencyField

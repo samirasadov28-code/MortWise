@@ -5,7 +5,9 @@ import { MARKETS } from '@/lib/markets';
 import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import UpgradeWall from '@/components/shared/UpgradeWall';
 import Tooltip from '@/components/shared/Tooltip';
+import OnboardingTip from '@/components/shared/OnboardingTip';
 import CalculationBreakdown from '@/components/results/CalculationBreakdown';
+import { useOnboardingFlag } from '@/lib/useOnboardingFlag';
 
 interface FreeResultsProps {
   results: ScenarioResult[];
@@ -24,6 +26,7 @@ function clamp01(v: number) {
 export default function FreeResults({ results, state, onUnlocked, hideUpgradeWall, displayMarket }: FreeResultsProps) {
   const dm: MarketCode = displayMarket ?? state.market;
   const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
+  const [showFirstResult, dismissFirstResult] = useOnboardingFlag('mortwise_seen_first_result');
   if (results.length === 0) return null;
 
   // Show best result (lowest total cost)
@@ -54,6 +57,18 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
 
   return (
     <div className="space-y-6">
+      {showFirstResult && (
+        <OnboardingTip onDismiss={dismissFirstResult}>
+          <p className="text-sm font-semibold text-[#2a2520] mb-2">Your first result — here's what to look at</p>
+          <ol className="space-y-1 text-sm text-[#2a2520]">
+            <li className="flex gap-2"><span className="text-[#4a7c96] font-bold">1.</span><span><strong>Monthly payment</strong> — your minimum repayment at today's rate</span></li>
+            <li className="flex gap-2"><span className="text-[#4a7c96] font-bold">2.</span><span><strong>Total interest</strong> — the true long-term cost of borrowing</span></li>
+            <li className="flex gap-2"><span className="text-[#4a7c96] font-bold">3.</span><span><strong>Affordability check</strong> — whether the loan fits the lender's income cap</span></li>
+          </ol>
+          <p className="text-xs text-[#6b7a8a] mt-2">Unlock <strong>Full Analysis</strong> below to stress-test rates, simulate overpayments, compare markets, and more.</p>
+        </OnboardingTip>
+      )}
+
       {/* Hero result */}
       <div className="bg-white border border-[#4a7c96]/30 rounded-xl p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4 mb-4">
