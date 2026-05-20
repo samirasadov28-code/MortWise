@@ -5,6 +5,9 @@ import type { WizardState, ScenarioInput } from '@/lib/types';
 import AIRateBanner from '@/components/shared/AIRateBanner';
 import Tooltip from '@/components/shared/Tooltip';
 import { AIBadge } from '@/components/shared/AIRateBanner';
+import RateInput from '@/components/shared/RateInput';
+import { showToast } from '@/components/shared/Toaster';
+import { track } from '@/lib/analytics';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface Step5Props {
@@ -48,6 +51,9 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
           term: state.mortgageTerm,
           buyerType: state.buyerType,
           rateStructure: state.rateStructure,
+          // Tell the API exactly which lenders to quote for, so a 5-bank or
+          // 6-bank wizard doesn't silently drop the trailing entries.
+          lenders: state.scenarios.map((s) => s.lenderName).filter(Boolean),
         }),
       });
       if (!res.ok) {
@@ -62,11 +68,26 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
       }
       const data: AIRateResponse = await res.json();
 
-      // Merge AI scenarios into existing ones
+      // Match AI scenarios back to wizard rows by lender name (case-
+      // insensitive) so reordering or partial responses can't cross the
+      // wires. Falls back to positional match for any bank the AI didn't
+      // address by name (e.g. it returned a different lender list).
+      const aiByName = new Map<string, Partial<ScenarioInput>>();
+      for (const s of data.scenarios) {
+        if (s.lenderName) aiByName.set(s.lenderName.trim().toLowerCase(), s);
+      }
+      const usedNames = new Set<string>();
       const updated = state.scenarios.map((s, i) => {
-        const aiScenario = data.scenarios[i];
-        if (!aiScenario) return s;
-        return { ...s, ...aiScenario, id: s.id };
+        const matched = aiByName.get((s.lenderName ?? '').trim().toLowerCase());
+        if (matched) {
+          usedNames.add((s.lenderName ?? '').trim().toLowerCase());
+          return { ...s, ...matched, id: s.id, lenderName: s.lenderName };
+        }
+        const positional = data.scenarios[i];
+        if (positional && !usedNames.has((positional.lenderName ?? '').trim().toLowerCase())) {
+          return { ...s, ...positional, id: s.id, lenderName: s.lenderName };
+        }
+        return s;
       });
 
       const newAiIds = new Set(updated.map((s) => s.id));
@@ -78,8 +99,15 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
         model: data.model,
       });
       onChange({ scenarios: updated });
+      track('rate_generation_succeeded', {
+        market: state.market,
+        provider: data.provider,
+      });
     } catch (err) {
-      setAiError(err instanceof Error ? err.message : 'Failed to generate rates');
+      const msg = err instanceof Error ? err.message : 'Failed to generate rates';
+      setAiError(msg);
+      showToast({ kind: 'error', message: msg, durationMs: 6000 });
+      track('rate_generation_failed', { market: state.market, message: msg });
     } finally {
       setAiLoading(false);
     }
@@ -87,16 +115,18 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
+      <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <h2 className="text-xl font-bold text-[#2a2520] mb-1">{t('step5.title')}</h2>
-          <p className="text-[#6b7a8a] text-sm">{t('step5.subtitle')}</p>
+          <p className="text-[#6b7a8a] text-sm">
+            {t('step5.subtitle')}
+          </p>
         </div>
         <button
           type="button"
           onClick={generateAIRates}
           disabled={aiLoading}
-          className="self-start flex items-center gap-2 px-4 py-2 bg-amber-100 border border-amber-300 hover:bg-amber-100 rounded-lg text-amber-700 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-amber-100 border border-amber-300 hover:bg-amber-100 rounded-lg text-amber-700 text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>✨</span>
           {aiLoading ? t('step5.generating') : t('step5.generateRates')}
@@ -105,7 +135,7 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
 
       {aiError && (
         <div className="text-red-700 text-sm mb-4 p-3 rounded-lg bg-red-50 border border-red-200 space-y-1">
-          <p className="font-semibold">AI rate generator unavailable</p>
+          <p className="font-semibold">{t('step5.aiUnavailable')}</p>
           <p className="leading-relaxed">
             {aiError.split(/(\bhttps?:\/\/\S+)/g).map((part, i) =>
               /^https?:\/\//.test(part) ? (
@@ -124,7 +154,7 @@ export default function Step5Scenarios({ state, onChange }: Step5Props) {
             )}
           </p>
           <p className="text-xs text-red-600/80">
-            Tip: this is a temporary fallback — you can still enter rates manually for each lender below.
+            {t('step5.aiFallbackTip')}
           </p>
         </div>
       )}
@@ -168,6 +198,7 @@ interface ScenarioCardProps {
 }
 
 function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenerated, onChange }: Omit<ScenarioCardProps, 'sym'>) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -181,7 +212,7 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
           value={scenario.lenderName}
           onChange={(e) => onChange({ lenderName: e.target.value })}
           className="flex-1 bg-transparent text-[#2a2520] font-medium focus:outline-none placeholder-[#9aa5b0]"
-          placeholder="Lender name"
+          placeholder={t('step5.lenderName')}
         />
         {isAIGenerated && <AIBadge />}
       </div>
@@ -193,20 +224,18 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
             <>
               <div>
                 <label className="block text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
-                  Fixed rate (%)
-                  <Tooltip content="The interest rate during the fixed period. This rate is guaranteed not to change until the fixed period ends." />
+                  {t('step5.fixedRate')}
+                  <Tooltip content={t('step5.fixedRateHelp')} />
                 </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={scenario.fixedRate !== undefined ? (scenario.fixedRate * 100).toFixed(2) : ''}
-                  onChange={(e) => onChange({ fixedRate: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
+                <RateInput
+                  value={scenario.fixedRate}
+                  onValueChange={(v) => onChange({ fixedRate: v })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                   placeholder="3.80"
                 />
               </div>
               <div>
-                <label className="block text-xs text-[#6b7a8a] mb-1">Fixed period (years)</label>
+                <label className="block text-xs text-[#6b7a8a] mb-1">{t('step5.fixedPeriod')}</label>
                 <input
                   type="number"
                   value={scenario.fixedPeriodYears ?? ''}
@@ -224,28 +253,24 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
             <>
               <div>
                 <label className="block text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
-                  Base rate (%)
-                  <Tooltip content="The central bank reference rate (e.g. ECB main refinancing rate, Bank of England base rate)." />
+                  {t('step5.baseRate')}
+                  <Tooltip content={t('step5.baseRateHelp')} />
                 </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={scenario.trackerBaseRate !== undefined ? (scenario.trackerBaseRate * 100).toFixed(2) : ''}
-                  onChange={(e) => onChange({ trackerBaseRate: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
+                <RateInput
+                  value={scenario.trackerBaseRate}
+                  onValueChange={(v) => onChange({ trackerBaseRate: v })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                   placeholder="2.60"
                 />
               </div>
               <div>
                 <label className="block text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
-                  Margin / spread (%)
-                  <Tooltip content="The fixed premium your lender adds above the base rate. E.g. ECB +0.95% means your rate = ECB rate + 0.95%." />
+                  {t('step5.margin')}
+                  <Tooltip content={t('step5.marginHelp')} />
                 </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={scenario.trackerMargin !== undefined ? (scenario.trackerMargin * 100).toFixed(2) : ''}
-                  onChange={(e) => onChange({ trackerMargin: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
+                <RateInput
+                  value={scenario.trackerMargin}
+                  onValueChange={(v) => onChange({ trackerMargin: v })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                   placeholder="0.95"
                 />
@@ -255,14 +280,12 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
 
           <div>
             <label className="block text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
-              {rateStructure === 'fixed' ? 'Revert rate (%)' : 'Variable rate (%)'}
-              <Tooltip content={rateStructure === 'fixed' ? "The rate your mortgage reverts to after the fixed period ends. This is what your stress test will be based on." : "Your ongoing variable rate."} />
+              {rateStructure === 'fixed' ? t('step5.revertRate') : t('step5.variableRate')}
+              <Tooltip content={rateStructure === 'fixed' ? t('step5.revertRateHelp') : t('step5.variableRateHelp')} />
             </label>
-            <input
-              type="number"
-              step="0.01"
-              value={scenario.variableRate !== undefined ? (scenario.variableRate * 100).toFixed(2) : ''}
-              onChange={(e) => onChange({ variableRate: e.target.value === "" ? undefined : Number(e.target.value) / 100 })}
+            <RateInput
+              value={scenario.variableRate}
+              onValueChange={(v) => onChange({ variableRate: v })}
               className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
               placeholder="4.20"
             />
@@ -270,15 +293,15 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
 
           <div>
             <label className="block text-xs text-[#6b7a8a] mb-1">
-              Repayment type
+              {t('step5.repaymentType')}
             </label>
             <select
               value={scenario.repaymentType}
               onChange={(e) => onChange({ repaymentType: e.target.value as ScenarioInput['repaymentType'] })}
               className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
             >
-              <option value="annuity">Annuity (standard)</option>
-              <option value="fixed_principal">Fixed principal</option>
+              <option value="annuity">{t('step5.annuity')}</option>
+              <option value="fixed_principal">{t('step5.fixedPrincipal')}</option>
             </select>
           </div>
         </div>
@@ -287,14 +310,14 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
-              Cashback (%)
-              <Tooltip content="Some lenders offer a cash rebate when you draw down the mortgage. E.g. 2% cashback on a €320k loan = €6,400 paid to you at drawdown." />
+              {t('step5.cashback')}
+              <Tooltip content={t('step5.cashbackHelp')} />
             </label>
-            <input
-              type="number"
-              step="0.1"
-              value={scenario.cashbackPercent !== undefined ? (scenario.cashbackPercent * 100).toFixed(1) : ''}
-              onChange={(e) => onChange({ cashbackPercent: Number(e.target.value) / 100 || undefined })}
+            <RateInput
+              value={scenario.cashbackPercent}
+              onValueChange={(v) => onChange({ cashbackPercent: v })}
+              precision={1}
+              step={0.1}
               className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
               placeholder="0"
             />
@@ -302,8 +325,8 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
           {(scenario.cashbackPercent ?? 0) > 0 && (
             <div>
               <label className="block text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
-                Clawback period (yrs)
-                <Tooltip content="The number of years you must remain with the lender to keep the cashback. If you switch or sell before this, you repay a proportion." />
+                {t('step5.clawback')}
+                <Tooltip content={t('step5.clawbackHelp')} />
               </label>
               <input
                 type="number"
@@ -323,7 +346,7 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
           onClick={() => setExpanded((v) => !v)}
           className="text-xs text-[#6b7a8a] hover:text-[#4a7c96] flex items-center gap-1 transition-colors"
         >
-          {expanded ? '▲' : '▼'} Advanced options (grace period, overpayment)
+          {expanded ? '▲' : '▼'} {t('step5.advanced')}
         </button>
 
         {expanded && (
@@ -331,8 +354,8 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs text-[#6b7a8a] mb-1 flex items-center gap-1">
-                  Grace period (months)
-                  <Tooltip content="Interest-only months at the start of the mortgage. You pay only interest, not principal, reducing initial monthly payments." />
+                  {t('step5.gracePeriod')}
+                  <Tooltip content={t('step5.gracePeriodHelp')} />
                 </label>
                 <input
                   type="number"
@@ -345,14 +368,14 @@ function ScenarioCard({ scenario, index, rateStructure, mortgageTerm, isAIGenera
                 />
               </div>
               <div>
-                <label className="block text-xs text-[#6b7a8a] mb-1">Overpayment reduces</label>
+                <label className="block text-xs text-[#6b7a8a] mb-1">{t('step5.overpaymentReduces')}</label>
                 <select
                   value={scenario.overpaymentReduces}
                   onChange={(e) => onChange({ overpaymentReduces: e.target.value as 'payment' | 'term' })}
                   className="w-full px-3 py-2 bg-[#f5f3ef] border border-[#e8e3dc] rounded-lg text-[#2a2520] text-sm focus:outline-none focus:border-[#4a7c96]"
                 >
-                  <option value="term">Term (same payment, shorter loan)</option>
-                  <option value="payment">Payment (same term, lower payments)</option>
+                  <option value="term">{t('step5.reducesTerm')}</option>
+                  <option value="payment">{t('step5.reducesPayment')}</option>
                 </select>
               </div>
             </div>

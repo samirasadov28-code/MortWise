@@ -17,6 +17,10 @@ const RequestSchema = z.object({
   term: z.number().min(5).max(40),
   buyerType: z.enum(['first_time', 'mover', 'investor', 'non_resident']),
   rateStructure: z.enum(['fixed', 'variable', 'split', 'tracker']).optional(),
+  /** Specific lender names to quote for. When provided, the model returns
+   *  exactly one scenario per lender so the client can update every row.
+   *  Falls back to the curated market roster when omitted. */
+  lenders: z.array(z.string().min(1)).max(10).optional(),
 });
 
 const ScenarioSchema = z.object({
@@ -209,20 +213,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { market, ltv, term, buyerType, rateStructure } = parsed.data;
+    const { market, ltv, term, buyerType, rateStructure, lenders } = parsed.data;
     const marketName = MARKETS[market]?.name ?? market;
     const currency = MARKETS[market]?.currency ?? '';
     const ctx = marketContext[market] ?? `${marketName} (${currency})`;
-    const knownLenders = getLenders(market).map((l) => l.name).join(', ');
+    const requestedLenders =
+      (lenders && lenders.length > 0 ? lenders : getLenders(market).map((l) => l.name));
+    const lenderCount = requestedLenders.length;
+    const lenderListing = requestedLenders.map((n, i) => `${i + 1}. ${n}`).join('\n');
 
-    const prompt = `Generate 4 realistic mortgage rate scenarios for a ${marketName} (${market}) buyer.
+    const prompt = `Generate ${lenderCount} realistic mortgage rate scenarios for a ${marketName} (${market}) buyer.
 
 Context: ${ctx}
-Use only these real lenders (pick 4, do not invent banks): ${knownLenders}
 LTV: ${(ltv * 100).toFixed(0)}%
 Term: ${term} years
 Buyer type: ${buyerType}
 Preferred rate structure: ${rateStructure ?? 'mixed'}
+
+Return EXACTLY ${lenderCount} scenarios — one per lender below, in this order, using these EXACT names (do not rename, do not substitute):
+${lenderListing}
 
 Return a JSON object with this exact structure:
 {
@@ -242,8 +251,8 @@ Return a JSON object with this exact structure:
   "disclaimer": "string explaining these are AI estimates as of training data, not live rates"
 }
 
-Include: one 3-5yr fixed, one long fixed (7-10yr), one tracker/variable, one with cashback.
-Use realistic rates for the market. All rate values as decimals (0.04 = 4%).`;
+Use realistic rates for the market. All rate values as decimals (0.04 = 4%).
+Vary the rate structures across the ${lenderCount} entries when feasible (mix of fixed periods, at least one tracker / variable, at least one with cashback).`;
 
     // Try every configured provider in order. Within each provider, try its
     // candidate models in order. Surface a clear error mentioning the provider

@@ -17,16 +17,25 @@ interface OverpaymentPanelProps {
   displayMarket?: MarketCode;
 }
 
+/**
+ * Overpayment simulator. The user enters a lump sum + cadence, picks whether
+ * the saving reduces the term or the monthly payment, then clicks Run. Two
+ * charts are rendered: outstanding balance over time, and monthly payment
+ * over time so the user can see both kinds of "saving" in motion.
+ */
 export default function OverpaymentPanel({ primaryInput, market, displayMarket }: OverpaymentPanelProps) {
   const { t } = useTranslation();
   const dm = displayMarket ?? market;
   const fmt = (v: number) => formatCurrencyIn(v, market, dm);
   const sym = MARKETS[market].currencySymbol;
 
+  // Inputs — all strings under the hood so the user can fully delete them.
   const [lumpSum, setLumpSum] = useState<number>(10000);
   const [startYearStr, setStartYearStr] = useState<string>('1');
   const [frequencyStr, setFrequencyStr] = useState<string>('1');
   const [reduces, setReduces] = useState<'payment' | 'term'>('term');
+
+  // Computed state — only updated when the user clicks Run.
   const [comparison, setComparison] = useState<OverpaymentComparison | null>(null);
 
   const startYear = Math.max(1, Math.min(primaryInput.mortgageTerm, Number(startYearStr) || 1));
@@ -34,8 +43,13 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
   const inputsValid = lumpSum > 0;
 
   function calculate() {
-    if (!inputsValid) { setComparison(null); return; }
-    setComparison(compareOverpayment(primaryInput, lumpSum, startYear, frequency, reduces));
+    if (!inputsValid) {
+      setComparison(null);
+      return;
+    }
+    setComparison(
+      compareOverpayment(primaryInput, lumpSum, startYear, frequency, reduces),
+    );
   }
 
   function reset() {
@@ -68,25 +82,18 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
     return data;
   }, [comparison]);
 
-  const noOverpaymentLabel = t('overpayment.noOverpayment');
-  const withOverpaymentLabel = t('overpayment.withOverpayment');
-
-  const planStatusText = inputsValid
-    ? (frequency === 1
-        ? t('overpayment.planStatusSingle', { amount: fmt(lumpSum), start: startYear })
-        : t('overpayment.planStatusMultiple', { amount: fmt(lumpSum), n: frequency, start: startYear }))
-    : t('overpayment.enterLumpSum');
-
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-[#2a2520] mb-1">{t('overpayment.title')}</h3>
-      <p className="text-xs text-[#6b7a8a] mb-4">{t('overpayment.intro')}</p>
+      <h3 className="text-sm font-semibold text-[#2a2520] mb-1">{t('overpay.title')}</h3>
+      <p className="text-xs text-[#6b7a8a] mb-4">
+        {t('overpay.intro')}
+      </p>
 
       {/* Inputs */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-            {t('overpayment.lumpSum')}
+            Lump sum
           </label>
           <div className="relative">
             <FormattedNumberInput
@@ -101,7 +108,7 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
         </div>
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-            {t('overpayment.startYear')}
+            Start year
           </label>
           <input
             type="text"
@@ -114,7 +121,7 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
         </div>
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-            {t('overpayment.everyNYears')}
+            Every N years
           </label>
           <input
             type="text"
@@ -127,15 +134,15 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
         </div>
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-            {t('overpayment.reduces')}
+            Reduces
           </label>
           <select
             value={reduces}
             onChange={(e) => setReduces(e.target.value as 'payment' | 'term')}
             className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
           >
-            <option value="term">{t('overpayment.reduceTerm')}</option>
-            <option value="payment">{t('overpayment.reducePayment')}</option>
+            <option value="term">Term (shorter loan, same payment)</option>
+            <option value="payment">Payment (same term, lower payments)</option>
           </select>
         </div>
       </div>
@@ -148,7 +155,7 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
           disabled={!inputsValid}
           className="px-4 py-2 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
         >
-          {t('overpayment.run')}
+          Run simulation
         </button>
         {comparison && (
           <button
@@ -156,10 +163,14 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
             onClick={reset}
             className="px-4 py-2 border border-[#e8e3dc] hover:border-[#4a7c96] text-[#6b7a8a] hover:text-[#4a7c96] text-sm rounded-lg transition-colors"
           >
-            {t('overpayment.reset')}
+            Reset
           </button>
         )}
-        <p className="text-xs text-[#6b7a8a] ml-auto">{planStatusText}</p>
+        <p className="text-xs text-[#6b7a8a] ml-auto">
+          {inputsValid
+            ? `Plan: ${fmt(lumpSum)} every ${frequency} year${frequency !== 1 ? 's' : ''} from year ${startYear}`
+            : 'Enter a lump sum greater than 0 to run.'}
+        </p>
       </div>
 
       {comparison && (
@@ -167,18 +178,18 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
           {/* Headline stats */}
           <div className="grid grid-cols-3 gap-3 mb-5">
             <Stat
-              label={t('overpayment.monthsSaved')}
+              label="Months saved"
               value={comparison.monthsSaved > 0 ? `${comparison.monthsSaved} mo` : '—'}
               tone="primary"
             />
-            <Stat label={t('overpayment.interestSaved')} value={fmt(comparison.interestSaved)} tone="good" />
-            <Stat label={t('overpayment.totalSaved')} value={fmt(comparison.totalSaved)} tone="good" />
+            <Stat label="Interest saved" value={fmt(comparison.interestSaved)} tone="good" />
+            <Stat label="Total saved" value={fmt(comparison.totalSaved)} tone="good" />
           </div>
 
           {/* Balance over time */}
           <div className="mb-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-              {t('overpayment.balanceChartTitle')}
+              Outstanding balance over time
             </p>
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
@@ -191,8 +202,8 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
                   labelFormatter={(l) => `Year ${l}`}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                <Line type="monotone" dataKey="baselineBalance" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name={noOverpaymentLabel} />
-                <Line type="monotone" dataKey="overBalance" stroke="#4a7c96" strokeWidth={2} dot={false} name={withOverpaymentLabel} />
+                <Line type="monotone" dataKey="baselineBalance" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name="No overpayment" />
+                <Line type="monotone" dataKey="overBalance" stroke="#4a7c96" strokeWidth={2} dot={false} name="With overpayment" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -200,15 +211,15 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
           {/* Monthly payment over time */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-              {t('overpayment.paymentChartTitle')}
+              Monthly payment over time
               {reduces === 'term' && (
                 <span className="ml-2 font-normal text-[#6b7a8a]/80 normal-case tracking-normal">
-                  · {t('overpayment.termNote')}
+                  · Reduces term: payment is constant, loan ends earlier.
                 </span>
               )}
               {reduces === 'payment' && (
                 <span className="ml-2 font-normal text-[#6b7a8a]/80 normal-case tracking-normal">
-                  · {t('overpayment.paymentNote')}
+                  · Reduces payment: monthly payment steps down after each overpayment.
                 </span>
               )}
             </p>
@@ -223,8 +234,8 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
                   labelFormatter={(l) => `Year ${l}`}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                <Line type="monotone" dataKey="baselinePayment" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name={noOverpaymentLabel} />
-                <Line type="monotone" dataKey="overPayment" stroke="#4a7c96" strokeWidth={2} dot={false} name={withOverpaymentLabel} />
+                <Line type="monotone" dataKey="baselinePayment" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name="No overpayment" />
+                <Line type="monotone" dataKey="overPayment" stroke="#4a7c96" strokeWidth={2} dot={false} name="With overpayment" />
               </LineChart>
             </ResponsiveContainer>
           </div>

@@ -26,18 +26,18 @@ export default function StressTestPanel({ results, inputs, market, displayMarket
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
       <div className="flex items-start justify-between gap-3 mb-2">
-        <h3 className="text-sm font-semibold text-[#2a2520]">{t('stressTest.title')}</h3>
+        <h3 className="text-sm font-semibold text-[#2a2520]">{t('stress.title')}</h3>
       </div>
 
       {fixedPeriodYears && (
         <p className="text-xs text-[#6b7a8a] mb-4">
-          {t('stressTest.fixedPeriodNote', { years: fixedPeriodYears })}
+          {t('stress.intro1')} <span className="text-[#2a2520] font-medium">{t('stress.years', { years: fixedPeriodYears })}</span>{t('stress.intro2')}
         </p>
       )}
 
-      {/* Scenario selector */}
+      {/* Slider */}
       <div className="mb-5">
-        <label className="block text-xs text-[#6b7a8a] mb-2">{t('stressTest.rateIncrease')}</label>
+        <label className="block text-xs text-[#6b7a8a] mb-2">{t('stress.scenarioLabel')}</label>
         <div className="flex gap-2 flex-wrap">
           {INCREMENTS.map((inc) => (
             <button
@@ -84,13 +84,13 @@ export default function StressTestPanel({ results, inputs, market, displayMarket
               <p className="text-sm font-semibold text-[#2a2520] mb-2">{r.lenderName}</p>
               <div className="flex items-baseline justify-between">
                 <div>
-                  <p className="text-xs text-[#6b7a8a]">{t('stressTest.newPayment')}</p>
-                  <p className="text-lg font-bold text-[#2a2520]">{fmt(newPayment)}/mo</p>
+                  <p className="text-xs text-[#6b7a8a]">{t('stress.newPayment')}</p>
+                  <p className="text-lg font-bold text-[#2a2520]">{fmt(newPayment)}/{t('stress.perMonth')}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-[#6b7a8a]">{t('stressTest.increase')}</p>
+                  <p className="text-xs text-[#6b7a8a]">{t('stress.increase')}</p>
                   <p className={`text-sm font-semibold ${increaseColors[severity]}`}>
-                    +{fmt(increase)}/mo
+                    +{fmt(increase)}/{t('stress.perMonth')}
                   </p>
                   <p className={`text-xs ${increaseColors[severity]}`}>
                     +{(increasePct * 100).toFixed(0)}%
@@ -98,7 +98,7 @@ export default function StressTestPanel({ results, inputs, market, displayMarket
                 </div>
               </div>
               <p className="text-xs text-[#6b7a8a] mt-2">
-                {t('stressTest.extraInterest', { amount: fmt(stress.totalExtraInterest) })}
+                {t('stress.extraInterest', { amount: fmt(stress.totalExtraInterest) })}
               </p>
             </div>
           );

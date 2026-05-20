@@ -15,22 +15,34 @@ interface HolidayPanelProps {
   displayMarket?: MarketCode;
 }
 
+/**
+ * Interest holiday / payment-pause simulator. The user enters when the pause
+ * starts (in months from today) and how long it lasts, then clicks Run.
+ * Charts show outstanding balance and monthly payment over time so the
+ * "balance jumps up + payment resets higher" dynamic is obvious.
+ */
 export default function HolidayPanel({ primaryInput, market, displayMarket }: HolidayPanelProps) {
   const { t } = useTranslation();
   const dm = displayMarket ?? market;
   const fmt = (v: number) => formatCurrencyIn(v, market, dm);
 
+  // String inputs so users can fully delete digits and retype them.
   const [holidayStartStr, setHolidayStartStr] = useState<string>('24');
   const [holidayDurationStr, setHolidayDurationStr] = useState<string>('3');
+
   const [comparison, setComparison] = useState<HolidayComparison | null>(null);
 
   const totalMonths = primaryInput.mortgageTerm * 12;
   const holidayStart = Math.max(1, Math.min(totalMonths - 12, Number(holidayStartStr) || 1));
   const holidayDuration = Math.max(1, Math.min(24, Number(holidayDurationStr) || 1));
-  const inputsValid = Number(holidayStartStr) > 0 && Number(holidayDurationStr) > 0;
+  const inputsValid =
+    Number(holidayStartStr) > 0 && Number(holidayDurationStr) > 0;
 
   function calculate() {
-    if (!inputsValid) { setComparison(null); return; }
+    if (!inputsValid) {
+      setComparison(null);
+      return;
+    }
     setComparison(compareHoliday(primaryInput, holidayStart, holidayDuration));
   }
 
@@ -62,19 +74,18 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
     return data;
   }, [comparison]);
 
-  const noPauseLabel = t('holiday.noPause');
-  const withPauseLabel = t('holiday.withPause');
-
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
       <h3 className="text-sm font-semibold text-[#2a2520] mb-1">{t('holiday.title')}</h3>
-      <p className="text-xs text-[#6b7a8a] mb-4">{t('holiday.intro')}</p>
+      <p className="text-xs text-[#6b7a8a] mb-4">
+        {t('holiday.intro')}
+      </p>
 
       {/* Inputs */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-            {t('holiday.pauseStartsLabel')}
+            {t('holiday.startMonth')}
           </label>
           <input
             type="text"
@@ -85,12 +96,12 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
             className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
           />
           <p className="text-[11px] text-[#6b7a8a]/70 mt-1">
-            {t('holiday.pauseStartsHelp', { max: totalMonths - 12 })}
+            {t('holiday.startMonthHint', { max: totalMonths - 12 })}
           </p>
         </div>
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-            {t('holiday.durationLabel')}
+            {t('holiday.duration')}
           </label>
           <input
             type="text"
@@ -100,7 +111,9 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
             placeholder="3"
             className="w-full px-3 py-2 bg-[#f9f7f4] border border-[#e8e3dc] rounded-lg text-sm focus:outline-none focus:border-[#4a7c96]"
           />
-          <p className="text-[11px] text-[#6b7a8a]/70 mt-1">{t('holiday.durationHelp')}</p>
+          <p className="text-[11px] text-[#6b7a8a]/70 mt-1">
+            {t('holiday.durationHint')}
+          </p>
         </div>
       </div>
 
@@ -112,7 +125,7 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
           disabled={!inputsValid}
           className="px-4 py-2 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors"
         >
-          {t('holiday.run')}
+          {t('holiday.runSim')}
         </button>
         {comparison && (
           <button
@@ -120,13 +133,13 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
             onClick={reset}
             className="px-4 py-2 border border-[#e8e3dc] hover:border-[#4a7c96] text-[#6b7a8a] hover:text-[#4a7c96] text-sm rounded-lg transition-colors"
           >
-            {t('holiday.reset')}
+            {t('sens.reset')}
           </button>
         )}
         <p className="text-xs text-[#6b7a8a] ml-auto">
           {inputsValid
-            ? t('holiday.planStatus', { duration: holidayDuration, start: holidayStart })
-            : t('holiday.enterParams')}
+            ? t('holiday.plan', { duration: holidayDuration, start: holidayStart })
+            : t('holiday.invalidInputs')}
         </p>
       </div>
 
@@ -136,16 +149,16 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
             <Stat label={t('holiday.extraInterest')} value={fmt(comparison.extraInterest)} tone="bad" />
             <Stat label={t('holiday.balanceAtEnd')} value={fmt(comparison.balanceAtHolidayEnd)} tone="neutral" />
-            <Stat label={t('holiday.newMonthly')} value={`${fmt(comparison.newMonthlyPayment)}/mo`} tone="warning" />
+            <Stat label={t('holiday.newMonthly')} value={`${fmt(comparison.newMonthlyPayment)}/${t('stress.perMonth')}`} tone="warning" />
             <Stat label={t('holiday.totalExtra')} value={fmt(comparison.totalExtraCost)} tone="bad" />
           </div>
 
           {/* Balance over time */}
           <div className="mb-5">
             <p className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-              {t('holiday.balanceChartTitle')}
+              {t('holiday.balanceOverTime')}
               <span className="ml-2 font-normal text-[#6b7a8a]/80 normal-case tracking-normal">
-                · {t('holiday.balanceChartNote')}
+                {t('holiday.balanceOverTimeNote')}
               </span>
             </p>
             <ResponsiveContainer width="100%" height={220}>
@@ -159,8 +172,8 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
                   labelFormatter={(l) => `Year ${l}`}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                <Line type="monotone" dataKey="baselineBalance" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name={noPauseLabel} />
-                <Line type="monotone" dataKey="holidayBalance" stroke="#f59e0b" strokeWidth={2} dot={false} name={withPauseLabel} />
+                <Line type="monotone" dataKey="baselineBalance" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name="No pause" />
+                <Line type="monotone" dataKey="holidayBalance" stroke="#f59e0b" strokeWidth={2} dot={false} name="With pause" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -168,9 +181,9 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
           {/* Monthly payment over time */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-1.5">
-              {t('holiday.paymentChartTitle')}
+              Monthly payment over time
               <span className="ml-2 font-normal text-[#6b7a8a]/80 normal-case tracking-normal">
-                · {t('holiday.paymentChartNote')}
+                · Drops to 0 during pause, then resumes higher to amortise the new balance.
               </span>
             </p>
             <ResponsiveContainer width="100%" height={200}>
@@ -184,8 +197,8 @@ export default function HolidayPanel({ primaryInput, market, displayMarket }: Ho
                   labelFormatter={(l) => `Year ${l}`}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-                <Line type="monotone" dataKey="baselinePayment" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name={noPauseLabel} />
-                <Line type="monotone" dataKey="holidayPayment" stroke="#f59e0b" strokeWidth={2} dot={false} name={withPauseLabel} />
+                <Line type="monotone" dataKey="baselinePayment" stroke="#9aa5b0" strokeWidth={1.5} dot={false} name="No pause" />
+                <Line type="monotone" dataKey="holidayPayment" stroke="#f59e0b" strokeWidth={2} dot={false} name="With pause" />
               </LineChart>
             </ResponsiveContainer>
           </div>

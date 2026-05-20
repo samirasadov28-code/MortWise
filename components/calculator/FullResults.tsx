@@ -18,7 +18,11 @@ import BuyToLetPanel from '@/components/results/BuyToLetPanel';
 import SensitivityPanel from '@/components/results/SensitivityPanel';
 import ForeignCurrencyPanel from '@/components/results/ForeignCurrencyPanel';
 import CalculationBreakdown from '@/components/results/CalculationBreakdown';
+import SavedScenariosPanel from '@/components/results/SavedScenariosPanel';
 import { buildPreparedScenarios } from '@/lib/wizard';
+import { showToast } from '@/components/shared/Toaster';
+import { track } from '@/lib/analytics';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface FullResultsProps {
   results: ScenarioResult[];
@@ -28,6 +32,7 @@ interface FullResultsProps {
 }
 
 export default function FullResults({ results, state, displayMarket }: FullResultsProps) {
+  const { t } = useTranslation();
   const dm: MarketCode = displayMarket ?? state.market;
   const exportRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
@@ -42,6 +47,7 @@ export default function FullResults({ results, state, displayMarket }: FullResul
   async function handleExportPDF() {
     if (typeof window === 'undefined' || exporting) return;
     setExporting(true);
+    track('pdf_exported', { scenarios: ranked.length });
     try {
       const { default: jsPDF } = await import('jspdf');
       const { default: html2canvas } = await import('html2canvas');
@@ -98,6 +104,9 @@ export default function FullResults({ results, state, displayMarket }: FullResul
       }
 
       pdf.save(`mortwise-analysis-${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'PDF export failed';
+      showToast({ kind: 'error', message: msg, durationMs: 6000 });
     } finally {
       setExporting(false);
     }
@@ -112,15 +121,15 @@ export default function FullResults({ results, state, displayMarket }: FullResul
         className="sticky top-[72px] z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-[#f5f3ef]/95 backdrop-blur-sm border-b border-[#e8e3dc] flex items-center justify-between"
       >
         <div>
-          <h2 className="text-xl font-bold text-[#2a2520]">Full Analysis</h2>
-          <p className="text-[#6b7a8a] text-xs sm:text-sm">{ranked.length} scenario{ranked.length !== 1 ? 's' : ''} compared</p>
+          <h2 className="text-xl font-bold text-[#2a2520]">{t('results.fullAnalysis')}</h2>
+          <p className="text-[#6b7a8a] text-xs sm:text-sm">{t('results.scenariosCompared', { n: ranked.length })}</p>
         </div>
         <button
           onClick={handleExportPDF}
           disabled={exporting}
           className="flex items-center gap-2 px-4 py-2 border border-[#4a7c96]/30 bg-white hover:bg-[#4a7c96] hover:text-white hover:border-[#4a7c96] rounded-lg text-[#4a7c96] text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-wait shadow-sm"
         >
-          {exporting ? 'Building PDF…' : '↓ Export PDF'}
+          {exporting ? t('results.buildingPdf') : t('results.exportPdf')}
         </button>
       </div>
 
@@ -134,21 +143,21 @@ export default function FullResults({ results, state, displayMarket }: FullResul
         {/* Calculation walkthrough — explicit math from inputs to monthly + total. */}
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Calculation breakdown
+            {t('full.sectionCalc')}
           </h3>
           <CalculationBreakdown results={ranked} state={state} displayMarket={dm} />
         </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Side-by-side comparison
+            {t('full.sectionCompare')}
           </h3>
           <ComparisonTable results={ranked} market={state.market} displayMarket={dm} />
         </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Charts
+            {t('full.sectionCharts')}
           </h3>
           <div className="space-y-4">
             <BalanceChart results={ranked} market={state.market} displayMarket={dm} />
@@ -158,7 +167,7 @@ export default function FullResults({ results, state, displayMarket }: FullResul
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Rate-rise stress test
+            {t('full.sectionStress')}
           </h3>
           <StressTestPanel results={ranked} inputs={state.scenarios} market={state.market} displayMarket={dm} />
         </section>
@@ -166,7 +175,7 @@ export default function FullResults({ results, state, displayMarket }: FullResul
         {state.scenarios[0] && (
           <section>
             <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-              Overpayment simulator
+              {t('full.sectionOverpayment')}
             </h3>
             <OverpaymentPanel primaryInput={primaryPrepared} market={state.market} displayMarket={dm} />
           </section>
@@ -174,7 +183,7 @@ export default function FullResults({ results, state, displayMarket }: FullResul
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Cashback analysis
+            {t('full.sectionCashback')}
           </h3>
           <CashbackPanel results={ranked} inputs={preparedScenarios} market={state.market} displayMarket={dm} />
         </section>
@@ -182,7 +191,7 @@ export default function FullResults({ results, state, displayMarket }: FullResul
         {state.scenarios[0] && (
           <section>
             <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-              Interest holiday
+              {t('full.sectionHoliday')}
             </h3>
             <HolidayPanel primaryInput={primaryPrepared} market={state.market} displayMarket={dm} />
           </section>
@@ -190,30 +199,37 @@ export default function FullResults({ results, state, displayMarket }: FullResul
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Sensitivity analysis · all key inputs
+            {t('full.sectionSensitivity')}
           </h3>
           <SensitivityPanel state={state} displayMarket={dm} />
         </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Buy-to-let · rental cash flow
+            {t('full.sectionBtl')}
           </h3>
           <BuyToLetPanel state={state} results={ranked} displayMarket={dm} />
         </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Foreign-currency mortgage
+            {t('full.sectionFx')}
           </h3>
           <ForeignCurrencyPanel state={state} />
         </section>
 
         <section>
           <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
-            Cross-market comparison · same cash invested
+            {t('full.sectionCrossMarket')}
           </h3>
           <MarketsComparison state={state} />
+        </section>
+
+        <section>
+          <h3 className="text-sm font-semibold text-[#6b7a8a] uppercase tracking-wide mb-3">
+            {t('full.sectionSaved')}
+          </h3>
+          <SavedScenariosPanel currentState={state} displayMarket={dm} />
         </section>
       </div>
     </div>

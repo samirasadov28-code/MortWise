@@ -7,12 +7,11 @@ import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import { newtonRaphsonIRR } from '@/lib/engine/irr';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
-import OnboardingTip from '@/components/shared/OnboardingTip';
-import { useOnboardingFlag } from '@/lib/useOnboardingFlag';
 
 interface BuyToLetPanelProps {
   state: WizardState;
   results: ScenarioResult[];
+  /** Display currency. Defaults to local market currency. */
   displayMarket?: MarketCode;
 }
 
@@ -20,7 +19,6 @@ const DEFAULT_OPERATING_COST_RATIO = 0.25;
 
 export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLetPanelProps) {
   const { t } = useTranslation();
-  const [showBtlTip, dismissBtlTip] = useOnboardingFlag('mortwise_seen_btl_tip');
   const market = MARKETS[state.market];
   const dm: MarketCode = displayMarket ?? state.market;
   const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
@@ -32,7 +30,7 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
   const [monthlyRent, setMonthlyRent] = useState<number>(() => Math.round(state.housePrice * 0.004));
   const [opexRatio, setOpexRatio] = useState<number>(DEFAULT_OPERATING_COST_RATIO);
   const [occupancy, setOccupancy] = useState<number>(0.95);
-  const [appreciation, setAppreciation] = useState<number>(0.03);
+  const [appreciation, setAppreciation] = useState<number>(0.03); // 3% pa default
   const [holdYears, setHoldYears] = useState<number>(10);
   const [rentInflation, setRentInflation] = useState<number>(0.02);
 
@@ -45,7 +43,11 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
   const analysis = useMemo(() => {
     if (!best) return null;
     const months = Math.min(holdYears * 12, best.periods.length);
+
+    // Annual flows: rent grows with rentInflation. Mortgage payment uses the
+    // first-month figure (we keep it flat — close enough for a quick yield view).
     const monthlyMortgage = best.firstMonthlyPayment;
+
     const cashflows: number[] = [-cashInvested];
     let cumulativeNetCash = -cashInvested;
     let paybackYear: number | null = null;
@@ -60,6 +62,7 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
       totalRent += grossYearRent;
       totalNetRent += netYearRent;
 
+      // For IRR: in the final year, add exit equity = property value − remaining balance
       let inflow = yearCash;
       if (y === holdYears) {
         const exitMonthIdx = Math.min(months - 1, best.periods.length - 1);
@@ -69,15 +72,21 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
         inflow += exitEquity;
       }
       cashflows.push(inflow);
+
       cumulativeNetCash += yearCash;
-      if (paybackYear === null && cumulativeNetCash >= 0) paybackYear = y;
+      if (paybackYear === null && cumulativeNetCash >= 0) {
+        paybackYear = y;
+      }
     }
 
     const irrAnnual = newtonRaphsonIRR(cashflows, 0.05);
+
+    // Year-1 metrics for headline yields
     const grossYr1 = monthlyRent * 12 * occupancy;
     const netYr1 = grossYr1 * (1 - opexRatio);
     const annualMortgageYr1 = monthlyMortgage * 12;
     const annualCashFlowYr1 = netYr1 - annualMortgageYr1;
+
     const grossYield = state.housePrice > 0 ? grossYr1 / state.housePrice : 0;
     const netYield = state.housePrice > 0 ? netYr1 / state.housePrice : 0;
     const cashYield = cashInvested > 0 ? annualCashFlowYr1 / cashInvested : 0;
@@ -85,9 +94,18 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
       monthlyRent * (1 - opexRatio) > 0 ? monthlyMortgage / (monthlyRent * (1 - opexRatio)) : 1;
 
     return {
-      grossYr1, netYr1, annualMortgageYr1, annualCashFlowYr1,
-      grossYield, netYield, cashYield, breakEvenOccupancy,
-      irrAnnual, paybackYear, totalRent, totalNetRent,
+      grossYr1,
+      netYr1,
+      annualMortgageYr1,
+      annualCashFlowYr1,
+      grossYield,
+      netYield,
+      cashYield,
+      breakEvenOccupancy,
+      irrAnnual,
+      paybackYear,
+      totalRent,
+      totalNetRent,
     };
   }, [best, monthlyRent, opexRatio, occupancy, appreciation, holdYears, rentInflation, state.housePrice, cashInvested]);
 
@@ -96,37 +114,35 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-      {showBtlTip && (
-        <OnboardingTip onDismiss={dismissBtlTip}>
-          <p className="text-sm text-[#2a2520]">
-            <span className="font-semibold">Evaluating buy-to-rent vs buying to live in?</span> Set the monthly rent to match your local market, then check whether the <strong>net yield</strong> and <strong>cash yield</strong> exceed your mortgage rate — if not, you may be better off buying as a primary residence.
-          </p>
-        </OnboardingTip>
-      )}
-      <p className={`text-sm text-[#6b7a8a] mb-4${showBtlTip ? ' mt-4' : ''}`}>{t('btl.intro')}</p>
+      <p className="text-sm text-[#6b7a8a] mb-4">
+        {t('btl.intro')}
+      </p>
 
+      {/* Inputs — monthly rent uses FormattedNumberInput (commas, currency on right);
+          percentage / year fields use draft-string state so the user can fully
+          delete the value and retype, including the last "0". */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
         <CurrencyField
-          label={t('btl.monthlyRent')}
+          label="Monthly rent"
           value={monthlyRent}
           setValue={setMonthlyRent}
           symbol={market.currencySymbol}
           placeholder="2,000"
         />
-        <NumberField label={t('btl.opex')} value={Math.round(opexRatio * 100)} setValue={(v) => setOpexRatio(v / 100)} suffix="%" max={100} placeholder="25" />
-        <NumberField label={t('btl.occupancy')} value={Math.round(occupancy * 100)} setValue={(v) => setOccupancy(v / 100)} suffix="%" max={100} placeholder="95" />
-        <NumberField label={t('btl.holdYears')} value={holdYears} setValue={setHoldYears} min={1} max={state.mortgageTerm} placeholder="10" />
-        <NumberField label={t('btl.rentInflation')} value={Math.round(rentInflation * 1000) / 10} setValue={(v) => setRentInflation(v / 100)} suffix="%" allowDecimal placeholder="2.0" />
-        <NumberField label={t('btl.appreciation')} value={Math.round(appreciation * 1000) / 10} setValue={(v) => setAppreciation(v / 100)} suffix="%" allowDecimal placeholder="3.0" />
+        <NumberField label="Opex %" value={Math.round(opexRatio * 100)} setValue={(v) => setOpexRatio(v / 100)} suffix="%" max={100} placeholder="25" />
+        <NumberField label="Occupancy %" value={Math.round(occupancy * 100)} setValue={(v) => setOccupancy(v / 100)} suffix="%" max={100} placeholder="95" />
+        <NumberField label="Hold (yrs)" value={holdYears} setValue={setHoldYears} min={1} max={state.mortgageTerm} placeholder="10" />
+        <NumberField label="Rent inflation %/yr" value={Math.round(rentInflation * 1000) / 10} setValue={(v) => setRentInflation(v / 100)} suffix="%" allowDecimal placeholder="2.0" />
+        <NumberField label="Property appreciation %/yr" value={Math.round(appreciation * 1000) / 10} setValue={(v) => setAppreciation(v / 100)} suffix="%" allowDecimal placeholder="3.0" />
       </div>
 
       {/* Headline metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <Metric label={t('btl.grossYield')} value={formatPercent(analysis.grossYield, 2)} tone="neutral" />
-        <Metric label={t('btl.netYield')} value={formatPercent(analysis.netYield, 2)} tone="neutral" />
-        <Metric label={t('btl.cashYield')} value={formatPercent(analysis.cashYield, 1)} tone={analysis.cashYield > 0 ? 'good' : 'bad'} />
+        <Metric label="Gross yield" value={formatPercent(analysis.grossYield, 2)} tone="neutral" />
+        <Metric label="Net yield" value={formatPercent(analysis.netYield, 2)} tone="neutral" />
+        <Metric label="Cash yield" value={formatPercent(analysis.cashYield, 1)} tone={analysis.cashYield > 0 ? 'good' : 'bad'} />
         <Metric
-          label={t('btl.irr', { years: holdYears })}
+          label={`IRR (${holdYears}yr)`}
           value={analysis.irrAnnual === null || analysis.irrAnnual === undefined ? '—' : formatPercent(analysis.irrAnnual, 1)}
           tone={(analysis.irrAnnual ?? 0) > 0 ? 'good' : 'bad'}
         />
@@ -134,41 +150,37 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
 
       {/* Detail rows */}
       <dl className="text-sm divide-y divide-[#e8e3dc]/60 border-t border-[#e8e3dc]/60">
-        <Row label={t('btl.cashInvested')} value={fmt(cashInvested)} />
-        <Row label={t('btl.stampDuty')} value={fmt(stampDuty)} />
-        <Row label={t('btl.yr1GrossRent')} value={fmt(analysis.grossYr1)} />
-        <Row label={t('btl.yr1NetRent')} value={fmt(analysis.netYr1)} />
-        <Row label={t('btl.yr1Mortgage')} value={fmt(analysis.annualMortgageYr1)} />
+        <Row label="Cash invested (deposit + stamp duty + fees)" value={fmt(cashInvested)} />
+        <Row label="Stamp duty at investor rate" value={fmt(stampDuty)} />
+        <Row label="Year-1 gross rent" value={fmt(analysis.grossYr1)} />
+        <Row label="Year-1 net rent (after opex)" value={fmt(analysis.netYr1)} />
+        <Row label="Year-1 mortgage payments" value={fmt(analysis.annualMortgageYr1)} />
         <Row
-          label={t('btl.yr1CashFlow')}
+          label="Year-1 cash flow"
           value={fmt(analysis.annualCashFlowYr1)}
           tone={cashFlowPositive ? 'good' : 'bad'}
         />
         <Row
-          label={t('btl.payback')}
+          label="Payback (cumulative cash flow ≥ deposit + fees)"
           value={
             analysis.paybackYear === null
-              ? t('btl.paybackNotWithin', { years: holdYears })
-              : t('btl.paybackYear', { n: analysis.paybackYear })
+              ? `Not within ${holdYears} years at these assumptions`
+              : `Year ${analysis.paybackYear}`
           }
           tone={analysis.paybackYear === null ? 'bad' : 'good'}
         />
         <Row
-          label={t('btl.breakEvenOccupancy')}
-          value={
-            analysis.breakEvenOccupancy <= 1
-              ? formatPercent(analysis.breakEvenOccupancy, 0)
-              : t('btl.breakEvenOver100')
-          }
+          label="Break-even occupancy (Y1)"
+          value={analysis.breakEvenOccupancy <= 1 ? formatPercent(analysis.breakEvenOccupancy, 0) : '> 100% (rent never covers mortgage)'}
           tone={analysis.breakEvenOccupancy > 0.95 ? 'bad' : 'neutral'}
         />
       </dl>
 
-      {/* Market risk notes */}
+      {/* Market risk notes — surface the regulatory environment that can shift */}
       {market.regulatoryNotes.length > 0 && (
         <details className="mt-5 group">
           <summary className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] cursor-pointer hover:text-[#4a7c96]">
-            {t('btl.rulesTitle', { market: market.name })}
+            How rules, rates &amp; terms can change in {market.name}
           </summary>
           <ul className="mt-2 space-y-1.5 text-xs text-[#6b7a8a]">
             {market.regulatoryNotes.map((n, i) => (
@@ -181,11 +193,21 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
         </details>
       )}
 
-      <p className="text-[11px] text-[#6b7a8a]/70 mt-3 leading-relaxed">{t('btl.footnote')}</p>
+      <p className="text-[11px] text-[#6b7a8a]/70 mt-3 leading-relaxed">
+        IRR uses your hold period (default 10y) and includes year-end exit equity:
+        property value × (1+appreciation)^N minus the remaining mortgage balance.
+        Excludes income tax on rent — varies by country and your personal tax position.
+      </p>
     </div>
   );
 }
 
+/**
+ * Currency input with comma-separator formatting and the currency symbol on
+ * the right. Reuses our shared FormattedNumberInput which already lets the
+ * user fully delete the digits — including the last "0" — and treats empty
+ * as 0 internally.
+ */
 function CurrencyField({
   label, value, setValue, symbol, placeholder,
 }: {
@@ -214,6 +236,13 @@ function CurrencyField({
   );
 }
 
+/**
+ * Plain numeric input that holds its own draft-string state so the user can
+ * fully delete the digits — including the last 0 — without the parent's
+ * number snapping back into the input. Syncs to parent on every keystroke.
+ * Resyncs from the parent when the parent's value changes externally
+ * (e.g. on Reset).
+ */
 function NumberField({
   label, value, setValue, min, max, suffix, allowDecimal, placeholder,
 }: {
@@ -227,6 +256,7 @@ function NumberField({
   placeholder?: string;
 }) {
   const [draft, setDraft] = useState<string>(value === 0 ? '' : String(value));
+  // Re-sync if the parent's value drifts away from what our string would parse to.
   useEffect(() => {
     const parsed = Number(draft);
     if (Number.isFinite(parsed) && parsed === value) return;
@@ -238,7 +268,10 @@ function NumberField({
     const allowed = allowDecimal ? /[^0-9.]/g : /[^0-9]/g;
     const cleaned = raw.replace(allowed, '');
     setDraft(cleaned);
-    if (cleaned === '' || cleaned === '.') { setValue(0); return; }
+    if (cleaned === '' || cleaned === '.') {
+      setValue(0);
+      return;
+    }
     let n = Number(cleaned);
     if (!Number.isFinite(n)) return;
     if (typeof max === 'number' && n > max) n = max;
@@ -269,7 +302,11 @@ function NumberField({
 }
 
 function Metric({ label, value, tone }: { label: string; value: string; tone: 'good' | 'bad' | 'neutral' }) {
-  const tones: Record<string, string> = { good: 'text-green-700', bad: 'text-red-600', neutral: 'text-[#2a2520]' };
+  const tones: Record<string, string> = {
+    good: 'text-green-700',
+    bad: 'text-red-600',
+    neutral: 'text-[#2a2520]',
+  };
   return (
     <div className="bg-[#f9f7f4] rounded-lg p-3">
       <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b7a8a]">{label}</p>
@@ -279,7 +316,11 @@ function Metric({ label, value, tone }: { label: string; value: string; tone: 'g
 }
 
 function Row({ label, value, tone }: { label: string; value: string; tone?: 'good' | 'bad' | 'neutral' }) {
-  const tones: Record<string, string> = { good: 'text-green-700', bad: 'text-red-600', neutral: 'text-[#2a2520]' };
+  const tones: Record<string, string> = {
+    good: 'text-green-700',
+    bad: 'text-red-600',
+    neutral: 'text-[#2a2520]',
+  };
   return (
     <div className="flex items-center justify-between py-2">
       <dt className="text-[#6b7a8a]">{label}</dt>

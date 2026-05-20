@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { setUnlockState } from '@/lib/stripe';
 import Link from 'next/link';
+import { track } from '@/lib/analytics';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -23,6 +24,7 @@ function SuccessContent() {
         if (data.verified) {
           setUnlockState(sessionId);
           setStatus('success');
+          track('checkout_succeeded');
           setTimeout(() => router.push('/calculator'), 2500);
         } else {
           setStatus('error');
