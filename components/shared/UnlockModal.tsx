@@ -46,7 +46,7 @@ export default function UnlockModal({ onClose }: { onClose: () => void }) {
             onClick={onClose}
             className="w-full py-2.5 bg-[#4a7c96] hover:bg-[#3d6a82] text-white font-semibold rounded-lg text-sm transition-colors"
           >
-            Let's explore →
+            Let&apos;s explore →
           </button>
         </div>
       </div>
