@@ -120,15 +120,6 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-2">
             <LanguagePicker compact />
-            <a
-              href="https://asadov-stack.netlify.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 border border-[#e8e3dc] hover:border-[#4a7c96]/50 text-[#6b7a8a] hover:text-[#4a7c96] text-xs font-medium rounded-lg transition-colors bg-white"
-            >
-              <span>🔗</span>
-              ModeLoop Other Products
-            </a>
             <Link
               href="/calculator"
               className="px-4 py-2 bg-[#4a7c96] hover:bg-[#3a6a82] text-white text-sm font-semibold rounded-lg transition-colors"
@@ -268,17 +259,19 @@ export default function LandingPage() {
         <MarketsCarousel markets={MARKETS_LIST} />
       </section>
 
-      {/* Other products footer link */}
-      <section className="max-w-5xl mx-auto px-6 pb-8 sm:pb-10 text-center">
+      {/* ModeLoop other products — prominent bottom CTA */}
+      <section className="max-w-5xl mx-auto px-6 pb-10 sm:pb-14 text-center">
         <a
           href="https://asadov-stack.netlify.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#e8e3dc] hover:border-[#4a7c96]/60 text-[#6b7a8a] hover:text-[#4a7c96] text-sm font-medium rounded-xl transition-colors bg-white shadow-sm"
+          className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl border border-[#e8e3dc] bg-white hover:border-amber-300 hover:shadow-md transition-all shadow-sm"
         >
-          <span>🔗</span>
-          ModeLoop Other Products
-          <span className="text-xs opacity-60">↗</span>
+          <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-white text-[11px] font-bold tracking-widest uppercase leading-none">
+            MODELOOP
+          </span>
+          <span className="text-sm font-medium text-[#2a2520]">Explore our other products</span>
+          <span className="text-[#6b7a8a] text-sm">→</span>
         </a>
       </section>
 
