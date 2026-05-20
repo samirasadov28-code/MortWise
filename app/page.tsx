@@ -260,19 +260,24 @@ export default function LandingPage() {
       </section>
 
       {/* ModeLoop other products — prominent bottom CTA */}
-      <section className="max-w-5xl mx-auto px-6 pb-10 sm:pb-14 text-center">
-        <a
-          href="https://asadov-stack.netlify.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl border border-[#e8e3dc] bg-white hover:border-amber-300 hover:shadow-md transition-all shadow-sm"
-        >
-          <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-white text-[11px] font-bold tracking-widest uppercase leading-none">
-            MODELOOP
-          </span>
-          <span className="text-sm font-medium text-[#2a2520]">Explore our other products</span>
-          <span className="text-[#6b7a8a] text-sm">→</span>
-        </a>
+      <section className="border-t border-[#e8e3dc] bg-white py-10 sm:py-14">
+        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center gap-4 text-center">
+          <p className="text-xs font-semibold text-[#6b7a8a] uppercase tracking-widest">From the same team</p>
+          <a
+            href="https://asadov-stack.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl border-2 border-[#e8e3dc] bg-[#f5f3ef] hover:border-amber-400 hover:bg-amber-50 hover:shadow-lg transition-all shadow-sm group"
+          >
+            <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-white text-[11px] font-bold tracking-widest uppercase leading-none">
+              MODELOOP
+            </span>
+            <span className="text-base font-semibold text-[#2a2520] group-hover:text-amber-700 transition-colors">
+              Explore our other products
+            </span>
+            <span className="text-[#6b7a8a] group-hover:text-amber-600 transition-colors text-lg">→</span>
+          </a>
+        </div>
       </section>
 
       <Disclaimer />
