@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useOnboardingFlag } from '@/lib/useOnboardingFlag';
+import UnlockModal from '@/components/shared/UnlockModal';
 import type { ScenarioResult, WizardState, MarketCode } from '@/lib/types';
 import { rankScenarios } from '@/lib/engine/scenarios';
 import ScenarioCard from '@/components/results/ScenarioCard';
@@ -34,6 +36,7 @@ export default function FullResults({ results, state, displayMarket }: FullResul
   const dm: MarketCode = displayMarket ?? state.market;
   const exportRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
+  const [showUnlock, dismissUnlock] = useOnboardingFlag('mortwise_seen_full_unlock');
   const ranked = rankScenarios(results);
   // Sub-panels (overpayment, holiday) need a "ready to amortise" scenario that
   // already has the wizard's housePrice / term / cashback / etc. merged in —
@@ -111,6 +114,8 @@ export default function FullResults({ results, state, displayMarket }: FullResul
 
   return (
     <div className="space-y-6">
+      {showUnlock && <UnlockModal onClose={dismissUnlock} />}
+
       {/* Header — sticky so Export PDF stays accessible while scrolling. */}
       <div
         className="sticky top-[72px] z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-[#f5f3ef]/95 backdrop-blur-sm border-b border-[#e8e3dc] flex items-center justify-between"
