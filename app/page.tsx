@@ -15,6 +15,61 @@ import {
 } from '@/components/shared/HouseIcons';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
 
+const FAQ_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How much can I borrow for a mortgage?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Most lenders allow you to borrow 3.5–5× your annual income. MortWise calculates your maximum borrowing power based on your income, deposit, and the lending rules of your chosen market (50+ countries supported).',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the difference between a fixed and variable rate mortgage?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A fixed-rate mortgage locks in your interest rate for a set period, giving predictable repayments. A variable (tracker) rate moves with the market rate, which can mean lower payments when rates fall but higher payments when they rise. MortWise lets you compare both side-by-side.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is LTV and why does it matter?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'LTV (Loan-to-Value) is the percentage of the property price you are borrowing. A lower LTV means a larger deposit and usually unlocks better interest rates. MortWise displays your LTV band and shows how changing your deposit affects the rate you can access.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is a mortgage stress test?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A stress test shows how your monthly repayment would change if interest rates rise — typically by +1%, +2%, or +3%. MortWise\'s full analysis includes a rate-rise stress test so you can check affordability before rates increase.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do overpayments reduce my mortgage?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Making lump-sum or regular overpayments reduces your outstanding balance faster, cutting the total interest you pay and shortening your term. MortWise\'s overpayment simulator shows exactly how much you save in interest and months.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Does MortWise support mortgages outside Ireland and the UK?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. MortWise supports mortgage calculations across 50+ markets including Germany, France, Spain, UAE, Australia, Canada, the US, and many more, each with country-specific stamp duty rules, lending limits, and government scheme eligibility.',
+      },
+    },
+  ],
+};
+
 const FREE_FEATURES = [
   'Monthly repayment estimate',
   'Total interest & total cost over life of loan',
@@ -281,6 +336,11 @@ export default function LandingPage() {
       </section>
 
       <Disclaimer />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
     </div>
   );
 }
