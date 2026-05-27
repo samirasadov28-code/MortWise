@@ -16,7 +16,17 @@ export const metadata: Metadata = {
   title: 'MortWise — AI-Powered Mortgage Assistant',
   description:
     'AI-powered mortgage comparison and stress-testing. Compare fixed, variable and split-rate scenarios, get AI-generated market rates, and ask the built-in AI assistant anything about your mortgage across 50+ markets.',
-  keywords: 'AI mortgage calculator, AI mortgage assistant, mortgage comparison, first time buyer, Ireland, UK, UAE',
+  keywords: [
+    'mortgage calculator', 'mortgage comparison', 'AI mortgage calculator', 'AI mortgage assistant',
+    'first time buyer mortgage', 'mortgage stress test', 'fixed rate mortgage calculator',
+    'variable rate mortgage calculator', 'split rate mortgage', 'buy to let mortgage calculator',
+    'mortgage affordability calculator', 'LTV calculator', 'stamp duty calculator',
+    'Ireland mortgage calculator', 'UK mortgage calculator', 'UAE mortgage calculator',
+    'Germany mortgage calculator', 'France mortgage calculator', 'Spain mortgage calculator',
+    'mortgage repayment calculator', 'how much can I borrow', 'mortgage overpayment calculator',
+    'interest only mortgage calculator', 'mortgage rate comparison', 'cashback mortgage',
+    'mortgage advisor tool', 'best mortgage calculator', 'free mortgage calculator',
+  ],
   alternates: {
     canonical: '/',
   },
