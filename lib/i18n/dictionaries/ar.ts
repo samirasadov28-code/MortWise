@@ -1,6 +1,6 @@
 import type { Dictionary } from './en';
 
-const ar: Dictionary = {
+const ar: Partial<Dictionary> = {
   'brand.name': 'MortWise',
   'nav.startFree': 'ابدأ مجانًا ←',
   'header.unlocked': 'تم فتح التحليل الكامل',
