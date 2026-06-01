@@ -1,6 +1,6 @@
 import type { Dictionary } from './en';
 
-const hi: Dictionary = {
+const hi: Partial<Dictionary> = {
   'brand.name': 'MortWise',
   'nav.startFree': 'मुफ्त शुरू करें →',
   'header.unlocked': 'पूर्ण विश्लेषण अनलॉक हुआ',

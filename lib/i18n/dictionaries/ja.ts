@@ -1,6 +1,6 @@
 import type { Dictionary } from './en';
 
-const ja: Dictionary = {
+const ja: Partial<Dictionary> = {
   // ─── Brand / nav ──────────────────────────────────────────────────────
   'brand.name': 'MortWise',
   'nav.startFree': '無料で始める →',
