@@ -42,10 +42,15 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
     const data = new FormData(form);
 
     try {
-      const res = await fetch('/', {
+      const res = await fetch('https://formsubmit.co/ajax/finmodelup@gmail.com', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          _subject: `MortWise feedback — ${data.get('type') ?? 'general'}`,
+          email: data.get('email') || 'not provided',
+          type: data.get('type'),
+          message: data.get('message'),
+        }),
       });
       if (res.ok) {
         setSubmitState('success');
@@ -92,15 +97,7 @@ function FeedbackModal({ open, onClose }: { open: boolean; onClose: () => void }
             </button>
           </div>
         ) : (
-          <form
-            name="mortwise-feedback"
-            method="POST"
-            data-netlify="true"
-            netlify-honeypot="bot-field"
-            onSubmit={handleSubmit}
-          >
-            <input type="hidden" name="form-name" value="mortwise-feedback" />
-            <input type="hidden" name="bot-field" className="hidden" />
+          <form onSubmit={handleSubmit}>
 
             <div className="mb-4">
               <label className="block text-sm text-[#6b7a8a] mb-1.5" htmlFor="feedback-email">
