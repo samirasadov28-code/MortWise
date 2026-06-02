@@ -6,6 +6,7 @@ import FeedbackButton from '@/components/shared/FeedbackButton';
 import MortgageChat from '@/components/shared/MortgageChat';
 import Toaster from '@/components/shared/Toaster';
 import { I18nProvider } from '@/lib/i18n/I18nProvider';
+import ServiceWorkerRegister from '@/components/shared/ServiceWorkerRegister';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -78,12 +79,21 @@ const JSON_LD = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#4a7c96" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      </head>
       <body className={`${inter.className} bg-[#f5f3ef] text-[#2a2520] min-h-screen`}>
         <I18nProvider>
           {children}
           <FeedbackButton />
           <MortgageChat />
           <Toaster />
+          <ServiceWorkerRegister />
         </I18nProvider>
         <Script
           id="ld-json"
