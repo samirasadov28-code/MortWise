@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import packageJson from '@/package.json';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
 
@@ -52,7 +53,13 @@ export default function Disclaimer() {
       <p className="text-center text-xs text-[#6b7a8a]">
         {t('disclaimer.text')}
       </p>
-      <p className="text-center text-[11px] text-[#6b7a8a]/70 mt-1.5 font-mono flex items-center justify-center gap-2 flex-wrap">
+      <p className="text-center text-[11px] text-[#6b7a8a]/70 mt-1.5 flex items-center justify-center gap-3 flex-wrap">
+        <Link href="/privacy" className="underline hover:text-[#4a7c96] transition-colors">
+          Privacy Policy
+        </Link>
+        <span aria-hidden>·</span>
+      </p>
+      <p className="text-center text-[11px] text-[#6b7a8a]/70 mt-1 font-mono flex items-center justify-center gap-2 flex-wrap">
         <span>v{buildVersion}</span>
         <button
           type="button"
