@@ -2,6 +2,13 @@
 
 export const UNLOCK_STORAGE_KEY = 'mortwise_unlocked';
 
+// TEMPORARILY returning unlocked: true to make full analysis free for all users.
+// To re-enable the paywall, remove this override and restore the localStorage read below.
+export function getUnlockState(): { unlocked: boolean; sessionId?: string } {
+  return { unlocked: true };
+}
+
+/* PAYWALL RE-ENABLE: replace getUnlockState with this:
 export function getUnlockState(): { unlocked: boolean; sessionId?: string } {
   if (typeof window === 'undefined') return { unlocked: false };
   try {
@@ -12,6 +19,7 @@ export function getUnlockState(): { unlocked: boolean; sessionId?: string } {
     return { unlocked: false };
   }
 }
+*/
 
 export function setUnlockState(sessionId: string): void {
   if (typeof window === 'undefined') return;
