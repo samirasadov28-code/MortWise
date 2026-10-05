@@ -1,3 +1,4 @@
+import { reserveAiCall } from '@/lib/ai-quota';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { MARKETS } from '@/lib/markets';
@@ -205,6 +206,11 @@ export async function POST(req: NextRequest) {
     const parsed = RequestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    }
+
+    const quota = await reserveAiCall(req);
+    if (!quota.ok) {
+      return NextResponse.json({ error: quota.error }, { status: quota.status });
     }
 
     const providers = buildProviders();
