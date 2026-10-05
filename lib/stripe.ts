@@ -14,16 +14,20 @@ export function getUnlockState(): { unlocked: boolean; sessionId?: string } {
   try {
     const raw = localStorage.getItem(UNLOCK_STORAGE_KEY);
     if (!raw) return { unlocked: false };
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw) as { unlocked: boolean; sessionId?: string; expiresAt?: number };
+    // One-off 30-day access: expire locally as well.
+    if (!parsed.expiresAt || Date.now() > parsed.expiresAt) return { unlocked: false };
+    return parsed;
   } catch {
     return { unlocked: false };
   }
 }
 */
 
-export function setUnlockState(sessionId: string): void {
+export function setUnlockState(sessionId: string, expiresAt?: number): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(UNLOCK_STORAGE_KEY, JSON.stringify({ unlocked: true, sessionId }));
+  const expiry = expiresAt ?? Date.now() + 30 * 24 * 60 * 60 * 1000;
+  localStorage.setItem(UNLOCK_STORAGE_KEY, JSON.stringify({ unlocked: true, sessionId, expiresAt: expiry }));
 }
 
 export function clearUnlockState(): void {

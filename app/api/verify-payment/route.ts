@@ -17,29 +17,26 @@ export async function GET(req: NextRequest) {
   const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['subscription'],
-    });
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.metadata?.product !== 'mortwise_full') {
       return NextResponse.json({ verified: false });
     }
 
-    // For subscriptions, check the subscription status directly
-    const sub = session.subscription;
-    if (sub && typeof sub === 'object') {
-      const active = sub.status === 'active' || sub.status === 'trialing';
-      return NextResponse.json({ verified: active, subscriptionId: sub.id });
-    }
-
-    // Fallback: initial payment_status (covers the moment before subscription propagates)
-    if (session.payment_status === 'paid') {
-      return NextResponse.json({ verified: true, sessionId });
+    // One-off payment: paid, and within 30 days of purchase.
+    const ACCESS_SECONDS = 30 * 24 * 60 * 60;
+    const withinWindow = Date.now() / 1000 - session.created <= ACCESS_SECONDS;
+    if (session.mode === 'payment' && session.payment_status === 'paid' && withinWindow) {
+      return NextResponse.json({
+        verified: true,
+        sessionId,
+        expiresAt: (session.created + ACCESS_SECONDS) * 1000,
+      });
     }
 
     return NextResponse.json({ verified: false });
   } catch (error) {
-    console.error('Subscription verification error:', error);
+    console.error('Payment verification error:', error);
     return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
   }
 }

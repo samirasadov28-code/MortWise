@@ -72,7 +72,7 @@ const JSON_LD = {
   ],
   offers: [
     { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'EUR' },
-    { '@type': 'Offer', name: 'Full', price: '3.99', priceCurrency: 'EUR' },
+    { '@type': 'Offer', name: 'Full', price: '4.99', priceCurrency: 'EUR' },
   ],
 };
 

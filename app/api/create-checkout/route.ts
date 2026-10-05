@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { assertOneOffPrice } from '@/lib/stripe-price';
 
-// NOTE: Add Stripe webhooks before going to high volume to handle subscription
-// cancellations and renewals. Current flow verifies synchronously on /success.
+// One-off 30-day access payment. Access is verified synchronously on /success
+// from the checkout session; there is no webhook handler.
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mortwise.netlify.app';
 
 export async function POST() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.STRIPE_PRICE_ID;
+  const priceId = process.env.STRIPE_ONE_OFF_PRICE_ID;
 
   if (!secretKey) {
     return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
@@ -20,13 +21,15 @@ export async function POST() {
   const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
 
   try {
+    const problem = await assertOneOffPrice(stripe, priceId);
+    if (problem) {
+      console.error('MortWise price check failed:', problem);
+      return NextResponse.json({ error: 'Stripe price misconfigured' }, { status: 500 });
+    }
     const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
+      mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { product: 'mortwise_full' },
-      subscription_data: {
-        metadata: { product: 'mortwise_full' },
-      },
       success_url: `${APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/calculator`,
     });

@@ -100,8 +100,8 @@ export default function UpgradeWall({ onUnlocked }: UpgradeWallProps) {
 
       <div className="text-center">
         <div className="mb-3">
-          <span className="text-3xl font-bold text-[#2a2520]">€3.99</span>
-          <span className="text-[#6b7a8a] ml-2 text-sm">{t('paywall.priceSuffix')}</span>
+          <span className="text-3xl font-bold text-[#2a2520]">€4.99</span>
+          <span className="text-[#6b7a8a] ml-2 text-sm">{t('paywall.priceSuffix30')}</span>
         </div>
 
         {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
@@ -111,7 +111,7 @@ export default function UpgradeWall({ onUnlocked }: UpgradeWallProps) {
           disabled={loading}
           className="w-full py-4 px-6 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-lg"
         >
-          {loading ? t('paywall.redirecting') : t('paywall.cta')}
+          {loading ? t('paywall.redirecting') : t('paywall.cta30')}
         </button>
 
         <p className="mt-3 text-xs text-[#6b7a8a]">
