@@ -260,7 +260,7 @@ export default function AffordabilityCalculator({
           label={t('aff.byIncome')}
           value={formatCurrency(result.byIncomeMultiple, market)}
           note={`${result.incomeMultipleUsed.toFixed(1)}× ${
-            result.incomeMultipleIsDefault ? t('aff.estimated') : t('aff.regulatory')
+            result.incomeMultipleIsRegulatory ? t('aff.regulatory') : t('aff.estimated')
           }`}
           active={result.binding === 'income_multiple'}
         />
