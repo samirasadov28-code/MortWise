@@ -65,8 +65,12 @@ async function callOpenAICompat(
     body: JSON.stringify({
       model,
       messages,
-      max_tokens: 800,
+      // gpt-oss models spend tokens on reasoning, so they need more headroom.
+      max_tokens: model.startsWith('openai/gpt-oss') ? 2000 : 800,
       temperature: 0.4,
+      ...(model.startsWith('openai/gpt-oss')
+        ? { reasoning_effort: 'low', include_reasoning: false }
+        : {}),
     }),
   });
   if (!res.ok) return { ok: false, status: res.status, body: await res.text() };
@@ -123,7 +127,7 @@ function buildProviders(): ProviderConfig[] {
           models: (
             process.env.GROQ_CHAT_MODEL ??
             process.env.GROQ_MODEL ??
-            'llama-3.3-70b-versatile,llama-3.1-70b-versatile,llama-3.1-8b-instant'
+            'openai/gpt-oss-120b,openai/gpt-oss-20b'
           ).split(','),
           call: callGroq,
         }

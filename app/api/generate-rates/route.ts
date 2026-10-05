@@ -82,9 +82,14 @@ async function callOpenAICompat(
       { role: 'system', content: system },
       { role: 'user', content: user },
     ],
-    max_tokens: 1024,
+    // gpt-oss models spend tokens on reasoning, so they need more headroom.
+    max_tokens: model.startsWith('openai/gpt-oss') ? 3000 : 1024,
     temperature: 0.3,
   };
+  if (model.startsWith('openai/gpt-oss')) {
+    body.reasoning_effort = 'low';
+    body.include_reasoning = false;
+  }
   if (jsonMode) body.response_format = { type: 'json_object' };
 
   const res = await fetch(`${baseUrl}/chat/completions`, {
@@ -156,7 +161,7 @@ function buildProviders(): ProviderConfig[] {
       ? {
           name: 'groq',
           apiKey: process.env.GROQ_API_KEY,
-          models: (process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile,llama-3.1-70b-versatile,llama-3.1-8b-instant').split(','),
+          models: (process.env.GROQ_MODEL ?? 'openai/gpt-oss-120b,openai/gpt-oss-20b').split(','),
           call: callGroq,
         }
       : null,
