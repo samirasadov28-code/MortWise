@@ -22,7 +22,7 @@ function SuccessContent() {
       .then((r) => r.json())
       .then((data) => {
         if (data.verified) {
-          setUnlockState(sessionId);
+          setUnlockState(sessionId, data.expiresAt);
           setStatus('success');
           track('checkout_succeeded');
           setTimeout(() => router.push('/calculator'), 2500);
