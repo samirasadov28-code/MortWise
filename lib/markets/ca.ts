@@ -9,6 +9,14 @@ const ca: MarketConfig = {
   defaultTerm: 25,
   maxLTV: 0.95,
   maxIncomeMultiple: 5,
+  // CMHC total debt service cap.
+  dtiCap: 0.44,
+  // Minimum down payment: 5% of the first C$500k, 10% of C$500k-1.5m, 20% above.
+  maxPriceForDeposit: (deposit: number): number => {
+    if (deposit <= 25_000) return deposit / 0.05;
+    if (deposit <= 125_000) return 500_000 + (deposit - 25_000) / 0.10;
+    return 1_500_000 + (deposit - 125_000) / 0.20;
+  },
   minDepositPercent: 5,
 
   ltvBands: [

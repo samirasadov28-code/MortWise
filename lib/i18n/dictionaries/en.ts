@@ -41,6 +41,7 @@ const en = {
   'landing.full': 'Full',
   'landing.bestValue': 'Best value',
   'landing.perMonth': '/ month',
+  'landing.per30Days': 'one-off, 30 days of access',
   'landing.fullCta': 'Start free, upgrade inside →',
 
   // ─── Landing — markets section ────────────────────────────────────────
@@ -515,6 +516,8 @@ const en = {
   'paywall.title': 'See the full picture',
   'paywall.subtitle': 'Unlock the complete analysis suite — everything you need to make the right decision.',
   'paywall.priceSuffix': '/ month — cancel any time',
+  'paywall.priceSuffix30': 'one-off payment for 30 days of access. No subscription.',
+  'paywall.cta30': 'Unlock full analysis for 30 days — €4.99',
   'paywall.cta': 'Unlock full analysis — €3.99/month',
   'paywall.redirecting': 'Redirecting to checkout…',
   'paywall.secureFootnote': 'Secure payment via Stripe. Cancel any time from your Stripe billing portal.',

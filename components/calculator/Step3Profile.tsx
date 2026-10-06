@@ -1,5 +1,6 @@
 'use client';
 
+import { getIncomeMultiple } from '@/lib/affordability';
 import type { WizardState, BuyerType } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { formatCurrency } from '@/lib/formatting';
@@ -25,7 +26,8 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
   const market = MARKETS[state.market];
   const sym = market.currencySymbol;
   const totalIncome = state.annualIncome + state.coBorrowerIncome;
-  const maxBorrow = market.maxIncomeMultiple ? totalIncome * market.maxIncomeMultiple : null;
+  const incomeMultiple = getIncomeMultiple(state.market, state.buyerType);
+  const maxBorrow = incomeMultiple ? totalIncome * incomeMultiple : null;
 
   return (
     <div>
@@ -105,7 +107,7 @@ export default function Step3Profile({ state, onChange }: Step3Props) {
                 {t('step3.lendingLimit', { market: market.name, limit: formatCurrency(maxBorrow, state.market) })}
               </span>
               <span className="text-[#6b7a8a] ml-1">
-                ({market.maxIncomeMultiple}× {t('step3.incomeOf')} {formatCurrency(totalIncome, state.market)})
+                ({incomeMultiple}× {t('step3.incomeOf')} {formatCurrency(totalIncome, state.market)})
               </span>
             </p>
             <p className={`text-xs mt-0.5 ${

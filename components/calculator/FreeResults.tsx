@@ -1,5 +1,6 @@
 'use client';
 
+import { getIncomeMultiple } from '@/lib/affordability';
 import type { ScenarioResult, WizardState, MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
@@ -50,7 +51,8 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
 
   // Affordability check
   const totalIncome = state.annualIncome + state.coBorrowerIncome;
-  const maxBorrow = market.maxIncomeMultiple ? totalIncome * market.maxIncomeMultiple : null;
+  const incomeMultiple = getIncomeMultiple(state.market, state.buyerType);
+  const maxBorrow = incomeMultiple ? totalIncome * incomeMultiple : null;
   const requestedLoan = state.housePrice - state.deposit;
   const withinLimit = maxBorrow !== null && requestedLoan <= maxBorrow;
 
@@ -115,7 +117,7 @@ export default function FreeResults({ results, state, onUnlocked, hideUpgradeWal
               {withinLimit ? `✓ ${t('free.withinLimits')}` : `⚠ ${t('free.exceedsLimit')}`}
             </span>
             <span className="text-[#6b7a8a] ml-2">
-              ({market.maxIncomeMultiple}× {t('step3.incomeOf')} {fmt(totalIncome)} = {fmt(maxBorrow)})
+              ({incomeMultiple}× {t('step3.incomeOf')} {fmt(totalIncome)} = {fmt(maxBorrow)})
             </span>
           </p>
           <p className="text-xs text-[#6b7a8a] mt-1">

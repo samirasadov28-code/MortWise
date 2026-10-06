@@ -9,6 +9,8 @@ const sg: MarketConfig = {
   defaultTerm: 25,
   maxLTV: 0.75,
   maxIncomeMultiple: 5,
+  // MAS total debt servicing ratio.
+  dtiCap: 0.55,
   minDepositPercent: 25,
 
   ltvBands: [

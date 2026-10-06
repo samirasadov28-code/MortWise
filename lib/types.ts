@@ -140,6 +140,14 @@ export interface MarketConfig {
   defaultTerm: number;
   maxLTV: number;
   maxIncomeMultiple?: number;
+  /** Income multiple for first-time buyers when it differs from maxIncomeMultiple (Ireland: 4x vs 3.5x). */
+  firstTimeBuyerIncomeMultiple?: number;
+  /** True only where the income multiple is a regulatory limit (Ireland). Otherwise it is an estimate. */
+  incomeMultipleIsRegulatory?: boolean;
+  /** Regulatory or standard debt-service cap as a share of gross income, when one exists. */
+  dtiCap?: number;
+  /** Largest purchase price a given deposit supports, when deposit rules are tiered (Canada). */
+  maxPriceForDeposit?: (deposit: number) => number;
   minDepositPercent: number;
   ltvBands: Array<{
     maxLtv: number;
