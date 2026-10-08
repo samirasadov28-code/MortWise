@@ -58,6 +58,9 @@ export default function Disclaimer() {
           Privacy Policy
         </Link>
         <span aria-hidden>·</span>
+        <Link href="/terms" className="underline hover:text-[#4a7c96] transition-colors">
+          Terms
+        </Link>
       </p>
       <p className="text-center text-[11px] text-[#6b7a8a]/70 mt-1 font-mono flex items-center justify-center gap-2 flex-wrap">
         <span>v{buildVersion}</span>
