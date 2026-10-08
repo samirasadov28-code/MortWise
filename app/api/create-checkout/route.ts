@@ -20,16 +20,12 @@ export async function POST() {
   const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
 
   try {
-    // STRIPE_PRICE_ID decides the model: a one-off price gives lifetime access
-    // (mode 'payment'); a recurring price keeps the legacy subscription flow.
-    const price = await stripe.prices.retrieve(priceId);
-    const isRecurring = price.type === 'recurring';
-
+    // One-off lifetime access (no active subscriptions existed on the old monthly price).
+    // Restricted live keys may lack price-read permission, so the mode is fixed, not looked up.
     const session = await stripe.checkout.sessions.create({
-      mode: isRecurring ? 'subscription' : 'payment',
+      mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { product: 'mortwise_full' },
-      ...(isRecurring ? { subscription_data: { metadata: { product: 'mortwise_full' } } } : {}),
       success_url: `${APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${APP_URL}/calculator`,
     });
