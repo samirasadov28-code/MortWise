@@ -200,7 +200,7 @@ const uk: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ місяць — скасуй будь-коли',
   'paywall.cta': 'Розблокувати повний аналіз — 3,99 €/міс',
   'paywall.redirecting': 'Перенаправлення на оплату…',
-  'paywall.secureFootnote': 'Безпечна оплата через Stripe. Скасування будь-коли через портал виставлення рахунків Stripe.',
+  'paywall.secureFootnote': 'Безпечна оплата через Stripe. Разовий платіж, без підписки.',
   'paywall.earlyAccessLink': 'Маєш ранній доступ? Увійти через email →',
   'paywall.earlyAccessPrompt': 'Введи свій email раннього доступу',
   'paywall.cancel': 'Скасувати',

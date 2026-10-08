@@ -186,7 +186,7 @@ const de: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ Monat – jederzeit kündbar',
   'paywall.cta': 'Vollständige Analyse freischalten – 3,99 €/Monat',
   'paywall.redirecting': 'Weiterleitung zur Kasse…',
-  'paywall.secureFootnote': 'Sichere Zahlung über Stripe. Jederzeit über das Stripe-Abrechnungsportal kündbar.',
+  'paywall.secureFootnote': 'Sichere Zahlung über Stripe. Einmalzahlung, kein Abo.',
   'paywall.earlyAccessLink': 'Du hast frühen Zugriff? Mit E-Mail anmelden →',
   'paywall.earlyAccessPrompt': 'Gib deine Early-Access-E-Mail ein',
   'paywall.cancel': 'Abbrechen',

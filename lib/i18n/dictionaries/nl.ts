@@ -186,7 +186,7 @@ const nl: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ maand — altijd opzegbaar',
   'paywall.cta': 'Volledige analyse ontgrendelen — € 3,99/maand',
   'paywall.redirecting': 'Doorverwijzen naar betaling…',
-  'paywall.secureFootnote': 'Veilig betalen via Stripe. Op elk moment opzegbaar via je Stripe-facturatieportaal.',
+  'paywall.secureFootnote': 'Veilig betalen via Stripe. Eenmalige betaling, geen abonnement.',
   'paywall.earlyAccessLink': 'Early access? Inloggen met e-mail →',
   'paywall.earlyAccessPrompt': 'Voer je early-access e-mail in',
   'paywall.cancel': 'Annuleren',

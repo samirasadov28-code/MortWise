@@ -186,7 +186,7 @@ const tr: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ ay — istediğin zaman iptal et',
   'paywall.cta': 'Tam analizi aç — 3,99 €/ay',
   'paywall.redirecting': 'Ödemeye yönlendiriliyor…',
-  'paywall.secureFootnote': 'Stripe ile güvenli ödeme. İstediğin zaman Stripe faturalandırma portalından iptal et.',
+  'paywall.secureFootnote': 'Stripe ile güvenli ödeme. Tek seferlik ödeme, abonelik yok.',
   'paywall.earlyAccessLink': 'Erken erişimin var mı? E-posta ile giriş yap →',
   'paywall.earlyAccessPrompt': 'Erken erişim e-postanı gir',
   'paywall.cancel': 'İptal',
