@@ -186,7 +186,7 @@ const pt: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ mês — cancela quando quiseres',
   'paywall.cta': 'Desbloquear análise completa — 3,99 €/mês',
   'paywall.redirecting': 'A redirecionar para o pagamento…',
-  'paywall.secureFootnote': 'Pagamento seguro via Stripe. Cancela quando quiseres no portal de faturação Stripe.',
+  'paywall.secureFootnote': 'Pagamento seguro via Stripe. Pagamento único, sem subscrição.',
   'paywall.earlyAccessLink': 'Tens acesso antecipado? Entrar com email →',
   'paywall.earlyAccessPrompt': 'Insere o teu email de acesso antecipado',
   'paywall.cancel': 'Cancelar',

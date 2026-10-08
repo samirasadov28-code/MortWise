@@ -186,7 +186,7 @@ const ru: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ месяц — отмени в любое время',
   'paywall.cta': 'Разблокировать полный анализ — 3,99 €/мес',
   'paywall.redirecting': 'Перенаправление к оплате…',
-  'paywall.secureFootnote': 'Безопасная оплата через Stripe. Отмена в любой момент через портал биллинга Stripe.',
+  'paywall.secureFootnote': 'Безопасная оплата через Stripe. Разовый платёж, без подписки.',
   'paywall.earlyAccessLink': 'Есть ранний доступ? Войди по email →',
   'paywall.earlyAccessPrompt': 'Введи свой email раннего доступа',
   'paywall.cancel': 'Отмена',

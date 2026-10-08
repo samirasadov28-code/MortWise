@@ -520,7 +520,7 @@ const en = {
   'paywall.cta30': 'Unlock full analysis for life — €4.99',
   'paywall.cta': 'Unlock full analysis — €3.99/month',
   'paywall.redirecting': 'Redirecting to checkout…',
-  'paywall.secureFootnote': 'Secure payment via Stripe. Cancel any time from your Stripe billing portal.',
+  'paywall.secureFootnote': 'Secure payment via Stripe. One-off payment, no subscription.',
   'paywall.earlyAccessLink': 'Have early access? Sign in with email →',
   'paywall.earlyAccessPrompt': 'Enter your early-access email',
   'paywall.cancel': 'Cancel',

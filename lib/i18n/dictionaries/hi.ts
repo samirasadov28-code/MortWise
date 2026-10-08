@@ -186,7 +186,7 @@ const hi: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ माह — कभी भी रद्द करें',
   'paywall.cta': 'पूर्ण विश्लेषण अनलॉक करें — €3.99/माह',
   'paywall.redirecting': 'चेकआउट पर पुनर्निर्देशित हो रहा है…',
-  'paywall.secureFootnote': 'Stripe के माध्यम से सुरक्षित भुगतान। अपने Stripe बिलिंग पोर्टल से कभी भी रद्द करें।',
+  'paywall.secureFootnote': 'Stripe के माध्यम से सुरक्षित भुगतान। एकमुश्त भुगतान, कोई सदस्यता नहीं।',
   'paywall.earlyAccessLink': 'अर्ली एक्सेस है? ईमेल से साइन इन करें →',
   'paywall.earlyAccessPrompt': 'अपना अर्ली-एक्सेस ईमेल दर्ज करें',
   'paywall.cancel': 'रद्द करें',

@@ -186,7 +186,7 @@ const zh: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ 月——可随时取消',
   'paywall.cta': '解锁完整分析 — €3.99/月',
   'paywall.redirecting': '正在跳转至付款…',
-  'paywall.secureFootnote': '由 Stripe 安全支付。可随时通过 Stripe 计费门户取消。',
+  'paywall.secureFootnote': '由 Stripe 安全支付。一次性付款，无订阅。',
   'paywall.earlyAccessLink': '已有抢先体验权？用邮箱登录 →',
   'paywall.earlyAccessPrompt': '输入你的抢先体验邮箱',
   'paywall.cancel': '取消',

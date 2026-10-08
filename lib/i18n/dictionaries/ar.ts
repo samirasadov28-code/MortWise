@@ -186,7 +186,7 @@ const ar: Partial<Dictionary> = {
   'paywall.priceSuffix': '/ شهرياً — يمكن الإلغاء في أي وقت',
   'paywall.cta': 'فتح التحليل الكامل — 3.99 €/شهرياً',
   'paywall.redirecting': 'إعادة التوجيه إلى الدفع…',
-  'paywall.secureFootnote': 'دفع آمن عبر Stripe. يمكن الإلغاء في أي وقت من بوابة فواتير Stripe.',
+  'paywall.secureFootnote': 'دفع آمن عبر Stripe. دفعة لمرة واحدة، بدون اشتراك.',
   'paywall.earlyAccessLink': 'لديك وصول مبكر؟ سجّل الدخول بالبريد ←',
   'paywall.earlyAccessPrompt': 'أدخل بريدك الإلكتروني للوصول المبكر',
   'paywall.cancel': 'إلغاء',
