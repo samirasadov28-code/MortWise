@@ -51,7 +51,7 @@ function SuccessContent() {
             </div>
             <h1 className="text-2xl font-bold text-[#2a2520] mb-2">Full access unlocked!</h1>
             <p className="text-[#6b7a8a] mb-6">
-              You now have full access to the complete MortWise analysis suite. Your 30-day pass is now active.
+              You now have full access to the complete MortWise analysis suite. Your lifetime access is now active.
             </p>
             <p className="text-sm text-[#6b7a8a]">Redirecting you to the calculator…</p>
           </div>
