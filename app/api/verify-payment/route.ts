@@ -23,10 +23,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ verified: false });
     }
 
-    // One-off payment: paid, and within 30 days of purchase.
-    const ACCESS_SECONDS = 30 * 24 * 60 * 60;
-    const withinWindow = Date.now() / 1000 - session.created <= ACCESS_SECONDS;
-    if (session.mode === 'payment' && session.payment_status === 'paid' && withinWindow) {
+    // One-off lifetime payment: paid session unlocks access (100-year expiry).
+    const ACCESS_SECONDS = 100 * 365 * 24 * 60 * 60;
+    if (session.mode === 'payment' && session.payment_status === 'paid') {
       return NextResponse.json({
         verified: true,
         sessionId,

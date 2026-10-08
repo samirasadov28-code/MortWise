@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { assertOneOffPrice } from '@/lib/stripe-price';
 
-// One-off 30-day access payment. Access is verified synchronously on /success
+// One-off lifetime access payment. Access is verified synchronously on /success
 // from the checkout session; there is no webhook handler.
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mortwise.netlify.app';
@@ -21,11 +20,6 @@ export async function POST() {
   const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
 
   try {
-    const problem = await assertOneOffPrice(stripe, priceId);
-    if (problem) {
-      console.error('MortWise price check failed:', problem);
-      return NextResponse.json({ error: 'Stripe price misconfigured' }, { status: 500 });
-    }
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
