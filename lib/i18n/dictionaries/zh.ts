@@ -30,6 +30,7 @@ const zh: Dictionary = {
   'landing.full': '完整版',
   'landing.bestValue': '最佳选择',
   'landing.perMonth': '/ 月',
+  'landing.oneOff': '一次性付费，终身访问',
   'landing.fullCta': '免费开始，进入后升级 →',
 
   'landing.availableMarkets': '支持的房产市场',

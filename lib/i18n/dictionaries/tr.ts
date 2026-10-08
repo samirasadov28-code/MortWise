@@ -30,6 +30,7 @@ const tr: Dictionary = {
   'landing.full': 'Tam',
   'landing.bestValue': 'En iyi değer',
   'landing.perMonth': '/ ay',
+  'landing.oneOff': 'tek seferlik, ömür boyu erişim',
   'landing.fullCta': 'Ücretsiz başla, içeride yükselt →',
 
   'landing.availableMarkets': 'Desteklenen konut piyasaları',

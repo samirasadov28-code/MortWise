@@ -35,6 +35,7 @@ const fr: Dictionary = {
   'landing.full': 'Complet',
   'landing.bestValue': 'Meilleur rapport',
   'landing.perMonth': '/ mois',
+  'landing.oneOff': 'paiement unique, accès à vie',
   'landing.fullCta': 'Commencer gratuit, passer au complet plus tard →',
 
   // ─── Landing — markets section ────────────────────────────────────────

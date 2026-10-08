@@ -40,6 +40,7 @@ const en = {
   'landing.full': 'Full',
   'landing.bestValue': 'Best value',
   'landing.perMonth': '/ month',
+  'landing.oneOff': 'one-off, lifetime access',
   'landing.fullCta': 'Start free, upgrade inside →',
 
   // ─── Landing — markets section ────────────────────────────────────────

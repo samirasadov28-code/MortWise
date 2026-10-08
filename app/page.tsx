@@ -209,7 +209,7 @@ export default function LandingPage() {
                 <span className="text-xs px-2 py-0.5 bg-[#4a7c96]/20 text-[#4a7c96] rounded-full font-medium">{t('landing.bestValue')}</span>
               </div>
               <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">
-                €3.99 <span className="text-sm font-normal text-[#6b7a8a]">{t('landing.perMonth')}</span>
+                €4.99 <span className="text-sm font-normal text-[#6b7a8a]">{t('landing.oneOff')}</span>
               </p>
             </div>
             <ul className="space-y-2 mb-6">
