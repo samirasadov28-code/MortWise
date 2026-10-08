@@ -35,6 +35,7 @@ const uk: Dictionary = {
   'landing.full': 'Повний',
   'landing.bestValue': 'Найкраща ціна',
   'landing.perMonth': '/ місяць',
+  'landing.oneOff': 'одноразово, довічний доступ',
   'landing.fullCta': 'Почати безкоштовно, оновити всередині →',
 
   // ─── Landing — markets section ────────────────────────────────────────

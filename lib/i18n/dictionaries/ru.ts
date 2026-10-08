@@ -30,6 +30,7 @@ const ru: Dictionary = {
   'landing.full': 'Полный',
   'landing.bestValue': 'Лучшая цена',
   'landing.perMonth': '/ мес',
+  'landing.oneOff': 'разовый платёж, пожизненный доступ',
   'landing.fullCta': 'Начать бесплатно, обновить внутри →',
 
   'landing.availableMarkets': 'Доступные рынки жилья',

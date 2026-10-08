@@ -93,8 +93,8 @@ export default function UpgradeWall({ onUnlocked }: UpgradeWallProps) {
 
       <div className="text-center">
         <div className="mb-3">
-          <span className="text-3xl font-bold text-[#2a2520]">€3.99</span>
-          <span className="text-[#6b7a8a] ml-2 text-sm">/ month — cancel any time</span>
+          <span className="text-3xl font-bold text-[#2a2520]">€4.99</span>
+          <span className="text-[#6b7a8a] ml-2 text-sm">one-off — lifetime access</span>
         </div>
 
         {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
@@ -104,11 +104,11 @@ export default function UpgradeWall({ onUnlocked }: UpgradeWallProps) {
           disabled={loading}
           className="w-full py-4 px-6 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-lg"
         >
-          {loading ? 'Redirecting to checkout…' : 'Unlock full analysis — €3.99/month'}
+          {loading ? 'Redirecting to checkout…' : 'Unlock full analysis — €4.99 one-off'}
         </button>
 
         <p className="mt-3 text-xs text-[#6b7a8a]">
-          Secure payment via Stripe. Cancel any time from your Stripe billing portal.
+          Secure one-off payment via Stripe. No subscription.
         </p>
       </div>
 

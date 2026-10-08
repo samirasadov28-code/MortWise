@@ -30,6 +30,7 @@ const hi: Dictionary = {
   'landing.full': 'पूर्ण',
   'landing.bestValue': 'सर्वोत्तम मूल्य',
   'landing.perMonth': '/ माह',
+  'landing.oneOff': 'एकमुश्त, आजीवन पहुँच',
   'landing.fullCta': 'मुफ्त शुरू करें, अंदर अपग्रेड करें →',
 
   'landing.availableMarkets': 'उपलब्ध आवासीय बाज़ार',

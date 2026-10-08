@@ -30,6 +30,7 @@ const nl: Dictionary = {
   'landing.full': 'Volledig',
   'landing.bestValue': 'Beste waarde',
   'landing.perMonth': '/ maand',
+  'landing.oneOff': 'eenmalig, levenslange toegang',
   'landing.fullCta': 'Gratis starten, later upgraden →',
 
   'landing.availableMarkets': 'Beschikbare woningmarkten',

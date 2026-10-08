@@ -30,6 +30,7 @@ const it: Dictionary = {
   'landing.full': 'Completo',
   'landing.bestValue': 'Miglior rapporto',
   'landing.perMonth': '/ mese',
+  'landing.oneOff': 'una tantum, accesso a vita',
   'landing.fullCta': 'Inizia gratis, passa al completo dentro →',
 
   'landing.availableMarkets': 'Mercati immobiliari disponibili',
