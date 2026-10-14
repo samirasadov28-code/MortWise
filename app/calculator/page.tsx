@@ -8,7 +8,7 @@ import { DEFAULT_WIZARD_STATE } from '@/lib/defaults';
 import { COMPARISON_CURRENCIES } from '@/lib/fx';
 import { MARKETS } from '@/lib/markets';
 import { buildPreparedScenarios } from '@/lib/wizard';
-import { getUnlockState } from '@/lib/stripe';
+import { getUnlockState, FREE_FULL_ACCESS } from '@/lib/stripe';
 import { runScenarios } from '@/lib/engine/scenarios';
 import Disclaimer from '@/components/shared/Disclaimer';
 import WizardShell from '@/components/calculator/WizardShell';
@@ -68,6 +68,10 @@ export default function CalculatorPage() {
   // Check unlock status on mount and after payment
   useEffect(() => {
     async function checkUnlock() {
+      if (FREE_FULL_ACCESS) {
+        setState((s) => ({ ...s, isUnlocked: true }));
+        return;
+      }
       const { unlocked, sessionId } = getUnlockState();
       if (!unlocked) return;
 
@@ -83,7 +87,7 @@ export default function CalculatorPage() {
           const data = await res.json();
           setState((s) => ({ ...s, isUnlocked: data.unlocked === true }));
         } catch {
-          setState((s) => ({ ...s, isUnlocked: unlocked }));
+          setState((s) => ({ ...s, isUnlocked: false }));
         }
         return;
       }
@@ -94,7 +98,7 @@ export default function CalculatorPage() {
         const data = await res.json();
         setState((s) => ({ ...s, isUnlocked: data.verified === true }));
       } catch {
-        setState((s) => ({ ...s, isUnlocked: unlocked }));
+        setState((s) => ({ ...s, isUnlocked: false }));
       }
     }
     checkUnlock();
@@ -152,7 +156,7 @@ export default function CalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f3ef]">
+    <div className="min-h-screen pb-20 sm:pb-0 bg-[#f5f3ef]">
       {/* Header — frozen on top, always visible */}
       <header className="sticky top-0 z-40 border-b border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm px-6 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
@@ -245,6 +249,7 @@ export default function CalculatorPage() {
         )}
       </main>
 
+      {phase === 'results' && <div aria-hidden="true" className="fixed inset-x-0 bottom-0 h-16 bg-[#f5f3ef] border-t border-[#e8e3dc] z-40 sm:hidden" />}
       <Disclaimer />
     </div>
   );
