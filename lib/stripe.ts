@@ -2,10 +2,13 @@
 
 export const UNLOCK_STORAGE_KEY = 'mortwise_unlocked';
 
+// Preserve current free access explicitly; never infer it from a missing receipt.
+export const FREE_FULL_ACCESS = true;
+
 // TEMPORARILY returning unlocked: true to make full analysis free for all users.
 // To re-enable the paywall, remove this override and restore the localStorage read below.
 export function getUnlockState(): { unlocked: boolean; sessionId?: string } {
-  return { unlocked: true };
+  return { unlocked: FREE_FULL_ACCESS };
 }
 
 /* PAYWALL RE-ENABLE: replace getUnlockState with this:
