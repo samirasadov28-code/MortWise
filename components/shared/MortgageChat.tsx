@@ -160,7 +160,7 @@ export default function MortgageChat({ state, results }: MortgageChatProps) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={t('chat.askAriaLabel')}
-        className="fixed bottom-8 right-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
+        className="fixed bottom-2 sm:bottom-8 right-5 z-50 px-4 py-2.5 bg-[#2a2520] hover:bg-[#1a1510] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center gap-2"
       >
         <span aria-hidden>💬</span>
         {t('chat.button')}
