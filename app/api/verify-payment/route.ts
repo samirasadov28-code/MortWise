@@ -48,31 +48,30 @@ export async function GET(req: NextRequest) {
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['subscription', 'payment_intent.latest_charge'],
+      expand: ['payment_intent.latest_charge'],
     });
 
     if (session.metadata?.product !== 'mortwise_full') {
       return NextResponse.json({ verified: false });
     }
 
-    // For subscriptions, check the subscription status directly
-    const sub = session.subscription;
-    if (sub && typeof sub === 'object') {
-      const active = sub.status === 'active' || sub.status === 'trialing';
-      return NextResponse.json({ verified: active, subscriptionId: sub.id });
-    }
-
-    // Fallback: initial payment_status (covers the moment before subscription propagates)
-    if (session.payment_status === 'paid') {
+    // One-off lifetime payment: paid session unlocks access (100-year expiry),
+    // unless the charge was fully refunded or disputed.
+    const ACCESS_SECONDS = 100 * 365 * 24 * 60 * 60;
+    if (session.mode === 'payment' && session.payment_status === 'paid') {
       if (await isChargeRevoked(stripe, session)) {
         return NextResponse.json({ verified: false, refunded: true });
       }
-      return NextResponse.json({ verified: true, sessionId });
+      return NextResponse.json({
+        verified: true,
+        sessionId,
+        expiresAt: (session.created + ACCESS_SECONDS) * 1000,
+      });
     }
 
     return NextResponse.json({ verified: false });
   } catch (error) {
-    console.error('Subscription verification error:', error);
+    console.error('Payment verification error:', error);
     return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
   }
 }

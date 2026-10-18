@@ -392,6 +392,35 @@ export const LENDERS_BY_MARKET: Partial<Record<MarketCode, Lender[]>> = {
 };
 
 /**
+ * Indicative central-bank / interbank reference rate per market, used to
+ * pre-populate the "Base rate" field on tracker / variable scenarios. The
+ * lender's variable rate ≈ base rate + a margin, so we seed `trackerMargin`
+ * as `variableRate − baseRate` per lender.
+ *
+ * Hand-curated as of late-2024 / early-2025; real users can edit any value
+ * in Step 5. Markets not listed fall back to 0.04 (4%).
+ */
+export const BASE_RATES_BY_MARKET: Partial<Record<MarketCode, number>> = {
+  // ECB main refinancing rate sphere
+  IE: 0.0265, DE: 0.0265, FR: 0.0265, ES: 0.0265, IT: 0.0265, NL: 0.0265,
+  BE: 0.0265, AT: 0.0265, FI: 0.0265, PT: 0.0265, GR: 0.0265, LU: 0.0265,
+  EE: 0.0265, CY: 0.0265, IS: 0.0900,
+  // Other Europe / EEA non-euro
+  UK: 0.0475, CH: 0.0050, NO: 0.0450, SE: 0.0275, DK: 0.0285, PL: 0.0575,
+  CZ: 0.0400, HU: 0.0650, RO: 0.0650, TR: 0.5000, UA: 0.1450,
+  // Americas
+  US: 0.0450, CA: 0.0325, MX: 0.1025, BR: 0.1175, AR: 0.3500, CL: 0.0500,
+  // APAC
+  AU: 0.0435, NZ: 0.0425, JP: 0.0050, CN: 0.0335, HK: 0.0475, TW: 0.0200,
+  KR: 0.0300, SG: 0.0290, TH: 0.0225, MY: 0.0300, PH: 0.0575, ID: 0.0600,
+  VN: 0.0450, IN: 0.0625,
+  // MENA
+  UAE: 0.0440, SA: 0.0500, QA: 0.0500, KW: 0.0400, IL: 0.0450,
+  // Africa
+  ZA: 0.0775,
+};
+
+/**
  * Generic fallback lender list — used for markets that don't have a curated
  * roster yet. The market's regulatory hints are baked in via defaultTerm.
  */
@@ -409,9 +438,14 @@ export function getLenders(market: MarketCode): Lender[] {
   return LENDERS_BY_MARKET[market] ?? genericLenders();
 }
 
+export function getBaseRate(market: MarketCode): number {
+  return BASE_RATES_BY_MARKET[market] ?? 0.04;
+}
+
 /** Build wizard scenarios seeded from a market's lender roster. */
 export function scenariosForMarket(market: MarketCode, count = 4): ScenarioInput[] {
   const lenders = getLenders(market).slice(0, count);
+  const baseRate = getBaseRate(market);
   return lenders.map((l, i) => ({
     id: `scenario-${i + 1}`,
     lenderName: l.name,
@@ -424,6 +458,11 @@ export function scenariosForMarket(market: MarketCode, count = 4): ScenarioInput
     fixedRate: l.fixedRate,
     fixedPeriodYears: l.fixedPeriodYears,
     variableRate: l.variableRate,
+    // Seed tracker fields so Step 5 isn't empty when the user picks tracker /
+    // variable in Step 4. Margin is the lender's spread above the central
+    // bank rate; clamp to ≥0 so a stale baseRate doesn't produce a negative.
+    trackerBaseRate: baseRate,
+    trackerMargin: Math.max(0, l.variableRate - baseRate),
     cashbackPercent: l.cashbackPercent,
     cashbackClawbackYears: l.cashbackClawbackYears,
     repaymentType: 'annuity' as const,

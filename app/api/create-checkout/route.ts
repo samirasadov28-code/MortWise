@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// NOTE: Add Stripe webhooks before going to high volume to handle subscription
-// cancellations and renewals. Current flow verifies synchronously on /success.
+// One-off lifetime access payment. Access is verified synchronously on /success
+// from the checkout session; there is no webhook handler.
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mortwise.netlify.app';
 
 export async function POST() {
   const secretKey = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.STRIPE_PRICE_ID;
+  const priceId = process.env.STRIPE_ONE_OFF_PRICE_ID;
 
   if (!secretKey) {
     return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });

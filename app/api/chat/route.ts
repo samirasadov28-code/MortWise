@@ -1,3 +1,4 @@
+import { reserveAiCall } from '@/lib/ai-quota';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -65,8 +66,12 @@ async function callOpenAICompat(
     body: JSON.stringify({
       model,
       messages,
-      max_tokens: 800,
+      // gpt-oss models spend tokens on reasoning, so they need more headroom.
+      max_tokens: model.startsWith('openai/gpt-oss') ? 2000 : 800,
       temperature: 0.4,
+      ...(model.startsWith('openai/gpt-oss')
+        ? { reasoning_effort: 'low', include_reasoning: false }
+        : {}),
     }),
   });
   if (!res.ok) return { ok: false, status: res.status, body: await res.text() };
@@ -123,7 +128,7 @@ function buildProviders(): ProviderConfig[] {
           models: (
             process.env.GROQ_CHAT_MODEL ??
             process.env.GROQ_MODEL ??
-            'llama-3.3-70b-versatile,llama-3.1-70b-versatile,llama-3.1-8b-instant'
+            'openai/gpt-oss-120b,openai/gpt-oss-20b'
           ).split(','),
           call: callGroq,
         }
@@ -215,6 +220,11 @@ export async function POST(req: NextRequest) {
     const parsed = RequestSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    }
+
+    const quota = await reserveAiCall(req);
+    if (!quota.ok) {
+      return NextResponse.json({ error: quota.error }, { status: quota.status });
     }
 
     const providers = buildProviders();

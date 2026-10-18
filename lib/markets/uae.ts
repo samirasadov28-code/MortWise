@@ -9,6 +9,8 @@ const uae: MarketConfig = {
   defaultTerm: 25,
   maxLTV: 0.80,
   minDepositPercent: 20,
+  // Central Bank of the UAE debt burden ratio.
+  dtiCap: 0.50,
 
   ltvBands: [
     { maxLtv: 0.50, label: '≤50% LTV', description: 'Off-plan maximum; best rates' },

@@ -6,6 +6,7 @@ import type { ComponentType, SVGProps } from 'react';
 import Disclaimer from '@/components/shared/Disclaimer';
 import MarketsCarousel, { type MarketsCarouselItem } from '@/components/shared/MarketsCarousel';
 import LanguagePicker from '@/components/shared/LanguagePicker';
+import AffordabilityCalculator from '@/components/shared/AffordabilityCalculator';
 import {
   HouseCoinsIcon,
   HouseChartIcon,
@@ -13,6 +14,61 @@ import {
   HouseSkyline,
 } from '@/components/shared/HouseIcons';
 import { useTranslation } from '@/lib/i18n/I18nProvider';
+
+const FAQ_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How much can I borrow for a mortgage?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Most lenders allow you to borrow 3.5–5× your annual income. MortWise calculates your maximum borrowing power based on your income, deposit, and the lending rules of your chosen market (50+ countries supported).',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the difference between a fixed and variable rate mortgage?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A fixed-rate mortgage locks in your interest rate for a set period, giving predictable repayments. A variable (tracker) rate moves with the market rate, which can mean lower payments when rates fall but higher payments when they rise. MortWise lets you compare both side-by-side.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is LTV and why does it matter?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'LTV (Loan-to-Value) is the percentage of the property price you are borrowing. A lower LTV means a larger deposit and usually unlocks better interest rates. MortWise displays your LTV band and shows how changing your deposit affects the rate you can access.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is a mortgage stress test?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A stress test shows how your monthly repayment would change if interest rates rise — typically by +1%, +2%, or +3%. MortWise\'s full analysis includes a rate-rise stress test so you can check affordability before rates increase.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How do overpayments reduce my mortgage?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Making lump-sum or regular overpayments reduces your outstanding balance faster, cutting the total interest you pay and shortening your term. MortWise\'s overpayment simulator shows exactly how much you save in interest and months.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Does MortWise support mortgages outside Ireland and the UK?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. MortWise supports mortgage calculations across 50+ markets including Germany, France, Spain, UAE, Australia, Canada, the US, and many more, each with country-specific stamp duty rules, lending limits, and government scheme eligibility.',
+      },
+    },
+  ],
+};
 
 const FREE_FEATURES = [
   'Monthly repayment estimate',
@@ -134,6 +190,12 @@ export default function LandingPage() {
         <div className="flex justify-center mb-5 sm:mb-6">
           <Image src="/Logo_512.png" alt="MortWise" width={80} height={80} className="rounded-2xl shadow-md sm:w-24 sm:h-24" />
         </div>
+        <div className="flex justify-center mb-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#4a7c96]/10 border border-[#4a7c96]/30 text-[#4a7c96] text-xs sm:text-sm font-semibold">
+            <span aria-hidden>✨</span>
+            {t('landing.aiBadge')}
+          </span>
+        </div>
         <h1 className="text-2xl sm:text-5xl font-bold text-[#2a2520] mb-4 sm:mb-5 leading-tight">
           {t('landing.heroTitle')}{' '}
           <span className="text-[#4a7c96]">{t('landing.heroTitleAccent')}</span>
@@ -175,6 +237,17 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Affordability calculator — quick answer before users commit to the wizard */}
+      <section className="max-w-3xl mx-auto px-6 pb-12 sm:pb-16">
+        <h2 className="text-xl sm:text-2xl font-bold text-[#2a2520] text-center mb-2">
+          {t('aff.sectionTitle')}
+        </h2>
+        <p className="text-xs sm:text-sm text-[#6b7a8a] text-center mb-5 sm:mb-6 max-w-2xl mx-auto">
+          {t('aff.sectionSubtitle')}
+        </p>
+        <AffordabilityCalculator />
+      </section>
+
       {/* Free vs Paid */}
       <section className="max-w-5xl mx-auto px-6 pb-12 sm:pb-16">
         <h2 className="text-xl sm:text-2xl font-bold text-[#2a2520] text-center mb-6 sm:mb-8">{t('landing.freeVsFull')}</h2>
@@ -209,7 +282,7 @@ export default function LandingPage() {
                 <span className="text-xs px-2 py-0.5 bg-[#4a7c96]/20 text-[#4a7c96] rounded-full font-medium">{t('landing.bestValue')}</span>
               </div>
               <p className="text-xl sm:text-2xl font-bold text-[#2a2520] mt-1">
-                €4.99 <span className="text-sm font-normal text-[#6b7a8a]">{t('landing.oneOff')}</span>
+                €4.99 <span className="text-sm font-normal text-[#6b7a8a]">{t('landing.per30Days')}</span>
               </p>
             </div>
             <ul className="space-y-2 mb-6">
@@ -241,7 +314,33 @@ export default function LandingPage() {
         <MarketsCarousel markets={MARKETS_LIST} />
       </section>
 
+      {/* ModeLoop other products — prominent bottom CTA */}
+      <section className="border-t border-[#e8e3dc] bg-white py-10 sm:py-14">
+        <div className="max-w-5xl mx-auto px-6 flex flex-col items-center gap-4 text-center">
+          <p className="text-xs font-semibold text-[#6b7a8a] uppercase tracking-widest">From the same team</p>
+          <a
+            href="https://asadov-stack.netlify.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl border-2 border-[#e8e3dc] bg-[#f5f3ef] hover:border-amber-400 hover:bg-amber-50 hover:shadow-lg transition-all shadow-sm group"
+          >
+            <span className="px-2.5 py-1 rounded-lg bg-amber-400 text-white text-[11px] font-bold tracking-widest uppercase leading-none">
+              MODELOOP
+            </span>
+            <span className="text-base font-semibold text-[#2a2520] group-hover:text-amber-700 transition-colors">
+              Explore our other products
+            </span>
+            <span className="text-[#6b7a8a] group-hover:text-amber-600 transition-colors text-lg">→</span>
+          </a>
+        </div>
+      </section>
+
       <Disclaimer />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
     </div>
   );
 }

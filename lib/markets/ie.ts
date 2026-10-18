@@ -9,6 +9,8 @@ const ie: MarketConfig = {
   defaultTerm: 30,
   maxLTV: 0.90,
   maxIncomeMultiple: 3.5,
+  firstTimeBuyerIncomeMultiple: 4,
+  incomeMultipleIsRegulatory: true,
   minDepositPercent: 10,
 
   ltvBands: [
@@ -19,10 +21,14 @@ const ie: MarketConfig = {
     { maxLtv: 0.95, label: '91–95% LTV', description: 'Limited lenders, highest rates' },
   ],
 
-  stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
-    if (buyerType === 'investor') return price * 0.075;
-    if (price <= 1_000_000) return price * 0.01;
-    return 1_000_000 * 0.01 + (price - 1_000_000) * 0.02;
+  // Revenue.ie residential rates: 1% to EUR1m, 2% on EUR1m-1.5m, 6% above.
+  // New builds are charged on the VAT-exclusive price (13.5% VAT).
+  stampDuty: (price: number, { propertyType }: StampDutyContext): number => {
+    const base = propertyType === 'new_build' ? price / 1.135 : price;
+    let tax = Math.min(base, 1_000_000) * 0.01;
+    if (base > 1_000_000) tax += (Math.min(base, 1_500_000) - 1_000_000) * 0.02;
+    if (base > 1_500_000) tax += (base - 1_500_000) * 0.06;
+    return tax;
   },
 
   govtSchemes: [
@@ -43,9 +49,9 @@ const ie: MarketConfig = {
   ],
 
   regulatoryNotes: [
-    'Central Bank macro-prudential rules cap borrowing at 3.5× gross annual income for most buyers.',
-    'First-time buyers can borrow up to 90% LTV; second-time and subsequent buyers are limited to 80% LTV.',
-    'Buy-to-let investors are limited to 70% LTV.',
+    'Central Bank mortgage measures cap borrowing at 4× gross income for first-time buyers and 3.5× for movers.',
+    'Both first-time buyers and movers can borrow up to 90% of the property value (LTV).',
+    'Buy-to-let and other non-home loans are outside these measures; lenders set their own limits.',
     'The ECB base rate underpins variable and tracker mortgage rates in Ireland.',
   ],
 

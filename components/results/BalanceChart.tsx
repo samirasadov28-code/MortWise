@@ -6,6 +6,7 @@ import {
 import type { ScenarioResult } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
 import { formatCurrencyIn } from '@/lib/formatting';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface BalanceChartProps {
   results: ScenarioResult[];
@@ -16,6 +17,7 @@ interface BalanceChartProps {
 const COLORS = ['#4a7c96', '#10b981', '#f59e0b', '#ef4444'];
 
 export default function BalanceChart({ results, market, displayMarket }: BalanceChartProps) {
+  const { t } = useTranslation();
   if (results.length === 0) return null;
   const dm = displayMarket ?? market;
   const fmt = (v: number) => formatCurrencyIn(v, market, dm);
@@ -37,7 +39,7 @@ export default function BalanceChart({ results, market, displayMarket }: Balance
 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-[#2a2520] mb-4">Remaining balance over time</h3>
+      <h3 className="text-sm font-semibold text-[#2a2520] mb-4">{t('balance.title')}</h3>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e8e3dc" />
@@ -45,7 +47,7 @@ export default function BalanceChart({ results, market, displayMarket }: Balance
             dataKey="year"
             stroke="#9aa5b0"
             tick={{ fontSize: 11 }}
-            tickFormatter={(v) => `Yr ${v}`}
+            tickFormatter={(v) => `${t('balance.yrAbbr')} ${v}`}
           />
           <YAxis
             stroke="#9aa5b0"
@@ -57,7 +59,7 @@ export default function BalanceChart({ results, market, displayMarket }: Balance
             contentStyle={{ background: '#ffffff', border: '1px solid #e8e3dc', borderRadius: '8px' }}
             labelStyle={{ color: '#6b7a8a', fontSize: '12px' }}
             formatter={(v: unknown, name: unknown) => [fmt(v as number), String(name)]}
-            labelFormatter={(l) => `Year ${l}`}
+            labelFormatter={(l) => `${t('balance.year')} ${l}`}
           />
           <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '16px' }} />
           {results.map((r, i) => (

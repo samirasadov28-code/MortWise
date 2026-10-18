@@ -8,7 +8,7 @@ import { DEFAULT_WIZARD_STATE } from '@/lib/defaults';
 import { COMPARISON_CURRENCIES } from '@/lib/fx';
 import { MARKETS } from '@/lib/markets';
 import { buildPreparedScenarios } from '@/lib/wizard';
-import { getUnlockState } from '@/lib/stripe';
+import { getUnlockState, FREE_FULL_ACCESS } from '@/lib/stripe';
 import { runScenarios } from '@/lib/engine/scenarios';
 import Disclaimer from '@/components/shared/Disclaimer';
 import WizardShell from '@/components/calculator/WizardShell';
@@ -20,16 +20,29 @@ import Step5Scenarios from '@/components/calculator/Step5Scenarios';
 import FreeResults from '@/components/calculator/FreeResults';
 import FullResults from '@/components/calculator/FullResults';
 import LanguagePicker from '@/components/shared/LanguagePicker';
+import { track } from '@/lib/analytics';
 
 type Phase = 'wizard' | 'results';
 
 export default function CalculatorPage() {
   const [state, setState] = useState<WizardState>(() => {
     if (typeof window !== 'undefined') {
-      const saved = sessionStorage.getItem('mortwise_wizard');
+      // localStorage so the user keeps their wizard inputs across an
+      // accidental refresh — losing 5 steps of typing was a real conversion
+      // killer. We still fall back to sessionStorage for users who started
+      // typing in a previous version, so existing in-flight sessions don't
+      // suddenly empty out the day this ships.
+      const saved =
+        window.localStorage.getItem('mortwise_wizard') ??
+        window.sessionStorage.getItem('mortwise_wizard');
       if (saved) {
         try {
-          return { ...DEFAULT_WIZARD_STATE, ...JSON.parse(saved) };
+          // Keep the user's typed-in field values across refreshes, but always
+          // (re-)enter the wizard at Step 1 — landing-page "Start free" CTAs
+          // shouldn't drop the visitor into a half-finished previous run, and
+          // a previously-completed `step: 5` would otherwise immediately call
+          // Calculate again on next visit.
+          return { ...DEFAULT_WIZARD_STATE, ...JSON.parse(saved), step: 1 };
         } catch {
           // ignore
         }
@@ -55,6 +68,10 @@ export default function CalculatorPage() {
   // Check unlock status on mount and after payment
   useEffect(() => {
     async function checkUnlock() {
+      if (FREE_FULL_ACCESS) {
+        setState((s) => ({ ...s, isUnlocked: true }));
+        return;
+      }
       const { unlocked, sessionId } = getUnlockState();
       if (!unlocked) return;
 
@@ -70,7 +87,7 @@ export default function CalculatorPage() {
           const data = await res.json();
           setState((s) => ({ ...s, isUnlocked: data.unlocked === true }));
         } catch {
-          setState((s) => ({ ...s, isUnlocked: unlocked }));
+          setState((s) => ({ ...s, isUnlocked: false }));
         }
         return;
       }
@@ -81,16 +98,20 @@ export default function CalculatorPage() {
         const data = await res.json();
         setState((s) => ({ ...s, isUnlocked: data.verified === true }));
       } catch {
-        setState((s) => ({ ...s, isUnlocked: unlocked }));
+        setState((s) => ({ ...s, isUnlocked: false }));
       }
     }
     checkUnlock();
   }, []);
 
-  // Persist wizard state to sessionStorage
+  // Persist wizard state to localStorage so a refresh doesn't wipe inputs.
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      sessionStorage.setItem('mortwise_wizard', JSON.stringify(state));
+      try {
+        window.localStorage.setItem('mortwise_wizard', JSON.stringify(state));
+      } catch {
+        // Quota / private mode — silently skip so we don't crash the wizard.
+      }
     }
   }, [state]);
 
@@ -100,6 +121,7 @@ export default function CalculatorPage() {
 
   function handleNext() {
     if (state.step < 5) {
+      track('wizard_step_completed', { step: state.step, market: state.market });
       setState((s) => ({ ...s, step: s.step + 1 }));
     } else {
       // Run calculation
@@ -112,6 +134,10 @@ export default function CalculatorPage() {
       const computed = runScenarios(preparedScenarios, startDate);
       setResults(computed);
       setPhase('results');
+      track('wizard_calculate_clicked', {
+        market: state.market,
+        scenarios: computed.length,
+      });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
@@ -130,7 +156,7 @@ export default function CalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f3ef]">
+    <div className="min-h-screen pb-20 sm:pb-0 bg-[#f5f3ef]">
       {/* Header — frozen on top, always visible */}
       <header className="sticky top-0 z-40 border-b border-[#e8e3dc] bg-[#f5f3ef]/95 backdrop-blur-sm px-6 py-3">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
@@ -223,6 +249,7 @@ export default function CalculatorPage() {
         )}
       </main>
 
+      {phase === 'results' && <div aria-hidden="true" className="fixed inset-x-0 bottom-0 h-16 bg-[#f5f3ef] border-t border-[#e8e3dc] z-40 sm:hidden" />}
       <Disclaimer />
     </div>
   );

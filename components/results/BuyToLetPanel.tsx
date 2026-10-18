@@ -6,6 +6,7 @@ import { MARKETS } from '@/lib/markets';
 import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
 import { newtonRaphsonIRR } from '@/lib/engine/irr';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface BuyToLetPanelProps {
   state: WizardState;
@@ -17,6 +18,7 @@ interface BuyToLetPanelProps {
 const DEFAULT_OPERATING_COST_RATIO = 0.25;
 
 export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLetPanelProps) {
+  const { t } = useTranslation();
   const market = MARKETS[state.market];
   const dm: MarketCode = displayMarket ?? state.market;
   const fmt = (v: number) => formatCurrencyIn(v, state.market, dm);
@@ -113,9 +115,7 @@ export default function BuyToLetPanel({ state, results, displayMarket }: BuyToLe
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
       <p className="text-sm text-[#6b7a8a] mb-4">
-        Treat this property as a buy-to-let. Adjust the assumptions below to see whether the
-        rent covers the mortgage, what return you earn on cash invested, and when the
-        deal pays itself back.
+        {t('btl.intro')}
       </p>
 
       {/* Inputs — monthly rent uses FormattedNumberInput (commas, currency on right);

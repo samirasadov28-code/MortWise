@@ -3,6 +3,8 @@
 import type { ScenarioResult, WizardState, MarketCode } from '@/lib/types';
 import { MARKETS } from '@/lib/markets';
 import { formatCurrencyIn, formatPercent } from '@/lib/formatting';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
+import type { TranslationKey } from '@/lib/i18n/dictionaries/en';
 
 interface CalculationBreakdownProps {
   results: ScenarioResult[];
@@ -11,6 +13,13 @@ interface CalculationBreakdownProps {
   displayMarket?: MarketCode;
 }
 
+const BUYER_KEY: Record<string, TranslationKey> = {
+  first_time: 'step3.firstTime',
+  mover: 'step3.mover',
+  investor: 'step3.investor',
+  non_resident: 'step3.nonResident',
+};
+
 /**
  * Step-by-step explainer of how MortWise turns the user's inputs into the
  * headline monthly payment and total cost — including how government schemes,
@@ -18,6 +27,7 @@ interface CalculationBreakdownProps {
  * non-finance users so they can sanity-check (and trust) the numbers.
  */
 export default function CalculationBreakdown({ results, state, displayMarket }: CalculationBreakdownProps) {
+  const { t } = useTranslation();
   if (results.length === 0) return null;
   const best = [...results].sort((a, b) => a.totalAmountPaid - b.totalAmountPaid)[0];
   const market = MARKETS[state.market];
@@ -54,40 +64,40 @@ export default function CalculationBreakdown({ results, state, displayMarket }: 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5 space-y-5">
       <div>
-        <h3 className="text-base font-semibold text-[#2a2520] mb-1">How we calculated this</h3>
+        <h3 className="text-base font-semibold text-[#2a2520] mb-1">{t('calc.title')}</h3>
         <p className="text-xs text-[#6b7a8a]">
-          Showing the math behind your best scenario ({best.lenderName}). Every figure
-          below ties back to the inputs you entered in steps 1–5.
+          {t('calc.intro', { lender: best.lenderName })}
         </p>
       </div>
 
       {/* Loan amount build-up */}
       <section>
         <h4 className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-2">
-          1 · Loan amount build-up
+          {t('calc.section1')}
         </h4>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="Property price" value={fmt(state.housePrice)} />
-          <Line label="Cash deposit" value={`− ${fmt(state.deposit)}`} dim />
-          <Line label="Loan before adjustments" value={fmt(state.housePrice - state.deposit)} sub />
+          <Line label={t('calc.propertyPrice')} value={fmt(state.housePrice)} />
+          <Line label={t('calc.cashDeposit')} value={`− ${fmt(state.deposit)}`} dim />
+          <Line label={t('calc.loanBeforeAdj')} value={fmt(state.housePrice - state.deposit)} sub />
           {rolledFees > 0 && (
-            <Line label={`+ Other fees rolled into loan (${fmt(state.otherFees)})`} value={`+ ${fmt(rolledFees)}`} dim />
+            <Line label={t('calc.rolledFees', { amount: fmt(state.otherFees) })} value={`+ ${fmt(rolledFees)}`} dim />
           )}
           {schemeSupport > 0 && (
             <Line
-              label={`− Government scheme: ${state.selectedGovtSchemeName ?? 'support'}`}
+              label={t('calc.govtSchemeLine', { name: state.selectedGovtSchemeName ?? t('calc.support') })}
               value={`− ${fmt(schemeSupport)}`}
               dim
               highlight="green"
             />
           )}
-          <Line label="Net loan amount drawn" value={fmt(netLoan)} bold />
+          <Line label={t('calc.netLoan')} value={fmt(netLoan)} bold />
         </div>
         {schemeSupport > 0 && (
           <p className="text-xs text-green-700 mt-2 leading-relaxed">
-            The {state.selectedGovtSchemeName ?? 'selected'} scheme reduces the principal you borrow by{' '}
-            {fmt(schemeSupport)}, lowering both the monthly payment and the total
-            interest you pay over the life of the loan.
+            {t('calc.schemeNote', {
+              name: state.selectedGovtSchemeName ?? t('calc.selectedFallback'),
+              amt: fmt(schemeSupport),
+            })}
           </p>
         )}
       </section>
@@ -95,70 +105,74 @@ export default function CalculationBreakdown({ results, state, displayMarket }: 
       {/* Monthly payment formula */}
       <section>
         <h4 className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-2">
-          2 · Monthly payment
+          {t('calc.section2')}
         </h4>
         <p className="text-xs text-[#6b7a8a] mb-2">
-          Annuity formula:{' '}
+          {t('calc.annuityFormula')}{' '}
           <code className="bg-[#f9f7f4] px-1.5 py-0.5 rounded">
             P × r / (1 − (1 + r)<sup>−n</sup>)
           </code>{' '}
-          — same monthly payment over the term, principal share growing as interest share shrinks.
+          {t('calc.annuityCaption')}
         </p>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="P · principal" value={fmt(netLoan)} />
+          <Line label={t('calc.principal')} value={fmt(netLoan)} />
           <Line
-            label="r · monthly rate"
-            value={`${(monthlyRate * 100).toFixed(4)}% (annual ${formatPercent(rateForDisplay ?? 0, 2)} ÷ 12)`}
+            label={t('calc.monthlyRate')}
+            value={t('calc.monthlyRateValue', {
+              rate: (monthlyRate * 100).toFixed(4),
+              annual: formatPercent(rateForDisplay ?? 0, 2),
+            })}
           />
-          <Line label="n · months" value={`${totalMonths} (${state.mortgageTerm} yrs × 12)`} />
-          <Line label="→ first monthly payment" value={fmt(best.firstMonthlyPayment)} bold />
+          <Line label={t('calc.months')} value={t('calc.monthsValue', { months: totalMonths, years: state.mortgageTerm })} />
+          <Line label={t('calc.firstMonthlyArrow')} value={fmt(best.firstMonthlyPayment)} bold />
         </div>
       </section>
 
       {/* Total cost */}
       <section>
         <h4 className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-2">
-          3 · Totals over the loan life
+          {t('calc.section3')}
         </h4>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="Total payments (sum of all months)" value={fmt(best.totalAmountPaid)} />
-          <Line label="− Loan principal" value={`− ${fmt(netLoan)}`} dim />
-          <Line label="= Total interest paid" value={fmt(best.totalInterestPaid)} bold />
+          <Line label={t('calc.totalPayments')} value={fmt(best.totalAmountPaid)} />
+          <Line label={t('calc.minusPrincipal')} value={`− ${fmt(netLoan)}`} dim />
+          <Line label={t('calc.totalInterestEq')} value={fmt(best.totalInterestPaid)} bold />
           {best.cashbackReceived > 0 && (
             <Line
-              label="− Cashback received from lender"
+              label={t('calc.minusCashback')}
               value={`− ${fmt(best.cashbackReceived)}`}
               dim
               highlight="green"
             />
           )}
-          <Line label="= Net total loan payments" value={fmt(totalCost - best.cashbackReceived)} bold />
+          <Line label={t('calc.netTotalEq')} value={fmt(totalCost - best.cashbackReceived)} bold />
         </div>
       </section>
 
       {/* Cash at closing — separate from the mortgage */}
       <section>
         <h4 className="text-xs font-semibold uppercase tracking-wide text-[#6b7a8a] mb-2">
-          4 · Cash needed at closing (separate from the loan)
+          {t('calc.section4')}
         </h4>
         <div className="text-sm space-y-1.5 font-mono">
-          <Line label="Deposit" value={fmt(state.deposit)} />
+          <Line label={t('calc.deposit')} value={fmt(state.deposit)} />
           <Line
-            label={`Stamp duty (${state.propertyType === 'new_build' ? 'new build' : 'secondary'}, ${state.buyerType.replace('_', ' ')})`}
+            label={t('calc.stampDutyLine', {
+              property: state.propertyType === 'new_build' ? t('step2.newBuild').toLowerCase() : t('step2.secondaryMarket').toLowerCase(),
+              buyer: t(BUYER_KEY[state.buyerType] ?? 'step3.firstTime').toLowerCase(),
+            })}
             value={`+ ${fmt(stampDuty)}`}
             dim
           />
           {upfrontFees > 0 && (
-            <Line label="Other upfront fees (legal/surveyor/broker)" value={`+ ${fmt(upfrontFees)}`} dim />
+            <Line label={t('calc.upfrontFees')} value={`+ ${fmt(upfrontFees)}`} dim />
           )}
-          <Line label="Total cash at closing" value={fmt(cashAtClosing)} bold />
+          <Line label={t('calc.totalCash')} value={fmt(cashAtClosing)} bold />
         </div>
       </section>
 
       <p className="text-[11px] text-[#6b7a8a]/70 leading-relaxed">
-        Stamp duty is paid separately at purchase; it&rsquo;s never funded by the
-        mortgage. Total cash at closing is what you must have available — deposit +
-        stamp duty + (unrolled) fees.
+        {t('calc.disclaimer')}
       </p>
     </div>
   );

@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { setUnlockState } from '@/lib/stripe';
 import Link from 'next/link';
+import { track } from '@/lib/analytics';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -21,8 +22,9 @@ function SuccessContent() {
       .then((r) => r.json())
       .then((data) => {
         if (data.verified) {
-          setUnlockState(sessionId);
+          setUnlockState(sessionId, data.expiresAt);
           setStatus('success');
+          track('checkout_succeeded');
           setTimeout(() => router.push('/calculator'), 2500);
         } else {
           setStatus('error');
@@ -47,9 +49,9 @@ function SuccessContent() {
             <div className="w-20 h-20 rounded-full bg-[#4a7c96]/20 border-2 border-[#4a7c96] flex items-center justify-center mx-auto mb-6">
               <span className="text-3xl">✓</span>
             </div>
-            <h1 className="text-2xl font-bold text-[#2a2520] mb-2">Subscription active!</h1>
+            <h1 className="text-2xl font-bold text-[#2a2520] mb-2">Full access unlocked!</h1>
             <p className="text-[#6b7a8a] mb-6">
-              You now have full access to the complete MortWise analysis suite. This is a one-off purchase with lifetime access. Existing monthly subscribers can still cancel any time from their Stripe billing portal.
+              You now have full access to the complete MortWise analysis suite. Your lifetime access is now active.
             </p>
             <p className="text-sm text-[#6b7a8a]">Redirecting you to the calculator…</p>
           </div>

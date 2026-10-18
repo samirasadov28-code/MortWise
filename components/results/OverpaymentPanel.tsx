@@ -9,6 +9,7 @@ import { compareOverpayment, type OverpaymentComparison } from '@/lib/engine/ove
 import { formatCurrencyIn } from '@/lib/formatting';
 import { MARKETS } from '@/lib/markets';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface OverpaymentPanelProps {
   primaryInput: ScenarioInput;
@@ -23,6 +24,7 @@ interface OverpaymentPanelProps {
  * over time so the user can see both kinds of "saving" in motion.
  */
 export default function OverpaymentPanel({ primaryInput, market, displayMarket }: OverpaymentPanelProps) {
+  const { t } = useTranslation();
   const dm = displayMarket ?? market;
   const fmt = (v: number) => formatCurrencyIn(v, market, dm);
   const sym = MARKETS[market].currencySymbol;
@@ -82,10 +84,9 @@ export default function OverpaymentPanel({ primaryInput, market, displayMarket }
 
   return (
     <div className="bg-white border border-[#e8e3dc] rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-[#2a2520] mb-1">Overpayment simulator</h3>
+      <h3 className="text-sm font-semibold text-[#2a2520] mb-1">{t('overpay.title')}</h3>
       <p className="text-xs text-[#6b7a8a] mb-4">
-        Schedule a recurring lump-sum overpayment and see how much interest you
-        save and how the loan profile changes.
+        {t('overpay.intro')}
       </p>
 
       {/* Inputs */}

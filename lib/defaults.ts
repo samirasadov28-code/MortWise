@@ -1,67 +1,12 @@
 import type { ScenarioInput, WizardState } from './types';
+import { scenariosForMarket } from './lenders';
 
-export const DEFAULT_SCENARIOS: ScenarioInput[] = [
-  {
-    id: 'scenario-1',
-    lenderName: 'Bank of Ireland',
-    housePrice: 400000,
-    otherFees: 5000,
-    loanToValue: 0.80,
-    otherFeesCoveredByDebt: false,
-    mortgageTerm: 30,
-    rateStructure: 'fixed',
-    fixedRate: 0.038,
-    fixedPeriodYears: 5,
-    variableRate: 0.042,
-    repaymentType: 'annuity',
-    overpaymentReduces: 'term',
-  },
-  {
-    id: 'scenario-2',
-    lenderName: 'AIB',
-    housePrice: 400000,
-    otherFees: 5000,
-    loanToValue: 0.80,
-    otherFeesCoveredByDebt: false,
-    mortgageTerm: 30,
-    rateStructure: 'tracker',
-    trackerBaseRate: 0.026,
-    trackerMargin: 0.014,
-    variableRate: 0.040,
-    repaymentType: 'annuity',
-    overpaymentReduces: 'term',
-  },
-  {
-    id: 'scenario-3',
-    lenderName: 'Permanent TSB',
-    housePrice: 400000,
-    otherFees: 5000,
-    loanToValue: 0.80,
-    otherFeesCoveredByDebt: false,
-    mortgageTerm: 30,
-    rateStructure: 'fixed',
-    fixedRate: 0.0365,
-    fixedPeriodYears: 3,
-    variableRate: 0.042,
-    repaymentType: 'annuity',
-    overpaymentReduces: 'term',
-  },
-  {
-    id: 'scenario-4',
-    lenderName: 'Haven',
-    housePrice: 400000,
-    otherFees: 5000,
-    loanToValue: 0.80,
-    otherFeesCoveredByDebt: false,
-    mortgageTerm: 30,
-    rateStructure: 'fixed',
-    fixedRate: 0.041,
-    fixedPeriodYears: 10,
-    variableRate: 0.042,
-    repaymentType: 'annuity',
-    overpaymentReduces: 'term',
-  },
-];
+// Seed the wizard from the IE lender roster so trackerBaseRate/trackerMargin
+// are pre-populated on first render — same path that Step 1 takes when the
+// user later switches markets.
+export const DEFAULT_SCENARIOS: ScenarioInput[] = scenariosForMarket('IE', 4).map(
+  (s) => ({ ...s, housePrice: 400000 }),
+);
 
 export const DEFAULT_WIZARD_STATE: WizardState = {
   step: 1,

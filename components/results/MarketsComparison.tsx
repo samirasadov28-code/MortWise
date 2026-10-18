@@ -9,6 +9,7 @@ import { convertCurrency, COMPARISON_CURRENCIES } from '@/lib/fx';
 import { getLenders } from '@/lib/lenders';
 import Flag from '@/components/shared/Flag';
 import FormattedNumberInput from '@/components/shared/FormattedNumberInput';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface MarketsComparisonProps {
   state: WizardState;
@@ -41,6 +42,7 @@ function averageLenderTerms(market: MarketCode) {
 }
 
 export default function MarketsComparison({ state }: MarketsComparisonProps) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<Set<MarketCode>>(() => {
     const seed = new Set<MarketCode>([state.market]);
     (['UK', 'US', 'PT', 'ES', 'UAE'] as MarketCode[]).forEach((c) => seed.add(c));
@@ -141,14 +143,10 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
       <div className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
           <p className="text-sm text-[#6b7a8a]">
-            Same property price across countries — entered in your chosen
-            currency, converted to each market&rsquo;s local currency, then
-            modelled with that market&rsquo;s max LTV, average lender rate,
-            and investor stamp duty.
+            {t('cross.intro')}
           </p>
           <p className="text-xs text-[#6b7a8a]/70 mt-2">
-            Loan term {term} years. Local-currency figures shown alongside the
-            ranking column in {baseLabel}.
+            {t('cross.footnote', { term, label: baseLabel })}
           </p>
         </div>
       </div>
@@ -218,7 +216,7 @@ export default function MarketsComparison({ state }: MarketsComparisonProps) {
 
       {rows.length === 0 ? (
         <p className="text-sm text-[#6b7a8a] py-6 text-center">
-          Select at least one market and enter a property price to compare.
+          {t('cross.empty')}
         </p>
       ) : (
         <div className="overflow-x-auto">

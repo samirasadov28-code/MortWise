@@ -18,24 +18,33 @@ const uk: MarketConfig = {
     { maxLtv: 0.95, label: '91–95% LTV', description: 'Limited lenders, highest rates' },
   ],
 
-  // SDLT (England & Northern Ireland). Same headline schedule for new builds and existing,
-  // but heavy surcharges for additional homes / buy-to-let (+5% since Oct 2024) and
-  // non-residents (+2% since Apr 2021).
+  // SDLT (England & Northern Ireland), rates from 1 April 2025 (gov.uk).
+  // Standard: nil to 125k, 2% to 250k, 5% to 925k, 10% to 1.5m, 12% above.
+  // First-time buyers: nil to 300k, 5% to 500k, no relief above 500k.
+  // Surcharges on the whole price: +5% additional dwellings, +2% non-residents.
   stampDuty: (price: number, { buyerType }: StampDutyContext): number => {
-    let tax = 0;
-    if (buyerType === 'first_time' && price <= 625_000) {
-      // FTB relief: nil to £425k, 5% on slice £425k–£625k. Withdrawn entirely above £625k.
-      if (price <= 425_000) return 0;
-      return (price - 425_000) * 0.05;
+    const bands = (limits: Array<[number, number]>): number => {
+      let tax = 0;
+      let lower = 0;
+      for (const [upper, rate] of limits) {
+        if (price > lower) tax += (Math.min(price, upper) - lower) * rate;
+        lower = upper;
+      }
+      return tax;
+    };
+    let tax: number;
+    if (buyerType === 'first_time' && price <= 500_000) {
+      tax = bands([[300_000, 0], [500_000, 0.05]]);
+    } else {
+      tax = bands([
+        [125_000, 0],
+        [250_000, 0.02],
+        [925_000, 0.05],
+        [1_500_000, 0.10],
+        [Infinity, 0.12],
+      ]);
     }
-    // Standard residential band schedule
-    if (price > 250_000) tax += Math.min(price - 250_000, 675_000) * 0.05;
-    if (price > 925_000) tax += Math.min(price - 925_000, 575_000) * 0.10;
-    if (price > 1_500_000) tax += (price - 1_500_000) * 0.12;
-
-    // Investor / second-home surcharge: +5% on entire price (Higher Rates for Additional Dwellings)
     if (buyerType === 'investor') tax += price * 0.05;
-    // Non-resident surcharge: +2% on entire price, on top of HRAD if also an investor
     if (buyerType === 'non_resident') tax += price * 0.02;
     return tax;
   },
@@ -59,7 +68,7 @@ const uk: MarketConfig = {
 
   regulatoryNotes: [
     'FCA-regulated mortgage advice required for recommendations — this tool is for information only.',
-    'Bank of England stress test: lenders typically assess affordability at reversion rate +3%.',
+    'The Bank of England withdrew its mortgage affordability test on 20 June 2022; lenders now set their own affordability stress rates.',
     'Scotland uses LBTT; Wales uses LTT — stamp duty figures shown are for England/NI only.',
     'The Mortgage Charter introduced in 2023 provides additional protections for borrowers under financial stress.',
   ],

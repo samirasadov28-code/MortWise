@@ -1,6 +1,8 @@
 import type { ScenarioResult } from '@/lib/types';
 import type { MarketCode } from '@/lib/types';
 import { formatCurrencyIn, formatPercent, formatMonths } from '@/lib/formatting';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
+import type { TranslationKey } from '@/lib/i18n/dictionaries/en';
 
 interface ComparisonTableProps {
   results: ScenarioResult[];
@@ -18,25 +20,25 @@ type Formatter = (v: number) => string;
 
 interface MetricDef {
   key: MetricKey;
-  label: string;
-  /** Function returning a formatter built from the panel-level fmt() helper. */
+  labelKey: TranslationKey;
   format: (fmt: Formatter, v: number) => string;
   lowerIsBetter: boolean;
 }
 
 const METRICS: MetricDef[] = [
-  { key: 'firstMonthlyPayment', label: 'First monthly payment', format: (fmt, v) => fmt(v), lowerIsBetter: true },
-  { key: 'averageMonthlyPayment', label: 'Average monthly payment', format: (fmt, v) => fmt(v), lowerIsBetter: true },
-  { key: 'totalInterestPaid', label: 'Total interest paid', format: (fmt, v) => fmt(v), lowerIsBetter: true },
-  { key: 'totalAmountPaid', label: 'Total amount repaid', format: (fmt, v) => fmt(v), lowerIsBetter: true },
-  { key: 'effectiveAnnualRate', label: 'Effective annual rate', format: (_fmt, v) => formatPercent(v), lowerIsBetter: true },
-  { key: 'cashbackReceived', label: 'Cashback received', format: (fmt, v) => fmt(v), lowerIsBetter: false },
-  { key: 'actualRepaymentPeriodMonths', label: 'Actual term', format: (_fmt, v) => formatMonths(v), lowerIsBetter: true },
-  { key: 'irr', label: 'IRR', format: (_fmt, v) => formatPercent(v), lowerIsBetter: false },
-  { key: 'exitEquity', label: 'Exit equity', format: (fmt, v) => fmt(v), lowerIsBetter: false },
+  { key: 'firstMonthlyPayment',         labelKey: 'compare.firstMonthly',  format: (fmt, v) => fmt(v),                     lowerIsBetter: true  },
+  { key: 'averageMonthlyPayment',       labelKey: 'compare.avgMonthly',    format: (fmt, v) => fmt(v),                     lowerIsBetter: true  },
+  { key: 'totalInterestPaid',           labelKey: 'compare.totalInterest', format: (fmt, v) => fmt(v),                     lowerIsBetter: true  },
+  { key: 'totalAmountPaid',             labelKey: 'compare.totalRepaid',   format: (fmt, v) => fmt(v),                     lowerIsBetter: true  },
+  { key: 'effectiveAnnualRate',         labelKey: 'compare.effectiveRate', format: (_fmt, v) => formatPercent(v),          lowerIsBetter: true  },
+  { key: 'cashbackReceived',            labelKey: 'compare.cashback',      format: (fmt, v) => fmt(v),                     lowerIsBetter: false },
+  { key: 'actualRepaymentPeriodMonths', labelKey: 'compare.actualTerm',    format: (_fmt, v) => formatMonths(v),           lowerIsBetter: true  },
+  { key: 'irr',                         labelKey: 'compare.irr',           format: (_fmt, v) => formatPercent(v),          lowerIsBetter: false },
+  { key: 'exitEquity',                  labelKey: 'compare.exitEquity',    format: (fmt, v) => fmt(v),                     lowerIsBetter: false },
 ];
 
 export default function ComparisonTable({ results, market, displayMarket }: ComparisonTableProps) {
+  const { t } = useTranslation();
   if (results.length === 0) return null;
   const dm = displayMarket ?? market;
   const fmt: Formatter = (v) => formatCurrencyIn(v, market, dm);
@@ -60,7 +62,7 @@ export default function ComparisonTable({ results, market, displayMarket }: Comp
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-[#f9f7f4] border-b border-[#e8e3dc]">
-            <th className="text-left p-4 text-[#6b7a8a] font-medium w-48">Metric</th>
+            <th className="text-left p-4 text-[#6b7a8a] font-medium w-48">{t('compare.metric')}</th>
             {results.map((r) => (
               <th key={r.id} className="p-4 text-center text-[#2a2520] font-semibold">
                 {r.lenderName}
@@ -76,7 +78,7 @@ export default function ComparisonTable({ results, market, displayMarket }: Comp
 
             return (
               <tr key={metric.key} className="border-b border-[#e8e3dc] last:border-0 hover:bg-[#eef4f7]/60 transition-colors">
-                <td className="p-4 text-[#6b7a8a]">{metric.label}</td>
+                <td className="p-4 text-[#6b7a8a]">{t(metric.labelKey)}</td>
                 {results.map((r, i) => {
                   const val = r[metric.key] as number | undefined;
                   const isWinner = ranks[i] === 0;

@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import type { WizardState } from '@/lib/types';
 import { FeedbackInline, useSuppressFloatingFeedback } from '@/components/shared/FeedbackButton';
+import { useTranslation } from '@/lib/i18n/I18nProvider';
 
 interface WizardShellProps {
   state: WizardState;
@@ -12,14 +14,6 @@ interface WizardShellProps {
   nextLabel?: string;
 }
 
-const STEPS = [
-  { label: 'Market' },
-  { label: 'Property' },
-  { label: 'Profile' },
-  { label: 'Rate Type' },
-  { label: 'Scenarios' },
-];
-
 export default function WizardShell({
   state,
   children,
@@ -28,12 +22,27 @@ export default function WizardShell({
   canNext = true,
   nextLabel,
 }: WizardShellProps) {
+  const { t } = useTranslation();
+  const STEPS = [
+    { label: t('wizard.stepLabel.market') },
+    { label: t('wizard.stepLabel.property') },
+    { label: t('wizard.stepLabel.profile') },
+    { label: t('wizard.stepLabel.rateType') },
+    { label: t('wizard.stepLabel.scenarios') },
+  ];
   const step = state.step;
   const isLast = step === 5;
+  const stepContainerRef = useRef<HTMLDivElement>(null);
 
   // Hide the global floating Feedback button while the wizard's sticky
   // Back/Next bar is on screen — we render an in-flow Feedback below instead.
   useSuppressFloatingFeedback();
+
+  // Move keyboard / screen-reader focus to the new step's content on each
+  // transition so users don't have to tab back from the bottom Next button.
+  useEffect(() => {
+    stepContainerRef.current?.focus();
+  }, [step]);
 
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -45,7 +54,11 @@ export default function WizardShell({
             const isComplete = stepNum < step;
             const isCurrent = stepNum === step;
             return (
-              <div key={i} className="flex flex-col items-center gap-1 flex-1">
+              <div
+                key={i}
+                className="flex flex-col items-center gap-1 flex-1"
+                aria-current={isCurrent ? 'step' : undefined}
+              >
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
                     isComplete
@@ -77,8 +90,18 @@ export default function WizardShell({
       </div>
 
       {/* Step content */}
-      <div className="bg-white border border-[#e8e3dc] rounded-xl p-6 mb-6">
+      <div
+        ref={stepContainerRef}
+        tabIndex={-1}
+        role="region"
+        aria-label={t('wizard.stepOf', { step, total: STEPS.length }) + ': ' + (STEPS[step - 1]?.label ?? '')}
+        className="bg-white border border-[#e8e3dc] rounded-xl p-6 mb-6 focus:outline-none focus:ring-2 focus:ring-[#4a7c96]/30"
+      >
         {children}
+      </div>
+      {/* Live announcer — broadcasts step transitions to assistive tech. */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {t('wizard.stepOf', { step, total: STEPS.length })}: {STEPS[step - 1]?.label}
       </div>
 
       {/* Navigation — sticky at bottom of viewport during scroll, settles in flow above the
@@ -94,10 +117,10 @@ export default function WizardShell({
             disabled={step === 1}
             className="px-5 py-3 border border-[#e8e3dc] rounded-lg text-[#6b7a8a] hover:text-[#4a7c96] hover:border-[#4a7c96] disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm bg-white"
           >
-            ← Back
+            {t('wizard.back')}
           </button>
           <div className="text-xs text-[#6b7a8a] hidden sm:block">
-            Step {step} of {STEPS.length}
+            {t('wizard.stepOf', { step, total: STEPS.length })}
           </div>
           <button
             type="button"
@@ -105,7 +128,7 @@ export default function WizardShell({
             disabled={!canNext}
             className="px-6 sm:px-8 py-3 bg-[#4a7c96] hover:bg-[#3a6a82] disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors text-sm shadow-md flex-1 sm:flex-initial"
           >
-            {nextLabel ?? (isLast ? 'Calculate →' : 'Next →')}
+            {nextLabel ?? (isLast ? t('wizard.calculate') : t('wizard.next'))}
           </button>
         </div>
       </div>
