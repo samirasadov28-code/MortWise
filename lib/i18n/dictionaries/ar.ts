@@ -30,6 +30,7 @@ const ar: Partial<Dictionary> = {
   'landing.full': 'كامل',
   'landing.bestValue': 'أفضل قيمة',
   'landing.perMonth': '/ شهر',
+  'landing.per30Days': 'دفعة واحدة، وصول مدى الحياة',
   'landing.fullCta': 'ابدأ مجانًا، وحدِّث لاحقًا من الداخل ←',
 
   'landing.availableMarkets': 'الأسواق العقارية المتاحة',

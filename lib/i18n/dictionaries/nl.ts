@@ -30,6 +30,7 @@ const nl: Partial<Dictionary> = {
   'landing.full': 'Volledig',
   'landing.bestValue': 'Beste waarde',
   'landing.perMonth': '/ maand',
+  'landing.per30Days': 'eenmalig, levenslange toegang',
   'landing.fullCta': 'Gratis starten, later upgraden →',
 
   'landing.availableMarkets': 'Beschikbare woningmarkten',

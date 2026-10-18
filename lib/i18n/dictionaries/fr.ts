@@ -35,6 +35,7 @@ const fr: Partial<Dictionary> = {
   'landing.full': 'Complet',
   'landing.bestValue': 'Meilleur rapport',
   'landing.perMonth': '/ mois',
+  'landing.per30Days': 'paiement unique, accès à vie',
   'landing.fullCta': 'Commencer gratuit, passer au complet plus tard →',
 
   // ─── Landing — markets section ────────────────────────────────────────

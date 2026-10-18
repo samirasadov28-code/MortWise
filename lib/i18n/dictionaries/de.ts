@@ -30,6 +30,7 @@ const de: Partial<Dictionary> = {
   'landing.full': 'Vollständig',
   'landing.bestValue': 'Bestes Angebot',
   'landing.perMonth': '/ Monat',
+  'landing.per30Days': 'einmalig, lebenslanger Zugang',
   'landing.fullCta': 'Kostenlos starten, später upgraden →',
 
   'landing.availableMarkets': 'Verfügbare Wohnungsmärkte',

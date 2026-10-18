@@ -20,6 +20,8 @@ export async function POST() {
   const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
 
   try {
+    // One-off lifetime access (no active subscriptions existed on the old monthly price).
+    // Restricted live keys may lack price-read permission, so the mode is fixed, not looked up.
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],

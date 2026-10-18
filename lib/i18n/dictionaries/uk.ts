@@ -35,6 +35,7 @@ const uk: Partial<Dictionary> = {
   'landing.full': 'Повний',
   'landing.bestValue': 'Найкраща ціна',
   'landing.perMonth': '/ місяць',
+  'landing.per30Days': 'одноразово, довічний доступ',
   'landing.fullCta': 'Почати безкоштовно, оновити всередині →',
 
   // ─── Landing — markets section ────────────────────────────────────────

@@ -30,6 +30,7 @@ const ru: Partial<Dictionary> = {
   'landing.full': 'Полный',
   'landing.bestValue': 'Лучшая цена',
   'landing.perMonth': '/ мес',
+  'landing.per30Days': 'разовый платёж, пожизненный доступ',
   'landing.fullCta': 'Начать бесплатно, обновить внутри →',
 
   'landing.availableMarkets': 'Доступные рынки жилья',
