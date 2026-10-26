@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { hasPaidPurchase, verifyAccessToken } from '@/lib/access';
+import Stripe from 'stripe';
+import { verifyAccessToken, isPurchaseStillValid } from '@/lib/access';
+import { findPurchase } from '@/lib/purchases';
 
 export const runtime = 'nodejs';
 
@@ -27,8 +29,18 @@ export async function POST(req: NextRequest) {
   }
 
   // Re-check the purchase at redeem time so revoked/refunded access fails.
+  // Bounded: one index read + at most two Stripe calls.
   try {
-    if (!(await hasPaidPurchase(parsed.email))) {
+    const purchase = await findPurchase(parsed.email);
+    if (!purchase) {
+      return NextResponse.json({ verified: false });
+    }
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      return NextResponse.json({ verified: false }, { status: 500 });
+    }
+    const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
+    if (!(await isPurchaseStillValid(stripe, purchase.sessionId))) {
       return NextResponse.json({ verified: false });
     }
   } catch (error) {

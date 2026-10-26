@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { recordPurchase } from '@/lib/purchases';
 
 // A one-off lifetime purchase stops being valid when the payment is fully
 // refunded or disputed. session.payment_status stays 'paid' after a refund,
@@ -61,6 +62,21 @@ export async function GET(req: NextRequest) {
     if (session.mode === 'payment' && session.payment_status === 'paid') {
       if (await isChargeRevoked(stripe, session)) {
         return NextResponse.json({ verified: false, refunded: true });
+      }
+      // Index the eligible purchase for the access-recovery flow. A failed
+      // index write must not block the buyer's immediate unlock - log only.
+      try {
+        const email = session.customer_details?.email?.trim().toLowerCase();
+        if (email) {
+          await recordPurchase({
+            email,
+            sessionId,
+            product: 'mortwise_full',
+            paidAt: session.created,
+          });
+        }
+      } catch (indexError) {
+        console.error('Purchase index write failed:', indexError);
       }
       return NextResponse.json({
         verified: true,
