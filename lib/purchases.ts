@@ -28,9 +28,16 @@ export async function recordPurchase(rec: PurchaseRecord): Promise<void> {
 }
 
 export async function findPurchase(email: string): Promise<PurchaseRecord | null> {
-  const rec = await store().get(key(email), { type: 'json' });
-  if (!rec || typeof rec !== 'object') return null;
-  const r = rec as Partial<PurchaseRecord>;
-  if (typeof r.sessionId !== 'string' || r.product !== 'mortwise_full') return null;
-  return r as PurchaseRecord;
+  try {
+    const rec = await store().get(key(email), { type: 'json' });
+    if (!rec || typeof rec !== 'object') return null;
+    const r = rec as Partial<PurchaseRecord>;
+    if (typeof r.sessionId !== 'string' || r.product !== 'mortwise_full') return null;
+    return r as PurchaseRecord;
+  } catch (err) {
+    // Blob store not configured or unreachable — degrade to "no record found"
+    // rather than propagating and causing a 500.
+    console.error('[purchases] findPurchase failed:', err instanceof Error ? err.message : err);
+    return null;
+  }
 }
