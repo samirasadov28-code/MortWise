@@ -4,7 +4,7 @@
 // recovery endpoint with one bounded read (+ at most two Stripe calls for the
 // refund/dispute re-check).
 
-import { getStore, type Store } from '@netlify/blobs';
+import { getStore, getDeployStore, type Store } from '@netlify/blobs';
 
 export type PurchaseRecord = {
   email: string;
@@ -15,7 +15,16 @@ export type PurchaseRecord = {
 
 const STORE_NAME = 'mortwise-purchases';
 
+// Production always uses the durable site-level store.
+// Deploy-previews and branch-deploys use a deploy-scoped store so test seeds
+// are isolated per deploy and never land in the production buyer index.
 function store(): Store {
+  if (
+    process.env.NETLIFY_CONTEXT === 'deploy-preview' ||
+    process.env.NETLIFY_CONTEXT === 'branch-deploy'
+  ) {
+    return getDeployStore(STORE_NAME);
+  }
   return getStore(STORE_NAME);
 }
 
