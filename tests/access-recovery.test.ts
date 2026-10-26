@@ -40,6 +40,7 @@ import { signAccessToken, verifyAccessToken, sendAccessEmail } from '@/lib/acces
 import { POST as requestAccessLink } from '@/app/api/request-access-link/route';
 import { POST as redeemAccessLink } from '@/app/api/redeem-access-link/route';
 import { GET as verifyPayment } from '@/app/api/verify-payment/route';
+import { POST as testSeedPurchase } from '@/app/api/test-seed-purchase/route';
 
 const SECRET = 'test-signing-secret';
 const BUYER = 'buyer@example.com';
@@ -164,5 +165,45 @@ describe('token + email helpers', () => {
     const body = JSON.parse(init.body);
     expect(body.from).toBe('MortWise <noreply@modeloop.net>');
     expect(body.text).toContain('/access?token=');
+  });
+});
+
+describe('preview test-seed endpoint + bypass', () => {
+  it('blocked in production (NETLIFY_CONTEXT=production)', async () => {
+    process.env.NETLIFY_CONTEXT = 'production';
+    const res = await testSeedPurchase(post('/api/test-seed-purchase', { email: BUYER }));
+    expect(res.status).toBe(403);
+    delete process.env.NETLIFY_CONTEXT;
+  });
+
+  it('seeds buyer + returns signed token in non-production', async () => {
+    delete process.env.NETLIFY_CONTEXT; // local / deploy-preview
+    const res = await testSeedPurchase(post('/api/test-seed-purchase', { email: BUYER }));
+    const data = await res.json();
+    expect(data.seeded).toBe(true);
+    expect(data.email).toBe(BUYER);
+    expect(typeof data.token).toBe('string');
+    // record was written to the index store
+    expect(indexStore.get(BUYER)).toMatchObject({ sessionId: 'preview_test_bypass', product: 'mortwise_full' });
+  });
+
+  it('seeded token redeems end-to-end without Stripe (preview_test_bypass)', async () => {
+    delete process.env.NETLIFY_CONTEXT;
+    // seed
+    const seedRes = await testSeedPurchase(post('/api/test-seed-purchase', { email: BUYER }));
+    const { token } = await seedRes.json();
+    // redeem — NETLIFY_CONTEXT is not 'production' so bypass is active
+    const redeemRes = await redeemAccessLink(post('/api/redeem-access-link', { token }));
+    expect(await redeemRes.json()).toEqual({ verified: true, email: BUYER });
+  });
+
+  it('preview bypass is rejected when NETLIFY_CONTEXT=production', async () => {
+    process.env.NETLIFY_CONTEXT = 'production';
+    indexBuyer(BUYER, 'preview_test_bypass'); // manually seed with bypass ID
+    const token = signAccessToken(BUYER, SECRET);
+    const res = await redeemAccessLink(post('/api/redeem-access-link', { token }));
+    // isPurchaseStillValid falls through to Stripe, which throws — returns 500
+    expect(res.status).toBe(500);
+    delete process.env.NETLIFY_CONTEXT;
   });
 });

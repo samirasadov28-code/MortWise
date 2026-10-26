@@ -36,9 +36,20 @@ async function isChargeRevoked(stripe: Stripe, session: Stripe.Checkout.Session)
   }
 }
 
+// In deploy-preview and branch-deploy contexts, a session ID of
+// 'preview_test_bypass' skips the Stripe call so recovery can be proved
+// end-to-end without a real payment. Never honoured in production.
+function isPreviewBypass(sessionId: string): boolean {
+  return (
+    sessionId === 'preview_test_bypass' &&
+    process.env.NETLIFY_CONTEXT !== 'production'
+  );
+}
+
 // Bounded re-validation of ONE known purchase (recovery + redeem paths):
 // one session retrieve (expanded) + at most one charge lookup. Never scans.
 export async function isPurchaseStillValid(stripe: Stripe, sessionId: string): Promise<boolean> {
+  if (isPreviewBypass(sessionId)) return true;
   const session = await stripe.checkout.sessions.retrieve(sessionId, {
     expand: ['payment_intent.latest_charge'],
   });
