@@ -4,10 +4,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NextRequest } from 'next/server';
 
 // ---- Durable purchase index mock (in-memory Map standing in for Netlify Blobs) ----
+// Set blobError to simulate storage unavailability in specific tests.
 const indexStore = new Map<string, any>();
+let blobError: Error | null = null;
 vi.mock('@/lib/purchases', () => ({
-  recordPurchase: vi.fn(async (rec: any) => { indexStore.set(rec.email, rec); }),
-  findPurchase: vi.fn(async (email: string) => indexStore.get(email.trim().toLowerCase()) ?? null),
+  recordPurchase: vi.fn(async (rec: any) => {
+    if (blobError) throw blobError;
+    indexStore.set(rec.email, rec);
+  }),
+  findPurchase: vi.fn(async (email: string) => {
+    if (blobError) throw blobError;
+    return indexStore.get(email.trim().toLowerCase()) ?? null;
+  }),
 }));
 
 // ---- Stripe mock --------------------------------------------------------------
@@ -60,6 +68,7 @@ const post = (url: string, body: any) =>
 
 beforeEach(() => {
   indexStore.clear();
+  blobError = null;
   fakeSessionsById = {};
   fakeCharge = { refunded: false, disputed: false, amount: 499, amount_refunded: 0 };
   fetchMock.mockClear();
@@ -106,6 +115,14 @@ describe('request-access-link', () => {
     const buyer = await (await requestAccessLink(post('/api/request-access-link', { email: BUYER }))).text();
     expect(unknown).toBe(buyer);
   });
+
+  it('storage unavailable: returns 503 fast (not silently treated as buyer-not-found)', async () => {
+    blobError = new Error('Connection timed out');
+    const res = await requestAccessLink(post('/api/request-access-link', { email: BUYER }));
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ error: expect.stringContaining('unavailable') });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('redeem-access-link', () => {
@@ -129,6 +146,14 @@ describe('redeem-access-link', () => {
     expect(await (await redeemAccessLink(post('/api/redeem-access-link', { token: 'Z2FyYmFnZQ==' }))).json()).toEqual({ verified: false });
     const bad = signAccessToken(BUYER, 'wrong-secret');
     expect(await (await redeemAccessLink(post('/api/redeem-access-link', { token: bad }))).json()).toEqual({ verified: false });
+  });
+
+  it('storage unavailable at redeem: returns 503, not verified: false (token was valid)', async () => {
+    blobError = new Error('Blobs API unreachable');
+    const token = signAccessToken(BUYER, SECRET);
+    const res = await redeemAccessLink(post('/api/redeem-access-link', { token }));
+    expect(res.status).toBe(503);
+    expect(await res.json()).toMatchObject({ error: expect.stringContaining('unavailable') });
   });
 });
 
