@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { hasPaidPurchase, signAccessToken, sendAccessEmail } from '@/lib/access';
+import Stripe from 'stripe';
+import { signAccessToken, sendAccessEmail, isPurchaseStillValid } from '@/lib/access';
+import { findPurchase } from '@/lib/purchases';
 
 export const runtime = 'nodejs';
 
@@ -36,14 +38,22 @@ export async function POST(req: NextRequest) {
 
   // Paying customers get a signed sign-in link by email. The response is
   // identical whether or not a purchase exists, so the endpoint cannot be
-  // used to enumerate buyers.
+  // used to enumerate buyers. Lookup is the durable purchase index (one
+  // bounded read) plus at most two Stripe calls for the refund re-check;
+  // this endpoint never scans Stripe history.
   try {
-    if (await hasPaidPurchase(normalized)) {
+    const purchase = await findPurchase(normalized);
+    if (purchase) {
+      const secretKey = process.env.STRIPE_SECRET_KEY;
       const secret = process.env.AUTH_SIGNING_SECRET;
+      if (!secretKey) throw new Error('STRIPE_SECRET_KEY not configured');
       if (!secret) throw new Error('AUTH_SIGNING_SECRET not configured');
-      const origin = new URL(req.url).origin;
-      const link = `${origin}/access?token=${signAccessToken(normalized, secret)}`;
-      await sendAccessEmail(normalized, link);
+      const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
+      if (await isPurchaseStillValid(stripe, purchase.sessionId)) {
+        const origin = new URL(req.url).origin;
+        const link = `${origin}/access?token=${signAccessToken(normalized, secret)}`;
+        await sendAccessEmail(normalized, link);
+      }
     }
   } catch (error) {
     console.error('Access-link request failed:', error);

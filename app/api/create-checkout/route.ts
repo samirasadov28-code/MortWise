@@ -24,6 +24,10 @@ export async function POST() {
     // Restricted live keys may lack price-read permission, so the mode is fixed, not looked up.
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      // Buyers are looked up by Customer email in Stripe-side tooling.
+      // Under the pinned API version the default is 'if_required', which
+      // creates NO Customer for card payments.
+      customer_creation: 'always',
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { product: 'mortwise_full' },
       success_url: `${APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,

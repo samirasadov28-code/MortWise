@@ -6,20 +6,45 @@ import crypto from 'crypto';
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-// Returns true when Stripe shows a paid MortWise checkout for this email.
-export async function hasPaidPurchase(email: string): Promise<boolean> {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) return false;
-  const stripe = new Stripe(secretKey, { apiVersion: '2026-04-22.dahlia' });
-  const customers = await stripe.customers.list({ email, limit: 5 });
-  for (const customer of customers.data) {
-    const sessions = await stripe.checkout.sessions.list({ customer: customer.id, limit: 100 });
-    const paid = sessions.data.some(
-      (s) => s.payment_status === 'paid' && s.metadata?.product === 'mortwise_full'
+// A one-off purchase stops being valid when the payment is fully refunded or
+// disputed. session.payment_status stays 'paid' after a refund, so the charge
+// itself has to be checked (same rule as app/api/verify-payment/route.ts).
+async function isChargeRevoked(stripe: Stripe, session: Stripe.Checkout.Session): Promise<boolean> {
+  if (session.mode !== 'payment') return false;
+  try {
+    let charge: Stripe.Charge | null = null;
+    const pi = session.payment_intent;
+    if (pi && typeof pi === 'object' && pi.latest_charge && typeof pi.latest_charge === 'object') {
+      charge = pi.latest_charge as Stripe.Charge;
+    } else {
+      const piId = typeof pi === 'string' ? pi : pi?.id;
+      if (!piId) return false;
+      const charges = await stripe.charges.list({ payment_intent: piId, limit: 3 });
+      charge = charges.data[0] ?? null;
+    }
+    if (!charge) return false;
+    return (
+      charge.refunded === true ||
+      charge.disputed === true ||
+      (charge.amount_refunded ?? 0) >= charge.amount
     );
-    if (paid) return true;
+  } catch (error) {
+    // Mirror verify-payment: on a Stripe hiccup keep access and log, rather
+    // than failing closed for a buyer we cannot check right now.
+    console.error('Refund state lookup failed:', error);
+    return false;
   }
-  return false;
+}
+
+// Bounded re-validation of ONE known purchase (recovery + redeem paths):
+// one session retrieve (expanded) + at most one charge lookup. Never scans.
+export async function isPurchaseStillValid(stripe: Stripe, sessionId: string): Promise<boolean> {
+  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+    expand: ['payment_intent.latest_charge'],
+  });
+  if (session.metadata?.product !== 'mortwise_full') return false;
+  if (session.payment_status !== 'paid') return false;
+  return !(await isChargeRevoked(stripe, session));
 }
 
 export function signAccessToken(email: string, secret: string): string {
