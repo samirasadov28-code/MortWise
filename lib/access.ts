@@ -38,11 +38,15 @@ async function isChargeRevoked(stripe: Stripe, session: Stripe.Checkout.Session)
 
 // In deploy-preview and branch-deploy contexts, a session ID of
 // 'preview_test_bypass' skips the Stripe call so recovery can be proved
-// end-to-end without a real payment. Never honoured in production.
+// end-to-end without a real payment.
+// Fail-closed: if NETLIFY_CONTEXT is absent or any value other than the two
+// explicit preview strings, bypass is rejected. This means an attacker who
+// somehow seeds a bypass record into the production store gains nothing.
 function isPreviewBypass(sessionId: string): boolean {
   return (
     sessionId === 'preview_test_bypass' &&
-    process.env.NETLIFY_CONTEXT !== 'production'
+    (process.env.NETLIFY_CONTEXT === 'deploy-preview' ||
+     process.env.NETLIFY_CONTEXT === 'branch-deploy')
   );
 }
 

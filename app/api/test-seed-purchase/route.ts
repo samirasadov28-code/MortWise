@@ -5,14 +5,16 @@ import { recordPurchase } from '@/lib/purchases';
 export const runtime = 'nodejs';
 
 // Seeds a test purchase record and returns a ready-to-redeem recovery token.
-// Gated to non-production Netlify contexts (deploy-preview, branch-deploy, local).
+// Fail-closed: only available when NETLIFY_CONTEXT is EXPLICITLY 'deploy-preview'
+// or 'branch-deploy'. Any other value — including absent/undefined — returns 403.
 // The seeded record uses sessionId 'preview_test_bypass', which isPurchaseStillValid
-// accepts without a Stripe call in non-production environments.
+// accepts without a Stripe call in those same explicit preview contexts.
 //
 // POST /api/test-seed-purchase  { email: string }
 // → { seeded: true, email, token }  (token can be passed directly to /api/redeem-access-link)
 export async function POST(req: NextRequest) {
-  if (process.env.NETLIFY_CONTEXT === 'production') {
+  const ctx = process.env.NETLIFY_CONTEXT;
+  if (ctx !== 'deploy-preview' && ctx !== 'branch-deploy') {
     return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
   }
 

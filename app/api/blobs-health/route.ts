@@ -1,21 +1,36 @@
 import { NextResponse } from 'next/server';
-import { getStore } from '@netlify/blobs';
 
 export const runtime = 'nodejs';
 
-// Diagnostic endpoint: confirms that the Netlify Blobs store is reachable at
-// runtime. Safe to call in any environment; returns no sensitive data.
-// GET /api/blobs-health
+// Diagnostic endpoint: confirms NETLIFY_BLOBS_CONTEXT is present and structurally
+// valid (siteID + token fields exist). Does NOT make a network call to the Blobs
+// API — the previous implementation timed out because it tried a real store.get().
+// GET /api/blobs-health → { ok, contextPresent, hasSiteID, hasToken }
 export async function GET() {
-  const contextPresent = !!process.env.NETLIFY_BLOBS_CONTEXT;
-  try {
-    const store = getStore('mortwise-purchases');
-    // A cheap read for a key that will never exist; null result is fine.
-    await store.get('__health_probe__');
-    return NextResponse.json({ ok: true, contextPresent });
-  } catch (err) {
+  const raw = process.env.NETLIFY_BLOBS_CONTEXT;
+  if (!raw) {
     return NextResponse.json(
-      { ok: false, contextPresent, error: err instanceof Error ? err.message : String(err) },
+      { ok: false, contextPresent: false, error: 'NETLIFY_BLOBS_CONTEXT not in process.env' },
+      { status: 500 },
+    );
+  }
+  try {
+    // @netlify/blobs uses standard base64 (Buffer.from(x,'base64').toString())
+    const data: Record<string, unknown> = JSON.parse(
+      Buffer.from(raw, 'base64').toString(),
+    );
+    const hasSiteID = typeof data.siteID === 'string' && data.siteID.length > 0;
+    const hasToken  = typeof data.token  === 'string' && data.token.length  > 0;
+    if (!hasSiteID || !hasToken) {
+      return NextResponse.json(
+        { ok: false, contextPresent: true, hasSiteID, hasToken, error: 'Context missing siteID or token' },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({ ok: true, contextPresent: true, hasSiteID: true, hasToken: true });
+  } catch {
+    return NextResponse.json(
+      { ok: false, contextPresent: true, error: 'Context parse failed' },
       { status: 500 },
     );
   }
