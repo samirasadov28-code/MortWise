@@ -30,11 +30,21 @@ export async function POST(req: NextRequest) {
 
   // Re-check the purchase at redeem time so revoked/refunded access fails.
   // Bounded: one index read + at most two Stripe calls.
+  // Storage failures get their own 503 so callers know the store is unavailable,
+  // not that the token was invalid.
+  let purchase: Awaited<ReturnType<typeof findPurchase>>;
   try {
-    const purchase = await findPurchase(parsed.email);
-    if (!purchase) {
-      return NextResponse.json({ verified: false });
-    }
+    purchase = await findPurchase(parsed.email);
+  } catch (err) {
+    console.error('[redeem-access-link] Purchase index unavailable:', err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
+  }
+
+  if (!purchase) {
+    return NextResponse.json({ verified: false });
+  }
+
+  try {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     if (!secretKey) {
       return NextResponse.json({ verified: false }, { status: 500 });
@@ -44,7 +54,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ verified: false });
     }
   } catch (error) {
-    console.error('Access-link redeem failed:', error);
+    console.error('[redeem-access-link] Stripe validation failed:', error);
     return NextResponse.json({ verified: false }, { status: 500 });
   }
 

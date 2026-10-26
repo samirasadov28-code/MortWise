@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { signAccessToken, sendAccessEmail, isPurchaseStillValid } from '@/lib/access';
-import { findPurchase } from '@/lib/purchases';
+import { findPurchase, type PurchaseRecord } from '@/lib/purchases';
 
 export const runtime = 'nodejs';
 
@@ -41,9 +41,19 @@ export async function POST(req: NextRequest) {
   // used to enumerate buyers. Lookup is the durable purchase index (one
   // bounded read) plus at most two Stripe calls for the refund re-check;
   // this endpoint never scans Stripe history.
+
+  // Storage failures (including timeout) return 503 immediately — they must
+  // not be silently treated as "buyer not found" while an email never arrives.
+  let purchase: PurchaseRecord | null;
   try {
-    const purchase = await findPurchase(normalized);
-    if (purchase) {
+    purchase = await findPurchase(normalized);
+  } catch (err) {
+    console.error('[request-access-link] Purchase index unavailable:', err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: 'Service temporarily unavailable' }, { status: 503 });
+  }
+
+  if (purchase) {
+    try {
       const secretKey = process.env.STRIPE_SECRET_KEY;
       const secret = process.env.AUTH_SIGNING_SECRET;
       if (!secretKey) throw new Error('STRIPE_SECRET_KEY not configured');
@@ -54,9 +64,9 @@ export async function POST(req: NextRequest) {
         const link = `${origin}/access?token=${signAccessToken(normalized, secret)}`;
         await sendAccessEmail(normalized, link);
       }
+    } catch (error) {
+      console.error('[request-access-link] Email send failed:', error);
     }
-  } catch (error) {
-    console.error('Access-link request failed:', error);
   }
 
   return NextResponse.json({ sent: true });
